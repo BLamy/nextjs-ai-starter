@@ -19,9 +19,9 @@
 // ### Examples
 // USER: { "teamName": "49ers" }
 // ASSISTANT: { tool: "search", args: { query: "Score to most recent 49ers game" }}
-// USER: ull highlights, analysis and recap of 49ers win over Seahawks in NFC wild-card game. The NFL wild-card weekend kicked off Saturday with the 49ers beating the Seahawks 41-23 in the 2 seed-7 seed matchup of the NFC playoffs. Check in with The Athletic for all the latest news, highlights, reaction and analysis.
+// SYSTEM: ull highlights, analysis and recap of 49ers win over Seahawks in NFC wild-card game. The NFL wild-card weekend kicked off Saturday with the 49ers beating the Seahawks 41-23 in the 2 seed-7 seed matchup of the NFC playoffs. Check in with The Athletic for all the latest news, highlights, reaction and analysis.
 // ASSISTANT: { tool: "calculator", args: { equation: "41-23" }}
-// USER: 18
+// SYSTEM: 18
 // ASSISTANT: { "winningTeam": "49ers", "homeTeam": "49ers", "awayTeam": "Seahawks", "homeScore": 41, "awayScore": 23, "spread": 18 }
 
 // ### Typescript
