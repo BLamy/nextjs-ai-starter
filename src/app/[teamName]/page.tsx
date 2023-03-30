@@ -7,7 +7,7 @@ import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
 const promptPath = path.resolve(
   __dirname,
-  process.env.npm_lifecycle_event === "dev" ? "../../../../src/ai/prompts/NFLScoresPrompt.ts" : "../../NFLScoresPrompt.ts"
+  process.env.npm_lifecycle_event === "dev" ? "../../../../src/ai/prompts/NFLScoresPrompt.ts" : "../../NFLScoresPrompt.js"
 );
 
 const configuration = new Configuration({

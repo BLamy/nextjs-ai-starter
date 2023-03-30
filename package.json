@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && cp src/ai/prompts/NFLScoresPrompt.ts .next/server/NFLScoresPrompt.ts",
+    "build": "next build && cp src/ai/prompts/NFLScoresPrompt.ts .next/server/NFLScoresPrompt.js",
     "test": "jest",
     "start": "next start",
     "lint": "next lint"
