@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Card from "../../components/Card";
 import { Inter } from "next/font/google";
 import styles from "./page.module.css";
 
@@ -16,11 +16,7 @@ export default function NFL() {
     <main className={styles.main}>
       <ul>
         {nflTeams.map((teamName) => (
-          <li key={teamName}>
-            <a className={styles.a} href={`/nfl/${teamName}`}>
-              {teamName}
-            </a>
-          </li>
+          <Card key={teamName} title={teamName} href={`/nfl/${teamName}`} />
         ))}
       </ul>
     </main>
