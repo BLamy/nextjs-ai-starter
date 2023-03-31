@@ -3,14 +3,13 @@ import * as Tools from "@/ai/tools";
 import chalk from "chalk";
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 
-const configuration = new Configuration({
+const openai = new OpenAIApi(new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+}));
 
-const generateChatCompletion = async (
+async function generateChatCompletion(
   messages: ChatCompletionRequestMessage[]
-): Promise<Record<string, any>> => {
+): Promise<Record<string, any>> {
   const response = await openai.createChatCompletion({
     model: "gpt-4",
     messages,
@@ -21,13 +20,13 @@ const generateChatCompletion = async (
   );
 };
 
-const isValidTool = (tool: string): tool is "search" | "calculator" => {
+function isValidTool(tool: string): tool is "search" | "calculator" {
   return tool === "search" || tool === "calculator";
 };
 
-const runNFLScoresPrompt = async (
+async function runNFLScoresPrompt(
   args: Prompts.NFLScores.Input
-): Promise<Prompts.NFLScores.Output> => {
+): Promise<Prompts.NFLScores.Output> {
   console.log(chalk.blue(`SYSTEM: ${process.env.NFLScoresPrompt}`));
   console.log(chalk.green(`USER: ${JSON.stringify(args)}`));
   let messages: ChatCompletionRequestMessage[] = [
@@ -51,8 +50,7 @@ const runNFLScoresPrompt = async (
     });
 
     if (chatCompletion.error) {
-      const errMsg = JSON.stringify(chatCompletion.error);
-      const err = `ERROR: ${errMsg}. ${JSON.stringify(messages)}`;
+      const err = `ERROR: ${JSON.stringify(chatCompletion.error)}. ${JSON.stringify(messages)}`;
       console.error(chalk.red(err));
       throw new Error(err);
     }
@@ -67,8 +65,7 @@ const runNFLScoresPrompt = async (
           content: toolResponse,
         });
       } else {
-        const msgLog = JSON.stringify(messages);
-        const err = `HALLUCINATION: Unknown tool. ${msgLog}`;
+        const err = `HALLUCINATION: Unknown tool. ${JSON.stringify(messages)}`;
         console.error(chalk.red(err));
         throw new Error(err);
       }
@@ -79,8 +76,7 @@ const runNFLScoresPrompt = async (
       }
     }
   }
-  const msgLog = JSON.stringify(messages);
-  const err = `STACK OVERFLOW: Too many tools used. ${msgLog}`;
+  const err = `STACK OVERFLOW: Too many tools used. ${JSON.stringify(messages)}`;
   console.error(chalk.red(err));
   throw new Error(err);
 };
