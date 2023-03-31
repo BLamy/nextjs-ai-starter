@@ -5,23 +5,20 @@ import styles from "./page.module.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  // prettier-ignore
-  const nflTeams = [ 
-    "49ers", "Bears", "Bengals", "Bills", "Broncos", "Browns", "Buccaneers", "Cardinals", 
-    "Chargers", "Chiefs", "Colts", "Commanders", "Cowboys", "Dolphins", "Eagles", "Falcons", 
-    "Giants", "Jaguars", "Jets", "Lions", "Packers", "Panthers", "Patriots", "Raiders", 
-    "Rams", "Ravens", "Saints", "Seahawks", "Steelers", "Texans", "Titans", "Vikings",
-  ];
   return (
     <main className={styles.main}>
+      <h1>Pick a demo</h1>
       <ul>
-        {nflTeams.map((teamName) => (
-          <li key={teamName}>
-            <a className={styles.a} href={`/nfl/${teamName}`}>
-              {teamName}
-            </a>
-          </li>
-        ))}
+        <li>
+          <a className={styles.a} href="/joke">
+            Joke Generator
+          </a>
+        </li>
+        <li>
+          <a className={styles.a} href="/nfl">
+            NFL Scores
+          </a>
+        </li>
       </ul>
     </main>
   );

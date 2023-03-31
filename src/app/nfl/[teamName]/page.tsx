@@ -1,23 +1,8 @@
 import * as Prompts from "@/ai/prompts";
 import * as Tools from "@/ai/tools";
 import chalk from "chalk";
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
-
-const openai = new OpenAIApi(new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-}));
-async function generateChatCompletion(
-  messages: ChatCompletionRequestMessage[]
-): Promise<Record<string, any>> {
-  const response = await openai.createChatCompletion({
-    model: "gpt-3.5-turbo",
-    messages,
-  });
-
-  return JSON.parse(
-    response.data.choices[0].message?.content || '{ "error": "No response" }'
-  );
-};
+import { generateChatCompletion } from "@/lib/ChatCompletion";
+import { ChatCompletionRequestMessage } from "openai";
 
 function isValidTool(tool: string): tool is "search" | "calculator" {
   return tool === "search" || tool === "calculator";
