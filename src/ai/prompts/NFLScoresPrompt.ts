@@ -14,7 +14,8 @@
 // Remember you can use a tool by printing json in the following format
 // { "tool": "toolName", "args": { [key: string]: any }}
 
-// Your goal is to act as a prepared statement for LLMs, The user will feed you some json and you will ensure that the user input json is valid and that it matches the Input type. If all inputs are valid then you should perform the action described in the Prompt and return the result in the format described by the Output type.
+// Your goal is to act as a prepared statement for LLMs, The user will feed you some json and you will ensure that the user input json is valid and that it matches the Input type. 
+// If all inputs are valid then you should perform the action described in the Prompt and return the result in the format described by the Output type.
 
 // ### Examples
 // USER: { "teamName": "49ers" }
@@ -47,7 +48,7 @@ export const outputSchema = z.object({
   awayTeam: nflTeamSchema,
   homeScore: z.number(),
   awayScore: z.number(),
-  spread: z.number(),
+  spread: z.number().positive() ,
 });
 
 export type Prompt = `Can you tell me the results to the most recent {{teamName}} NFL game then calculate the spread.`

@@ -6,12 +6,11 @@ import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 const openai = new OpenAIApi(new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 }));
-
 async function generateChatCompletion(
   messages: ChatCompletionRequestMessage[]
 ): Promise<Record<string, any>> {
   const response = await openai.createChatCompletion({
-    model: "gpt-4",
+    model: "gpt-3.5-turbo",
     messages,
   });
 
@@ -40,7 +39,7 @@ async function runNFLScoresPrompt(
     },
   ];
   // There are only two tools so if it loops more than twice, something is wrong.
-  const TOOL_STACK_OVERFLOW_THRESHOLD = 2;
+  const TOOL_STACK_OVERFLOW_THRESHOLD = 3;
   for (let i = 0; i <= TOOL_STACK_OVERFLOW_THRESHOLD; i++) {
     const chatCompletion = await generateChatCompletion(messages);
     console.log(chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion)}`));

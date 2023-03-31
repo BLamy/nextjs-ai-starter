@@ -17,7 +17,7 @@ export default function Home() {
       <ul>
         {nflTeams.map((teamName) => (
           <li key={teamName}>
-            <a className={styles.a} href={`/${teamName}`}>
+            <a className={styles.a} href={`/nfl/${teamName}`}>
               {teamName}
             </a>
           </li>
