@@ -1,15 +1,7 @@
 import * as Prompts from "@/ai/prompts";
 import * as Tools from "@/ai/tools";
-import path from "path";
-import fs from "fs/promises";
 import chalk from "chalk";
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
-
-const promptPath = path.resolve(
-  __dirname,
-  // TODO: Figure out how to make this work when hosted on Vercel
-  process.env.npm_lifecycle_event === "dev" ? "../../../../src/ai/prompts/NFLScoresPrompt.ts" : "../../types/app/NFLScoresPrompt.js"
-);
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -36,13 +28,12 @@ const isValidTool = (tool: string): tool is "search" | "calculator" => {
 const runNFLScoresPrompt = async (
   args: Prompts.NFLScores.Input
 ): Promise<Prompts.NFLScores.Output> => {
-  const systemPrompt = await fs.readFile(promptPath, "utf-8");
-  console.log(chalk.blue(`SYSTEM: ${systemPrompt}`));
+  console.log(chalk.blue(`SYSTEM: ${process.env.NFLScoresPrompt}`));
   console.log(chalk.green(`USER: ${JSON.stringify(args)}`));
   let messages: ChatCompletionRequestMessage[] = [
     {
       role: "system",
-      content: systemPrompt,
+      content: process.env.NFLScoresPrompt as string,
     },
     {
       role: "user",
