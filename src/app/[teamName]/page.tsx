@@ -8,7 +8,7 @@ import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 const promptPath = path.resolve(
   __dirname,
   // TODO: Figure out how to make this work when hosted on Vercel
-  process.env.npm_lifecycle_event === "dev" ? "../../../../src/ai/prompts/NFLScoresPrompt.ts" : "../../NFLScoresPrompt.js"
+  process.env.npm_lifecycle_event === "dev" ? "../../../../src/ai/prompts/NFLScoresPrompt.ts" : "../../types/app/NFLScoresPrompt.js"
 );
 
 const configuration = new Configuration({
