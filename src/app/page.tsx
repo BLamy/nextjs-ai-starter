@@ -18,7 +18,7 @@ const demos = [
     title: "Docs",
     description:
       "Explore our comprehensive documentation to get started with our open-source project.",
-    href: "/docs",
+    href: "http://docs.nextjs.ai/",
   },
 ] as const;
 
