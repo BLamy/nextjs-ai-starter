@@ -4,20 +4,18 @@ import styles from "./page.module.css";
 const demos = [
   {
     title: "Joke Generator Basic Demo",
-    description:
-      "This demo showcases a simple joke generator using our open-source project.",
+    description: "This demo showcases a simple joke generator.",
     href: "/joke",
   },
   {
     title: "NFL Scores Agents Demo",
     description:
-      "This demo demonstrates how to fetch NFL scores using our open-source project.",
+      "This demo demonstrates how to fetch NFL scores using 2 tools.",
     href: "/nfl",
   },
   {
     title: "Docs",
-    description:
-      "Explore our comprehensive documentation to get started with our open-source project.",
+    description: "Explore our documentation.",
     href: "http://docs.nextjs.ai/",
   },
 ] as const;
