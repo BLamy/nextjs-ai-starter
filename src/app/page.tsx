@@ -4,13 +4,13 @@ import styles from "./page.module.css";
 const demos = [
   {
     title: "Joke Generator Basic Demo",
-    description: "This demo showcases a simple joke generator.",
+    description: "A simple joke generator, can take 2 arguments to customize response.",
     href: "/joke",
   },
   {
     title: "NFL Scores Agents Demo",
     description:
-      "This demo demonstrates how to fetch NFL scores using 2 tools.",
+      "This demo demonstrates how to fetch NFL scores using 2 different tools.",
     href: "/nfl",
   },
   {
