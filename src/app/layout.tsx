@@ -16,14 +16,14 @@ export default function RootLayout({
         <header className="py-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <div className="container mx-auto">
             <h1 className="text-4xl font-bold text-center">
-              Next AI App Starter
+              NextJS AI Starter
             </h1>
           </div>
         </header>
         {children}
         <footer className="mt-10 py-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <div className="container mx-auto text-center">
-            <p>LICENSE - MIT</p>
+            <p><a href="https://github.com/BLamy/nextjs-ai-starter/blob/main/LICENSE">LICENSE - MIT</a></p>
           </div>
         </footer>
       </body>
