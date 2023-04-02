@@ -39,7 +39,7 @@ async function runNFLScoresPrompt(
 
     if (chatCompletion.tool) {
       if (isValidTool(chatCompletion.tool)) {
-        const response = await Tools[chatCompletion.tool](chatCompletion.req);
+        const response = await Tools[chatCompletion.tool](chatCompletion.args);
         const toolResponse = JSON.stringify(response, null, 2);
         console.log(chalk.blue(`SYSTEM: ${toolResponse}`));
         messages.push({
