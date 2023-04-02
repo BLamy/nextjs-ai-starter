@@ -2,6 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const cp = require("child_process");
 
+const delimiter = "----^|delimiter|^----";
+
 module.exports = class PromptCompiler {
   promptsDirectory;
   constructor(promptsDirectory = "../src/ai/prompts") {
@@ -17,17 +19,11 @@ module.exports = class PromptCompiler {
 
   compileRailPrompt(fileName) {
     const railPath = path.join(__dirname, this.promptsDirectory, fileName);
-    cp.spawnSync(`pip install guardrails-ai`, {
-      shell: true
-    });
-    let railProcess = cp.spawnSync(`python scripts/compileRailFile.py ${railPath}`, {
+    let railProcess = cp.spawnSync(`pip install guardrails-ai && echo "${delimiter}" && python scripts/compileRailFile.py ${railPath}`, {
       shell: true
     });
     if (railProcess.error) {
-      cp.spawnSync(`pip3 install guardrails-ai`, {
-        shell: true
-      });
-      railProcess = cp.spawnSync(`python3 scripts/compileRailFile.py ${railPath}`, {
+      railProcess = cp.spawnSync(`pip3 install guardrails-ai && echo "${delimiter}" && python3 scripts/compileRailFile.py ${railPath}`, {
         shell: true
       });
       if (railProcess.error) {
