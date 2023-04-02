@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "cd scripts && pip install guardrails-ai && cd .. && next build",
+    "build": "cd scripts && ipython -c \"%run compileRailFile.ipynb\" && cd .. && next build",
     "build:local": "cd scripts && pip3 install guardrails-ai && cd .. && next build",
     "test": "jest",
     "start": "next start",
