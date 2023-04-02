@@ -1,5 +1,4 @@
 import Card from "../components/Card";
-import styles from "./page.module.css";
 
 const demos = [
   {
@@ -10,7 +9,7 @@ const demos = [
   {
     title: "Joke Generator Basic Demo",
     description: "A simple joke generator, can take 2 arguments to customize response.",
-    href: "/joke",
+    href: "/joke?jokeType=dad&count=3",
   },
   {
     title: "NFL Scores Agents Demo",
@@ -32,19 +31,17 @@ const demos = [
 
 export default function Home() {
   return (
-    <main className={`mt-10 flex-grow ${styles["min-h-screen-wrapper"]}`}>
-      <div className="container mx-auto min-h-screen-wrapper">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {demos.map((card, index) => (
-            <Card
-              key={index}
-              title={card.title}
-              description={card.description}
-              href={card.href}
-            />
-          ))}
-        </div>
+    <div className="container mx-auto min-h-screen-wrapper">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {demos.map((card, index) => (
+          <Card
+            key={index}
+            title={card.title}
+            description={card.description}
+            href={card.href}
+          />
+        ))}
       </div>
-    </main>
+    </div>
   );
 }

@@ -13,12 +13,10 @@ export default function NFL() {
     "Rams", "Ravens", "Saints", "Seahawks", "Steelers", "Texans", "Titans", "Vikings",
   ];
   return (
-    <main className={styles.main}>
-      <ul>
-        {nflTeams.map((teamName) => (
-          <Card key={teamName} title={teamName} href={`/nfl/${teamName}`} />
-        ))}
-      </ul>
-    </main>
+    <ul>
+      {nflTeams.map((teamName) => (
+        <Card key={teamName} title={teamName} href={`/nfl/${teamName}`} />
+      ))}
+    </ul>
   );
 }
