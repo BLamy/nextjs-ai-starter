@@ -17,11 +17,17 @@ module.exports = class PromptCompiler {
 
   compileRailPrompt(fileName) {
     const railPath = path.join(__dirname, this.promptsDirectory, fileName);
-    let railProcess = cp.spawnSync(`pip install gaurdrails-ui && python scripts/compileRailFile.py ${railPath}`, {
+    cp.spawnSync(`pip install guardrails-ai`, {
+      shell: true
+    });
+    let railProcess = cp.spawnSync(`python scripts/compileRailFile.py ${railPath}`, {
       shell: true
     });
     if (railProcess.error) {
-      railProcess = cp.spawnSync(`pip install gaurdrails-ui && python3 scripts/compileRailFile.py ${railPath}`, {
+      cp.spawnSync(`pip3 install guardrails-ai`, {
+        shell: true
+      });
+      railProcess = cp.spawnSync(`python3 scripts/compileRailFile.py ${railPath}`, {
         shell: true
       });
       if (railProcess.error) {
