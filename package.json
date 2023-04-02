@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "preinstall": "pip install -r requirements.txt",
     "dev": "next dev",
     "build": "next build",
     "test": "jest",
