@@ -19,7 +19,7 @@ module.exports = class PromptCompiler {
 
   compileRailPrompt(fileName) {
     const railPath = path.join(__dirname, this.promptsDirectory, fileName);
-    let railProcess = cp.spawnSync(`pip install guardrails-ai && echo "${delimiter}" && python scripts/compileRailFile.py ${railPath}`, {
+    let railProcess = cp.spawnSync(`pip3 install guardrails-ai && echo "${delimiter}" && python3 scripts/compileRailFile.py ${railPath}`, {
       shell: true
     });
     if (railProcess.error) {
