@@ -12,7 +12,7 @@ export default async function Joke() {
   return (
     <div>
       <h1>Tell me a poem:</h1>
-      {JSON.stringify(res).split('\\n').map(line => <p>{line}</p>)}
+      {JSON.stringify(res).split('\\n').map((line, i) => <p key={i}>{line}</p>)}
     </div>
   );
 }
