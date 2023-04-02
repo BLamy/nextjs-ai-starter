@@ -72,7 +72,7 @@ module.exports = class PromptCompiler {
     .filter((fileName) => fileName.endsWith("Prompt"))
     .reduce((acc, fileName) => ({ 
       ...acc, 
-      [`process.env.${fileName.split(".")[0]}Prompt`]: this.readPrompt(fileName) 
+      [`process.env.${fileName.split(".")[0]}Prompt`]: JSON.stringify(this.readPrompt(fileName))
     }), {});
 
   const railPrompts = allPrompts
@@ -86,7 +86,7 @@ module.exports = class PromptCompiler {
     .filter((fileName) => fileName.endsWith("Prompt.ts"))
     .reduce((acc, fileName) => ({ 
       ...acc, 
-      [`process.env.${fileName.split(".")[0]}Prompt`]: this.readPrompt(fileName) 
+      [`process.env.${fileName.split(".")[0]}Prompt`]: JSON.stringify(this.readPrompt(fileName)) 
     }), {});
 
     return { ...staticPrompts, ...railPrompts, ...typescriptPrompts };
