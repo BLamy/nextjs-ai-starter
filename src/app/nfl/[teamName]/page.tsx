@@ -18,7 +18,7 @@ async function runNFLScoresPrompt(
     },
     {
       role: "user",
-      content: JSON.stringify(input),
+      content: JSON.stringify(input, null, 2),
     },
   ];
   // There are only two tools so if it loops more than twice, something is wrong.
@@ -28,7 +28,7 @@ async function runNFLScoresPrompt(
     console.log(chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion, null, 2)}`));
     messages.push({
       role: "assistant",
-      content: JSON.stringify(chatCompletion),
+      content: JSON.stringify(chatCompletion, null, 2),
     });
 
     if (typeof chatCompletion === "string" || chatCompletion.error) {
@@ -44,7 +44,7 @@ async function runNFLScoresPrompt(
         console.log(chalk.blue(`SYSTEM: ${toolResponse}`));
         messages.push({
           role: "system",
-          content: JSON.stringify({ tool: chatCompletion.tool, res: toolResponse }),
+          content: toolResponse,
         });
       } else {
         const err = `HALLUCINATION: Unknown tool. ${JSON.stringify(messages, null, 2)}`;
