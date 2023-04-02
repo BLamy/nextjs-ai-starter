@@ -3,6 +3,11 @@ import styles from "./page.module.css";
 
 const demos = [
   {
+    title: "Basic Poem Demo",
+    description: "A static prompt. No arguments. No specific ouput. Just a poem.",
+    href: "/poem",
+  },
+  {
     title: "Joke Generator Basic Demo",
     description: "A simple joke generator, can take 2 arguments to customize response.",
     href: "/joke",
@@ -10,7 +15,7 @@ const demos = [
   {
     title: "NFL Scores Agents Demo",
     description:
-      "This demo demonstrates how to fetch NFL scores using 2 different tools.",
+      "Fetches NFL scores using 2 different tools (search & calculator).",
     href: "/nfl",
   },
   {

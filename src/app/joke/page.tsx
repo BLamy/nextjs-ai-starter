@@ -4,10 +4,10 @@ import { ChatCompletionRequestMessage } from "openai";
 import chalk from "chalk";
 
 async function runJokeGenerationPrompt(
-    args: Prompts.JokeGenerator.Input
+    input: Prompts.JokeGenerator.Input
   ): Promise<Prompts.JokeGenerator.Output> {
     console.log(chalk.blue(`SYSTEM: ${process.env.JokeGeneratorPrompt}`));
-    console.log(chalk.green(`USER: ${JSON.stringify(args)}`));
+    console.log(chalk.green(`USER: ${JSON.stringify(input)}`));
     let messages: ChatCompletionRequestMessage[] = [
       {
         role: "system",
@@ -15,7 +15,7 @@ async function runJokeGenerationPrompt(
       },
       {
         role: "user",
-        content: JSON.stringify(args),
+        content: JSON.stringify(input),
       },
     ];
     const chatCompletion = await generateChatCompletion(messages);
@@ -25,8 +25,8 @@ async function runJokeGenerationPrompt(
         content: JSON.stringify(chatCompletion),
     });
 
-    if (chatCompletion.error) {
-        const err = `ERROR: ${JSON.stringify(chatCompletion.error)}. ${JSON.stringify(messages)}`;
+    if (typeof chatCompletion === 'string' || chatCompletion.error) {
+        const err = `ERROR: ${JSON.stringify(chatCompletion)}. ${JSON.stringify(messages)}`;
         console.error(chalk.red(err));
         throw new Error(err);
     }
@@ -42,7 +42,6 @@ async function runJokeGenerationPrompt(
   };
   
   export default async function Joke({
-    // params,
     searchParams,
   }: {
     searchParams: URLSearchParams;
@@ -57,11 +56,11 @@ async function runJokeGenerationPrompt(
     if ("jokeType" in searchParams && (searchParams.jokeType === "dad" || searchParams.jokeType === "funny" || searchParams.jokeType === "dumb")) {
       params.jokeType = searchParams.jokeType;
     }
-    const args = Prompts.JokeGenerator.inputSchema.safeParse(params);
-    if (!args.success) {
+    const input = Prompts.JokeGenerator.inputSchema.safeParse(params);
+    if (!input.success) {
       return <h1>400 - invalid arguments</h1>;
     }
-    const res = await runJokeGenerationPrompt(args.data);
+    const res = await runJokeGenerationPrompt(input.data);
     return (
       <div>
         <h1>Tell me {params.count} {params.jokeType} Jokes:</h1>

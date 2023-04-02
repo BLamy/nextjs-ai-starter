@@ -1,4 +1,5 @@
 const webpack = require("webpack");
+const PromptCompiler = require("./scripts/PromptCompiler");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -6,21 +7,8 @@ const nextConfig = {
     appDir: true,
   },
   webpack: (config, { isServer, buildId }) => {
-    // Modify the Webpack configuration
-    const path = require('path')
-    const fs = require('fs')
-    
-    // Read all prompts from the prompts folder and add them to the DefinePlugin.
-    // This allows us to get the uncompiled prompt files at runtime to send to GPT
-    const prompts = fs.readdirSync(path.join(__dirname, './src/ai/prompts'))
-        .filter((fileName) => fileName !== 'index.ts')
-        .reduce((acc, fileName) => ({ 
-            ...acc, 
-            [`process.env.${fileName.replace('.ts', '')}`]: JSON.stringify(fs.readFileSync(path.join(__dirname, './src/ai/prompts', fileName), 'utf8'))
-        }), {})
-
-    // Add the DefinePlugin to the plugins array
-    config.plugins.push(new webpack.DefinePlugin(prompts));
+    // This will read the prompts in from the prompts directory compile them and assign them to process.env
+    config.plugins.push(new webpack.DefinePlugin(new PromptCompiler().build()));
 
     return config;
   },

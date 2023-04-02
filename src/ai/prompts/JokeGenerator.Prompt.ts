@@ -48,4 +48,4 @@ export type Prompt = `Can you tell {{count}} {{jokeType}} jokes?`
 export type Input = z.infer<typeof inputSchema>
 export type Output = z.infer<typeof outputSchema>
 export type Errors = "prompt injection attempt detected" | "json parse error" | "zod validation error" | "output formatting" | "unknown"
-export type Tools = { tool: 'search', args: { query: string } } | { tool: 'open-table', args: { query: string } }
+export type Tools = { tool: 'search', input: { query: string } } | { tool: 'open-table', input: { query: string } }

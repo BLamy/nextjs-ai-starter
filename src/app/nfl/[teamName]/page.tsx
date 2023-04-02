@@ -9,10 +9,10 @@ function isValidTool(tool: string): tool is "search" | "calculator" {
 };
 
 async function runNFLScoresPrompt(
-  args: Prompts.NFLScores.Input
+  input: Prompts.NFLScores.Input
 ): Promise<Prompts.NFLScores.Output> {
   console.log(chalk.blue(`SYSTEM: ${process.env.NFLScoresPrompt}`));
-  console.log(chalk.green(`USER: ${JSON.stringify(args)}`));
+  console.log(chalk.green(`USER: ${JSON.stringify(input)}`));
   let messages: ChatCompletionRequestMessage[] = [
     {
       role: "system",
@@ -20,7 +20,7 @@ async function runNFLScoresPrompt(
     },
     {
       role: "user",
-      content: JSON.stringify(args),
+      content: JSON.stringify(input),
     },
   ];
   // There are only two tools so if it loops more than twice, something is wrong.
@@ -33,15 +33,15 @@ async function runNFLScoresPrompt(
       content: JSON.stringify(chatCompletion),
     });
 
-    if (chatCompletion.error) {
-      const err = `ERROR: ${JSON.stringify(chatCompletion.error)}. ${JSON.stringify(messages)}`;
+    if (typeof chatCompletion === "string" || chatCompletion.error) {
+      const err = `ERROR: ${JSON.stringify(chatCompletion)}. ${JSON.stringify(messages)}`;
       console.error(chalk.red(err));
       throw new Error(err);
     }
 
     if (chatCompletion.tool) {
       if (isValidTool(chatCompletion.tool)) {
-        const response = await Tools[chatCompletion.tool](chatCompletion.args);
+        const response = await Tools[chatCompletion.tool](chatCompletion.input);
         const toolResponse = JSON.stringify(response);
         console.log(chalk.blue(`SYSTEM: ${toolResponse}`));
         messages.push({
@@ -70,11 +70,11 @@ export default async function ScorePageWithSpread({
 }: {
   params: Prompts.NFLScores.Input;
 }) {
-  const args = Prompts.NFLScores.inputSchema.safeParse(params);
-  if (!args.success) {
+  const input = Prompts.NFLScores.inputSchema.safeParse(params);
+  if (!input.success) {
     return <h1>404 - Team Not found</h1>;
   }
-  const res = await runNFLScoresPrompt(args.data);
+  const res = await runNFLScoresPrompt(input.data);
   return (
     <div>
       <h1>Last {params.teamName} Game:</h1>

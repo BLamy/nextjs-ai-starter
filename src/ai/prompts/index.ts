@@ -1,2 +1,2 @@
-export * as NFLScores from "./NFLScoresPrompt";
-export * as JokeGenerator from "./JokeGeneratorPrompt";
+export * as NFLScores from "./NFLScores.Prompt";
+export * as JokeGenerator from "./JokeGenerator.Prompt";
