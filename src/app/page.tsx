@@ -19,6 +19,11 @@ const demos = [
     href: "/nfl",
   },
   {
+    title: "Gaurdrails Demo",
+    description: "Loads prompt from a gaurdrails file.",
+    href: "/rail",
+  },
+  {
     title: "Docs",
     description: "Explore our documentation.",
     href: "http://docs.nextjs.ai/",
