@@ -3,16 +3,14 @@ import * as Tools from "@/ai/tools";
 import chalk from "chalk";
 import { generateChatCompletion } from "@/lib/ChatCompletion";
 import { ChatCompletionRequestMessage } from "openai";
-
-function isValidTool(tool: string): tool is "search" | "calculator" {
-  return tool === "search" || tool === "calculator";
-};
+import CodeCollapsible from "@/components/CodeCollapsible";
+import { colorForRole, isValidTool } from "@/lib/Utils";
 
 async function runNFLScoresPrompt(
   input: Prompts.NFLScores.Input
-): Promise<Prompts.NFLScores.Output> {
+): Promise<{ res: Prompts.NFLScores.Output, messages: ChatCompletionRequestMessage[] }> {
   console.log(chalk.blue(`SYSTEM: ${process.env.NFLScoresPrompt}`));
-  console.log(chalk.green(`USER: ${JSON.stringify(input)}`));
+  console.log(chalk.green(`USER: ${JSON.stringify(input, null, 2)}`));
   let messages: ChatCompletionRequestMessage[] = [
     {
       role: "system",
@@ -20,43 +18,43 @@ async function runNFLScoresPrompt(
     },
     {
       role: "user",
-      content: JSON.stringify(input),
+      content: JSON.stringify(input, null, 2),
     },
   ];
   // There are only two tools so if it loops more than twice, something is wrong.
   const TOOL_STACK_OVERFLOW_THRESHOLD = 3;
   for (let i = 0; i <= TOOL_STACK_OVERFLOW_THRESHOLD; i++) {
     const chatCompletion = await generateChatCompletion(messages);
-    console.log(chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion)}`));
+    console.log(chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion, null, 2)}`));
     messages.push({
       role: "assistant",
-      content: JSON.stringify(chatCompletion),
+      content: JSON.stringify(chatCompletion, null, 2),
     });
 
     if (typeof chatCompletion === "string" || chatCompletion.error) {
-      const err = `ERROR: ${JSON.stringify(chatCompletion)}. ${JSON.stringify(messages)}`;
+      const err = `ERROR: ${JSON.stringify(chatCompletion)}. ${JSON.stringify(messages, null, 2)}`;
       console.error(chalk.red(err));
       throw new Error(err);
     }
 
     if (chatCompletion.tool) {
       if (isValidTool(chatCompletion.tool)) {
-        const response = await Tools[chatCompletion.tool](chatCompletion.input);
-        const toolResponse = JSON.stringify(response);
+        const response = await Tools[chatCompletion.tool](chatCompletion.req);
+        const toolResponse = JSON.stringify(response, null, 2);
         console.log(chalk.blue(`SYSTEM: ${toolResponse}`));
         messages.push({
           role: "system",
           content: toolResponse,
         });
       } else {
-        const err = `HALLUCINATION: Unknown tool. ${JSON.stringify(messages)}`;
+        const err = `HALLUCINATION: Unknown tool. ${JSON.stringify(messages, null, 2)}`;
         console.error(chalk.red(err));
         throw new Error(err);
       }
     } else {
       const response = Prompts.NFLScores.outputSchema.safeParse(chatCompletion);
       if (response.success) {
-        return response.data;
+        return { res: response.data, messages };
       }
     }
   }
@@ -64,6 +62,7 @@ async function runNFLScoresPrompt(
   console.error(chalk.red(err));
   throw new Error(err);
 };
+
 
 export default async function ScorePageWithSpread({
   params,
@@ -74,11 +73,18 @@ export default async function ScorePageWithSpread({
   if (!input.success) {
     return <h1>404 - Team Not found</h1>;
   }
-  const res = await runNFLScoresPrompt(input.data);
+  const { res, messages } = await runNFLScoresPrompt(input.data);
   return (
-    <div>
+    <div className="m-10">
       <h1>Last {params.teamName} Game:</h1>
-      {JSON.stringify(res)}
+      {messages.map((message, i) => (
+        <CodeCollapsible
+          key={i}
+          title={message.role}
+          code={message.content}
+          color={colorForRole(message.role)}
+        />
+      ))}
     </div>
   );
 }

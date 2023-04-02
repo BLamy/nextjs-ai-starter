@@ -1,4 +1,5 @@
 import { generateChatCompletion } from "@/lib/ChatCompletion";
+import CodeCollapsible from "@/components/CodeCollapsible";
 
 export default async function RailExample() {
   const res = await generateChatCompletion([
@@ -8,9 +9,18 @@ export default async function RailExample() {
       }
   ]);
   return (
-    <div>
-      <h1>Explain what a bank run is in a tweet.</h1>
-      {JSON.stringify(res)}
+    <div className="m-10">
+      <CodeCollapsible
+        title="System Prompt"
+        code={process.env.GaurdRailPrompt as string }
+        color="blue"
+      />
+      <CodeCollapsible
+        isOpenByDefault
+        title="Assistant Response"
+        code={JSON.stringify(res, null, 2)}
+        color="gray"
+      />
     </div>
   );
 }

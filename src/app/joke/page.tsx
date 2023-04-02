@@ -2,16 +2,19 @@ import * as Prompts from "@/ai/prompts";
 import { generateChatCompletion } from "@/lib/ChatCompletion";
 import { ChatCompletionRequestMessage } from "openai";
 import chalk from "chalk";
+import CodeCollapsible from "@/components/CodeCollapsible";
+
+const systemPrompt = process.env.JokeGeneratorPrompt as string;
 
 async function runJokeGenerationPrompt(
     input: Prompts.JokeGenerator.Input
   ): Promise<Prompts.JokeGenerator.Output> {
-    console.log(chalk.blue(`SYSTEM: ${process.env.JokeGeneratorPrompt}`));
+    console.log(chalk.blue(`SYSTEM: ${systemPrompt}`));
     console.log(chalk.green(`USER: ${JSON.stringify(input)}`));
     let messages: ChatCompletionRequestMessage[] = [
       {
         role: "system",
-        content: process.env.JokeGeneratorPrompt as string,
+        content: systemPrompt,
       },
       {
         role: "user",
@@ -62,9 +65,10 @@ async function runJokeGenerationPrompt(
     }
     const res = await runJokeGenerationPrompt(input.data);
     return (
-      <div>
-        <h1>Tell me {params.count} {params.jokeType} Jokes:</h1>
-        {JSON.stringify(res)}
+      <div className="m-10">
+        <CodeCollapsible title="System" color="blue" code={systemPrompt} />
+        <CodeCollapsible title="User" color="green" code={JSON.stringify(input.data, null, 2)} />
+        <CodeCollapsible title="Assistant" color="gray" isOpenByDefault code={JSON.stringify(res, null, 2)} />
       </div>
     );
   }
