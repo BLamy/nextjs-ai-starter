@@ -22,20 +22,17 @@ module.exports = class PromptCompiler {
     let railProcess = cp.spawnSync(`pip3 install guardrails-ai && echo "${delimiter}" && python3 scripts/compileRailFile.py ${railPath}`, {
       shell: true
     });
+
     if (railProcess.error) {
-      railProcess = cp.spawnSync(`pip3 install guardrails-ai && echo "${delimiter}" && python3 scripts/compileRailFile.py ${railPath}`, {
-        shell: true
-      });
-      if (railProcess.error) {
-        throw new Error(
-          "Could not compile rail file. Make sure you have python is installed."
-        );
-      }
+      throw new Error(
+        "Could not compile rail file. Make sure you have python3 is installed."
+      );
     }
+
     const compiledFile = railProcess.output
       .toString()
-      // gaurdrails kept wrapping the output in commas for some reason
-      .slice(1, -1);
+      .split(delimiter)[1]
+
     return JSON.stringify(compiledFile);
   }
 
