@@ -17,19 +17,13 @@ module.exports = class PromptCompiler {
 
   compileRailPrompt(fileName) {
     const railPath = path.join(__dirname, this.promptsDirectory, fileName);
-    cp.spawnSync("pip", [
-      "install",
-      "gaurdrails-ui",
-    ]);
-    let railProcess = cp.spawnSync("python", [
-      "scripts/compileRailFile.py",
-      railPath,
-    ]);
+    let railProcess = cp.spawnSync(`pip install gaurdrails-ui && python scripts/compileRailFile.py ${railPath}`, {
+      shell: true
+    });
     if (railProcess.error) {
-      railProcess = cp.spawnSync("python3", [
-        "scripts/compileRailFile.py",
-        railPath,
-      ]);
+      railProcess = cp.spawnSync(`pip install gaurdrails-ui && python3 scripts/compileRailFile.py ${railPath}`, {
+        shell: true
+      });
       if (railProcess.error) {
         throw new Error(
           "Could not compile rail file. Make sure you have python is installed."
