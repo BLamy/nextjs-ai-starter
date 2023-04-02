@@ -21,17 +21,13 @@ module.exports = class PromptCompiler {
       "scripts/compileRailFile.py",
       railPath,
     ]);
+
     if (railProcess.error) {
-      railProcess = cp.spawnSync("python3", [
-        "scripts/compileRailFile.py",
-        railPath,
-      ]);
-      if (railProcess.error) {
-        throw new Error(
-          "Could not compile rail file. Make sure you have python is installed."
-        );
-      }
+      throw new Error(
+        "Could not compile rail file. Make sure you have python is installed."
+      );
     }
+    
     const compiledFile = railProcess.output
       .toString()
       // gaurdrails kept wrapping the output in commas for some reason
