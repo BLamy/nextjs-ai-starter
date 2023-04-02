@@ -23,7 +23,7 @@ export default function RootLayout({
         {children}
         <footer className="mt-10 py-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <div className="container mx-auto text-center">
-            <p><a href="https://github.com/BLamy/nextjs-ai-starter/blob/main/LICENSE">LICENSE - MIT</a></p>
+            <p><a href="https://github.com/BLamy/nextjs-ai-starter/blob/main/LICENSE">LICENSE - MIT</a> - Not affiliated with Vercel.</p>
           </div>
         </footer>
       </body>

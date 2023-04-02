@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "pip install -r requirements.txt && next build",
-    "build:local": "pip3 install -r requirements.txt && next build",
+    "build": "pip install guardrails-ai && next build",
+    "build:local": "pip3 install guardrails-ai && next build",
     "test": "jest",
     "start": "next start",
     "lint": "next lint"
