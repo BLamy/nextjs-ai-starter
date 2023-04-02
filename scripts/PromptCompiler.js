@@ -17,6 +17,10 @@ module.exports = class PromptCompiler {
 
   compileRailPrompt(fileName) {
     const railPath = path.join(__dirname, this.promptsDirectory, fileName);
+    cp.spawnSync("pip", [
+      "install",
+      "gaurdrails-ui",
+    ]);
     let railProcess = cp.spawnSync("python", [
       "scripts/compileRailFile.py",
       railPath,
