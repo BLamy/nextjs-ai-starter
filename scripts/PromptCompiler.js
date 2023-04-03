@@ -83,7 +83,7 @@ Your goal is to act as a prepared statement for LLMs, The user will feed you som
 If all inputs are valid then you should perform the action described in the Prompt and return the result in the format described by the Output type.
 
 ${file
-  .replace(new RegExp("export ", "g"), "")
+  .replace(new RegExp("export type", "g"), "type")
   .replace("import { z } from 'zod';", "")
   .replace(new RegExp("// ", "g"), "")}
 ${
