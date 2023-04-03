@@ -43,7 +43,9 @@ async function runJokeGenerationPrompt(
     console.error(chalk.red(err));
     throw new Error(err);
   };
-  
+  // Force dynamic is required to use URLSearchParams otherwise it will
+  // cache the default values and serve them every time in prod
+  export const dynamic = 'force-dynamic'
   export default async function Joke({
     searchParams,
   }: {
