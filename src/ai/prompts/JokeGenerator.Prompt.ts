@@ -24,10 +24,9 @@ export const outputSchema = z.array(
   z.object({
       setup: z.string(),
       punchline: z.string(),
-      // explanation should match the pattern: This is a {{jokeType}} joke because {{reason}}
-      explanation: z.string().refine(value => new RegExp(/This is a (funny|dad|dumb) joke (.*)/).test(value), {
-        message: 'explanation should match the pattern: This is a {{jokeType}} joke because {{reason}}',
-      })
+      explanation: z.custom<`This is a ${z.infer<typeof jokeTypeSchema>} joke because ${string}`>((val) => {
+        return /This is a (funny|dad|dumb) joke because (.*)/.test(val as string);
+      }),
     })
 )
 
