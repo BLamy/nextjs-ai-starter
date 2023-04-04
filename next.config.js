@@ -6,10 +6,9 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
-  webpack: async (config, { isServer, buildId }) => {
+  webpack: (config, { isServer, buildId }) => {
     // This will read the prompts in from the prompts directory compile them and assign them to process.env
-    const promptCompiler = new PromptCompiler();
-    config.plugins.push(new webpack.DefinePlugin(await promptCompiler.build()));
+    config.plugins.push(new webpack.DefinePlugin(new PromptCompiler().build()));
 
     return config;
   },
