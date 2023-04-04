@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pip3 install guardrails-ai && pip3 show guardrails-ai && next build",
     "test": "jest",
     "start": "next start",
     "lint": "next lint"
