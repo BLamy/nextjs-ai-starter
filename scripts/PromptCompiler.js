@@ -15,26 +15,28 @@ class PromptCompiler {
     );
   }
 
+  createAndActivateVirtualEnv() {
+    cp.execSync('python3 -m venv venv');
+    return `source ${path.join('venv', 'bin', 'activate')}`;
+  }
+
   compileRailPrompt(fileName) {
     const railPath = path.join(__dirname, this.promptsDirectory, fileName);
-    // This is a horrible way to install gardrails-ai but it's the only way I could get it to work on vercel.
-    let railProcess = cp.spawnSync(
-      `python3 scripts/compileRailFile.py ${railPath}`,
-      {
-        shell: true,
-      }
-    );
 
-    if (railProcess.error) {
-      throw new Error(
-        "Could not compile rail file. Make sure you have python3 is installed."
-      );
-    }
+    // Create and activate the virtual environment
+    const activateEnvCmd = this.createAndActivateVirtualEnv();
 
-    const compiledFile = railProcess.output.toString();
+    // Install guardrails-ai package in the virtual environment
+    const installCmd = `${activateEnvCmd} && pip install guardrails-ai==0.1.4`;
+    cp.execSync(installCmd);
+
+    // Run Python script in the virtual environment
+    const scriptCmd = `${activateEnvCmd} && python scripts/compileRailFile.py ${railPath}`;
+    const compiledFile = cp.execSync(scriptCmd).toString();
+
     const fileEndMarker = "JSON Output:";
     return JSON.stringify(
-      compiledFile.slice(2, compiledFile.indexOf(fileEndMarker) + fileEndMarker.length) + '\n'
+      compiledFile.slice(0, compiledFile.indexOf(fileEndMarker) + fileEndMarker.length) + '\n'
     );
   }
 
@@ -145,5 +147,7 @@ ${
     return { ...staticPrompts, ...railPrompts, ...typescriptPrompts };
   }
 }
+
+new PromptCompiler().build();
 
 module.exports = PromptCompiler;
