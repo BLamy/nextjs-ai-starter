@@ -19,7 +19,7 @@ class PromptCompiler {
     const railPath = path.join(__dirname, this.promptsDirectory, fileName);
     // This is a horrible way to install gardrails-ai but it's the only way I could get it to work on vercel.
     let railProcess = cp.spawnSync(
-      `pip3 install guardrails-ai > /dev/null && python3 scripts/compileRailFile.py ${railPath}`,
+      `python3 scripts/compileRailFile.py ${railPath}`,
       {
         shell: true,
       }
