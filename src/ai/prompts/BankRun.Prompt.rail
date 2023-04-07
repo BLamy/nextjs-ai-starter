@@ -25,5 +25,6 @@ Explain what a bank run is in a tweet.
 
 {output_schema}
 
+@json_suffix_prompt_v2_wo_none
 </prompt>
 </rail>

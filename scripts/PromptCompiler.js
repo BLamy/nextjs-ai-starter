@@ -85,6 +85,7 @@ ${
   hasTools
     ? `Remember you can use a tool by printing json in the following format
 { "tool": "toolName", "req": { [key: string]: any } }
+The observation will be fed back to you as a string in a system message. 
 `
     : ""
 }

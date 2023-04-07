@@ -35,5 +35,5 @@ export const outputSchema = z.object({
 export type Prompt = "Can you tell me the results to the most recent {{teamName}} NFL game then calculate the spread."
 export type Input = z.infer<typeof inputSchema>
 export type Output = z.infer<typeof outputSchema>
-export type Errors = "no game found" | "tool error" | "prompt injection attempt detected" | "json parse error" | "type error" | "unknown"
+export type Errors = "no game found" | "tool error" | "prompt injection attempt detected" | "json parse error" | "type error" | "output format error" | "unknown"
 export type Tools = { tool: 'search', args: { query: string } } | { tool: 'calculator', args: { equation: string } }

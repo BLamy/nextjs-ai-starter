@@ -1,10 +1,10 @@
 export function colorForRole(role: string) {
   switch (role) {
-    case "system":
-      return "blue";
-    case "user":
-      return "green";
     case "assistant":
+      return "blue";
+    case "system":
+      return "green";
+    case "user":
       return "gray";
     case "error":
       return "red";

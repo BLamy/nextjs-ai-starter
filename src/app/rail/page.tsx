@@ -5,19 +5,21 @@ export default async function RailExample() {
   const res = await generateChatCompletion([
       { 
           role: 'user', 
-          content: process.env.GaurdRailPrompt as string 
+          content: process.env.BankRunPrompt as string 
       }
-  ]);
+  ], {
+    model: "gpt-4"
+  });
   return (
     <div className="m-10">
       <CodeCollapsible
-        title="System Prompt"
-        code={process.env.GaurdRailPrompt as string }
-        color="blue"
+        title="User"
+        code={process.env.BankRunPrompt as string }
+        color="green"
       />
       <CodeCollapsible
         isOpenByDefault
-        title="Assistant Response"
+        title="Assistant"
         code={JSON.stringify(res, null, 2)}
         color="gray"
       />

@@ -3,6 +3,10 @@ import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 const openai = new OpenAIApi(new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 }));
+type Error = { 
+  error: string, 
+  msg: string
+};
 type Options = { 
   model?: string, //"gpt-3.5-turbo" | "gpt-4"
   parseResponse?: boolean,
@@ -13,10 +17,10 @@ const defaultOpts = {
   model: "gpt-3.5-turbo",
   temperature: 0
 };
-export async function generateChatCompletion(
+export async function generateChatCompletion<TOutput extends Record<string, any>>(
   messages: ChatCompletionRequestMessage[],
   opts: Options = {}
-): Promise<Record<string, any> | string> {
+): Promise<TOutput | string | Error> {
   const { 
     parseResponse,
     model,
@@ -30,6 +34,6 @@ export async function generateChatCompletion(
       response.data.choices[0].message?.content.replace("Here's your response:", "") || '{ "error": "No response" }'
     );
   } catch (e) {
-    return { error: "json parse error", msg: response.data.choices[0].message?.content };
+    return { error: "json parse error", msg: response.data.choices[0].message?.content || '{ "error": "No response" }'};
   }
 };
