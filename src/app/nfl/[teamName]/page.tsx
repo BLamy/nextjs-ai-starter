@@ -67,9 +67,9 @@ async function runNFLScoresPrompt(
     if ("tool" in chatCompletion) {
       if (isValidTool(chatCompletion.tool)) {
         const response = await Tools[chatCompletion.tool](chatCompletion.args);
-        console.log(chalk.blue(`SYSTEM: ${JSON.stringify(response, null, 2)}`));
+        console.log(chalk.green(`ASSISTANT: ${JSON.stringify(response, null, 2)}`));
         messages.push({
-          role: "system",
+          role: "assistant",
           content: response,
         });
       } else {

@@ -49,37 +49,33 @@ export default async function search({ query }: { query: string }) {
   const gameSpotLight = gameSpotlightSchema.safeParse(data);
   if (gameSpotLight.success) {
     const { game_spotlight } = gameSpotLight.data.sports_results;
-    return `
-      ${game_spotlight.date}: ${game_spotlight.stadium}
-      ${game_spotlight.teams[0].name}: ${game_spotlight.teams[0].score.total}
-      ${game_spotlight.teams[1].name}: ${game_spotlight.teams[1].score.total}
-    `;
+    return `### Observation
+${game_spotlight.date}: ${game_spotlight.stadium}
+${game_spotlight.teams[0].name}: ${game_spotlight.teams[0].score.total}
+${game_spotlight.teams[1].name}: ${game_spotlight.teams[1].score.total}`;
   }
 
   const relatedQuestions = relatedQuestionsSchema.safeParse(data);
   if (relatedQuestions.success) {
-    return relatedQuestions.data.related_questions
+    return "### Observation\n" + relatedQuestions.data.related_questions
       .map(
-        (question) => `
-        ${question.title}
-        ${question.date}
-        ${question.question}
-        ${question.snippet}
-      `
+        (question) => `${question.title}
+${question.date}
+${question.question}
+${question.snippet}
+`.replace(new RegExp("undefined[\S\s]*", "gm"), "")
       )
-      .join("\n---\n");
+      .join("\n\n\n");
   }
 
   const organicResults = organicResultsSchema.safeParse(data);
   if (organicResults.success) {
-    return organicResults.data.organic_results
+    return "### Observation" + organicResults.data.organic_results
       .map(
-        (result) => `
-        ${result.title}
-        ${result.snippet}
-      `
+        (result) => `${result.title}
+${result.snippet}`.replace(new RegExp("undefined[\S\s]*", "gm"), "")
       )
-      .join("\n---\n");
+      .join("\n\n\n");
   }
 
   return "ERROR: No results found";

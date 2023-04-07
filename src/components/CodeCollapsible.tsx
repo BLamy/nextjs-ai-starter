@@ -34,7 +34,7 @@ const CodeCollapsible: React.FC<Props> = ({
         }`}
         onClick={handleToggle}
       >
-        <span>{title}</span>
+        <span className="capitalize">{title}</span>
         <svg
           className={`transform transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
