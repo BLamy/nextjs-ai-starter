@@ -27,6 +27,16 @@ const demos = [
     description: "Explore our documentation.",
     href: "http://docs.nextjs.ai/",
   },
+  {
+    title: "Discord",
+    description: "Join our discord.",
+    href: "https://discord.gg/2F2bHSma",
+  },
+  {
+    title: "Github",
+    description: "Clone the code",
+    href: "https://github.com/blamy/nextjs-ai-starter",
+  },
 ] as const;
 
 export default function Home() {
