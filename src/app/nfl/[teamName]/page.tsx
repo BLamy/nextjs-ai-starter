@@ -8,7 +8,11 @@ import CodeCollapsible from "@/components/CodeCollapsible";
 import { colorForRole, isValidTool } from "@/lib/Utils";
 
 type ErrorWithMessages = { error: NFLScoresErrors, messages: ChatCompletionRequestMessage[] }
+// TODO move this prompt to the prompt file
+const createReflectionPromptForError = (error: string) =>  `USER: I tried to parse your output against the schema and I got this error ${error}. Did your previous response match the expected Output format? Remember no values in your response cannot be null or undefined unless they are marked with a Question Mark in the typescript type. If you believe your output is correct please repeat it. If not, please print an updated valid output or an error. Remember nothing other than valid JSON can be sent to the user
+ASSISTANT: My previous response did not match the expected Output format. Here is either the updated valid output or a relevant error from the Errors union:\n`
 
+// TODO: turn this into a generic function and rename to chain.run
 async function runNFLScoresPrompt(
   input: Prompts.NFLScores.Input
 ): Promise<{ res: Prompts.NFLScores.Output, messages: ChatCompletionRequestMessage[] } | ErrorWithMessages> {
@@ -25,7 +29,7 @@ async function runNFLScoresPrompt(
     },
   ];
   // There are only two tools so if it loops more than twice, something is wrong.
-  const TOOL_STACK_OVERFLOW_THRESHOLD = 3;
+  const TOOL_STACK_OVERFLOW_THRESHOLD = 5;
   for (let i = 0; i <= TOOL_STACK_OVERFLOW_THRESHOLD; i++) {
     let chatCompletion = await generateChatCompletion(messages);
     console.log(chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion, null, 2)}`));
@@ -35,11 +39,11 @@ async function runNFLScoresPrompt(
     });
 
     if (typeof chatCompletion === "string") {
-      const ReflectionPrompt = "Did your response match the expected Output format?";
-      console.log(chalk.gray(`SYSTEM: ${ReflectionPrompt}`));
+      const reflectionPrompt = createReflectionPromptForError("output was not a JSON object. Recieved string.");
+      console.log(chalk.gray(`SYSTEM: ${reflectionPrompt}`));
       messages.push({
         role: "system",
-        content: ReflectionPrompt,
+        content: reflectionPrompt,
       });
       chatCompletion = await generateChatCompletion(messages);
       console.log(chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion, null, 2)}`));
@@ -78,10 +82,16 @@ async function runNFLScoresPrompt(
         return { error: chatCompletion.error, messages }
       }
     } else {
-      const response = Prompts.NFLScores.outputSchema.safeParse(chatCompletion);
+      let response = Prompts.NFLScores.outputSchema.safeParse(chatCompletion);
       if (response.success) {
         return { res: response.data, messages };
       }
+      const reflectionPromptWithZodError = createReflectionPromptForError(response.error.message);
+      messages.push({
+        role: "system",
+        content: reflectionPromptWithZodError,
+      });
+      console.log(chalk.gray(`SYSTEM: ${reflectionPromptWithZodError}`));
     }
   }
   const err = `STACK OVERFLOW: Too many tools used. ${JSON.stringify(messages)}`;
