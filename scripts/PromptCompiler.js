@@ -34,17 +34,15 @@ class PromptCompiler {
     const scriptCmd = `${activateEnvCmd} && python scripts/compileRailFile.py ${railPath}`;
     const compiledFile = cp.execSync(scriptCmd).toString();
 
-    const fileEndMarker = "JSON Output:";
-    return JSON.stringify(
-      compiledFile.slice(0, compiledFile.indexOf(fileEndMarker) + fileEndMarker.length) + `
-      ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the \`name\` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.
-
+    return JSON.stringify(compiledFile.replace(
+        'ONLY return a valid JSON object (no other text is necessary). The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.', 
+        `ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the \`name\` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.
 Here are examples of simple (XML, JSON) pairs that show the expected behavior:
 - \`<string name='foo' format='two-words lower-case' />\` => \`{'foo': 'example one'}\`
 - \`<list name='bar'><string format='upper-case' /></list>\` => \`{"bar": ['STRING ONE', 'STRING TWO', etc.]}\`
 - \`<object name='baz'><string name="foo" format="capitalize two-words" /><integer name="index" format="1-indexed" /></object>\` => \`{'baz': {'foo': 'Some String', 'index': 1}}\`
-</prompt>`
-    );
+</prompt>
+`));
   }
 
   compileTypescriptPrompt(fileName) {
@@ -102,7 +100,6 @@ ${
     : ""
 }
 `.replace(new RegExp("`", "g"), "`");
-    console.log(prompt);
     return JSON.stringify(prompt);
   }
 
