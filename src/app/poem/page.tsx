@@ -1,29 +1,26 @@
 import { generateChatCompletion } from "@/lib/ChatCompletion";
-import CodeCollapsible from "@/components/CodeCollapsible";
+import Chat from "@/components/Chat";
+import { ChatCompletionRequestMessage } from "openai";
 
 export default async function Joke() {
-  const res = await generateChatCompletion([
-      { 
-          role: 'user', 
-          content: process.env.PoemGeneratorPrompt as string 
-      }
-  ], {
-    parseResponse: false
+  const messages: ChatCompletionRequestMessage[] = [
+    {
+      role: "user",
+      content: process.env.PoemGeneratorPrompt as string,
+    },
+  ];
+  const res = await generateChatCompletion(messages, {
+    parseResponse: false,
   });
   return (
-    <div className="m-10">
-      <CodeCollapsible
-        title="User"
-        code={process.env.PoemGeneratorPrompt as string }
-        color="green"
-      />
-      <CodeCollapsible
-        isOpenByDefault
-        title="Assistant"
-        code={JSON.stringify(res).split('\\n').map((line, i) => <p key={i}>{line}</p>)}
-        color="gray"
-      />
-    </div>
+    <Chat
+      messages={[
+        ...messages,
+        {
+          role: "assistant",
+          content: res as string,
+        },
+      ]}
+    />
   );
 }
-  

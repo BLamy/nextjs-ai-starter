@@ -38,7 +38,7 @@ export default function RootLayout({
             <div></div>
           </div>
         </header>
-        <main className={`mt-10 flex-grow ${styles["min-h-screen-wrapper"]}`}>
+        <main className={`flex-grow ${styles["screen-wrapper"]}`}>
           {children}
         </main>
         <footer className="py-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">

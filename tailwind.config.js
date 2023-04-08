@@ -6,8 +6,13 @@ module.exports = {
     "./src/components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'blue-bubble': '#0a84ff',
+        'green-bubble': '#34c759',
+      },
+    },
   },
-  plugins: [],
+  plugins: [require("daisyui")],
 }
 
