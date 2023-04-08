@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useEffect } from "react";
 import { ChatCompletionRequestMessage } from "openai";
-function isJsonString(str) {
+function isJsonString(str: string) {
   try {
       JSON.parse(str);
   } catch (e) {
