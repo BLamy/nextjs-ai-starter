@@ -13,7 +13,7 @@ export default function NFL() {
     "Rams", "Ravens", "Saints", "Seahawks", "Steelers", "Texans", "Titans", "Vikings",
   ];
   return (
-    <ul>
+    <ul className="container mx-auto w-full h-full overflow-y-scroll">
       {nflTeams.map((teamName) => (
         <Card key={teamName} title={teamName} href={`/nfl/${teamName}`} />
       ))}
