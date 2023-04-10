@@ -100,7 +100,22 @@ ${
     : ""
 }
 `.replace(new RegExp("`", "g"), "`");
-    return JSON.stringify(prompt);
+    // Replace require statements with the contents of the file inline
+    const requireRegex = new RegExp("\\$\\{JSON.stringify\\(require\\(\[\"'`]([^\"'`]*)[\"'`]\\)\\)\\}", "g");
+    const stringifiedRequireStatements = prompt.matchAll(requireRegex); // ? 
+    const resolvedPrompt = [...stringifiedRequireStatements].reduce((acc, match) => {
+      let filePath = match[1];
+      if (match[1].startsWith("@/")) {
+        filePath = `${match[1].replace("@/", "../../")}.ts`;
+      }
+      const fileContents = this.readPrompt(filePath)
+        .replace('export default ', '')
+        .replace(' as const;', '');
+      const minifiedFileContents = JSON.stringify(JSON.parse(fileContents));
+      return acc.replace(match[0], minifiedFileContents);
+    }, prompt);
+    
+    return JSON.stringify(resolvedPrompt);
   }
 
   // Read all prompts from the prompts folder and add them to the DefinePlugin.
@@ -152,7 +167,5 @@ ${
     return { ...staticPrompts, ...railPrompts, ...typescriptPrompts };
   }
 }
-
-new PromptCompiler().build();
 
 module.exports = PromptCompiler;
