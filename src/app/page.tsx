@@ -18,6 +18,12 @@ const demos = [
     href: "/nfl",
   },
   {
+    title: "Access Control Demo",
+    description:
+      "Allows admins to describe rules for access control using natural language and GPT will submit a PR to update it's own code.",
+    href: "https://accesscontrol.nextjs.ai/",
+  },
+  {
     title: "Gaurdrails Demo",
     description: "Loads prompt from a gaurdrails file.",
     href: "/rail",
@@ -25,7 +31,7 @@ const demos = [
   {
     title: "Docs",
     description: "Explore our documentation.",
-    href: "http://docs.nextjs.ai/",
+    href: "https://docs.nextjs.ai/",
   },
   {
     title: "Discord",
