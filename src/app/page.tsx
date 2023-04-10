@@ -14,7 +14,7 @@ const demos = [
   {
     title: "NFL Scores Agents Demo",
     description:
-      "Fetches NFL scores using 2 different tools (search & calculator).",
+      "Fetches NFL scores using 2 different tools (search & calculator). Note: search results are scraped poorly to show error handling.",
     href: "/nfl",
   },
   {
