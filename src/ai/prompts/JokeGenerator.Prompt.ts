@@ -1,4 +1,4 @@
-require('@/ai/prompts/preambles/turbo.Prompt.ts');
+require('@/ai/prompts/preambles/basic.turbo.Prompt.ts');
 require('@/ai/prompts/examples/JokeGenerator.Examples.json');
 import { z } from 'zod';
 

@@ -44,12 +44,12 @@ export default class TypesafePrompt<
       if (!inputValidation.success) {
         const error = "zod validation error";
         const messages: ChatCompletionRequestMessage[] = [{ role: "system", content: "todo error" }];
-        await errorHandlers[error](messages);
+        await errorHandlers[error](error, messages);
         return { error, messages };
       }
     }
-    console.log(chalk.blue(`SYSTEM: ${this.prompt}`));
-    console.log(chalk.green(`USER: ${JSON.stringify(input, null, 2)}`));
+    console.log(chalk.green(`SYSTEM: ${this.prompt}`));
+    console.log(chalk.blue(`USER: ${JSON.stringify(input, null, 2)}`));
     let messages: ChatCompletionRequestMessage[] = [
       {
         role: "system",
@@ -76,7 +76,7 @@ export default class TypesafePrompt<
         const reflectionPrompt = createReflectionPromptForError(
           "output was not a JSON object. Recieved string."
         );
-        console.log(chalk.gray(`SYSTEM: ${reflectionPrompt}`));
+        console.log(chalk.green(`SYSTEM: ${reflectionPrompt}`));
         messages.push({
           role: "system",
           content: reflectionPrompt,
@@ -100,7 +100,7 @@ export default class TypesafePrompt<
             role: "system",
             content,
           });
-          return { error, messages };
+          return { error: 'unknown', messages };
         }
       }
 
@@ -117,7 +117,7 @@ export default class TypesafePrompt<
             chatCompletion.args
           );
           console.log(
-            chalk.green(`ASSISTANT: ${JSON.stringify(response, null, 2)}`)
+            chalk.gray(`ASSISTANT: ${JSON.stringify(response, null, 2)}`)
           );
           messages.push({
             role: "assistant",
@@ -144,7 +144,7 @@ export default class TypesafePrompt<
           role: "system",
           content: reflectionPromptWithZodError,
         });
-        console.log(chalk.gray(`SYSTEM: ${reflectionPromptWithZodError}`));
+        console.log(chalk.green(`SYSTEM: ${reflectionPromptWithZodError}`));
       }
     }
     const err = `STACK OVERFLOW: Too many tools used. ${JSON.stringify(

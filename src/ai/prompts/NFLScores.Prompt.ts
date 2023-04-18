@@ -1,5 +1,5 @@
-require('@/ai/prompts/preambles/turbo.Prompt.ts');
-require('@/ai/prompts/examples/JokeGenerator.Examples.json');
+require('@/ai/prompts/preambles/tools.turbo.Prompt.ts');
+require('@/ai/prompts/examples/NFLScores.Examples.json');
 import { z } from 'zod';
 
 const nflTeamSchema = z.union([
@@ -25,8 +25,7 @@ export const outputSchema = z.object({
   spread: z.number().positive()
 });
 
-export const prompt = "Can you tell me the results to the most recent {{teamName}} NFL game then calculate the spread.";
-export type Prompt = typeof prompt;
+export type Prompt = "Can you tell me the results to the most recent {{teamName}} NFL game then calculate the spread.";;
 export type Input = z.infer<typeof inputSchema>;
 export type Output = z.infer<typeof outputSchema>;
 export type Errors = "no game found" | "tool error" | "prompt injection attempt detected" | "json parse error" | "type error" | "output format error" | "unknown";
