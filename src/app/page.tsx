@@ -24,8 +24,8 @@ const demos = [
     href: "https://accesscontrol.nextjs.ai/",
   },
   {
-    title: "Gaurdrails Demo",
-    description: "Loads prompt from a gaurdrails file.",
+    title: "Guardrails Demo",
+    description: "Loads prompt from a Guardrails file.",
     href: "/rail",
   },
   {
