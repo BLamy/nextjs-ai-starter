@@ -1,12 +1,5 @@
-// ### Examples
-// USER: { "count": 3, "jokeType": "funny" }
-// ASSISTANT: [
-//   { "setup": "Why did the tomato turn red?", "punchline": "Because it saw the salad dressing!", "explanation": "This is a funny joke because of the pun in salad dressing."  },
-//   { "setup": "Why did the scarecrow win an award?", "punchline": "Because he was outstanding in his field.", "explanation": "This is a funny joke because of the pun on the word field."  },
-//   { "setup": "Why don't scientists trust atoms?", "punchline": "Because they make up everything.", "explanation": "This is a funny joke because atoms are the basic building block for everything and therefore there is a pun for making everything up"  }
-// ]
-
-// ### Typescript
+require('@/ai/prompts/preambles/turbo.Prompt.ts');
+require('@/ai/prompts/examples/JokeGenerator.Examples.json');
 import { z } from 'zod';
 
 const jokeTypeSchema = z.union([

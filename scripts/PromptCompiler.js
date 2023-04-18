@@ -101,8 +101,8 @@ ${
 }
 `.replace(new RegExp("`", "g"), "`");
     // Replace require statements with the contents of the file inline
-    const requireRegex = new RegExp("\\$\\{JSON.stringify\\(require\\(\[\"'`]([^\"'`]*)[\"'`]\\)\\)\\}", "g");
-    const stringifiedRequireStatements = prompt.matchAll(requireRegex); // ? 
+    const stringifiedRequireRegex = new RegExp("\\$\\{JSON.stringify\\(require\\(\[\"'`]([^\"'`]*)[\"'`]\\)\\)\\}", "g");
+    const stringifiedRequireStatements = prompt.matchAll(stringifiedRequireRegex); // ? 
     const resolvedPrompt = [...stringifiedRequireStatements].reduce((acc, match) => {
       let filePath = match[1];
       if (match[1].startsWith("@/")) {
@@ -114,8 +114,34 @@ ${
       const minifiedFileContents = JSON.stringify(JSON.parse(fileContents));
       return acc.replace(match[0], minifiedFileContents);
     }, prompt);
-    
-    return JSON.stringify(resolvedPrompt);
+
+    // This is garbage code, will replace with content/source webpack plugin
+    const requireRegex = new RegExp("require\\(\[\"'`]([^\"'`]*)[\"'`]\\)", "g");
+    const requireStatements = resolvedPrompt.matchAll(requireRegex); // ? 
+    const finalPrompt = [...requireStatements].reduce((acc, match) => {
+      let filePath = match[1];
+      if (match[1].startsWith("@/")) {
+        filePath = `${match[1].replace("@/", "../../")}`;
+      }
+      let fileContents = this.readPrompt(filePath)
+        .replace('export default ', '')
+        .replace(' as const;', '')
+        .replace(new RegExp("// ", "g"), "");
+
+      if (filePath.endsWith("Examples.json")) {
+        const examples = require(match[1].replace("@/", "../src/")).reduce((acc, example) => {
+          return `${acc}
+${example.role.toUpperCase()}: ${example.content}`;
+        }, "");
+        fileContents = `### Examples
+${examples}
+
+### Typescript`
+      }
+      return acc.replace(match[0], fileContents);
+    }, resolvedPrompt);
+    console.log(finalPrompt) // ?
+    return JSON.stringify(finalPrompt);
   }
 
   // Read all prompts from the prompts folder and add them to the DefinePlugin.
@@ -167,5 +193,7 @@ ${
     return { ...staticPrompts, ...railPrompts, ...typescriptPrompts };
   }
 }
+
+new PromptCompiler().build();
 
 module.exports = PromptCompiler;
