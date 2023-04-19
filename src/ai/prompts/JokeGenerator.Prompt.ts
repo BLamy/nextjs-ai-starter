@@ -1,4 +1,4 @@
-import '@/ai/prompts/preambles/basic.turbo.Prompt.ts';
+import '@/ai/prompts/preambles/basic.turbo.Prompt.txt';
 import '@/ai/prompts/examples/JokeGenerator.Examples.json';
 import { z } from 'zod';
 

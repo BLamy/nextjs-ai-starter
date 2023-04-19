@@ -1,4 +1,4 @@
-import '@/ai/prompts/preambles/tools.turbo.Prompt.ts';
+import '@/ai/prompts/preambles/tools.turbo.Prompt.txt';
 import '@/ai/prompts/examples/NFLScores.Examples.json';
 import { z } from 'zod';
 
