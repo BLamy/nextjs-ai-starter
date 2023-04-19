@@ -20,14 +20,12 @@ ASSISTANT: My previous response did not match the expected Output format. Here i
 export default class TypesafePrompt<
   TPrompt extends string,
   TInput extends ZodSchema,
-  TOutput extends ZodSchema
-  // TErrors extends string
+  TOutput extends ZodSchema,
 > {
   constructor(
     private prompt: TPrompt,
     private inputSchema: TInput,
     private outputSchema: TOutput,
-    // private tools: TTools,
     private config?: {
       skipInputValidation?: boolean;
     }
@@ -37,8 +35,8 @@ export default class TypesafePrompt<
 
   async run<TError extends string>(
     input: z.infer<TInput>,
-    errorHandlers: { [TKey in (TError | "unknown" | "zod validation error")]: ErrorHandler }
-  ): Promise<Result<TOutput, (TError | "unknown" | "zod validation error")>> {
+    errorHandlers: { [TKey in (TError | "unknown" | "zod validation error" | "output format error")]: ErrorHandler }
+  ): Promise<Result<TOutput, (TError | "unknown" | "zod validation error" | "output format error")>> {
     if (!this.config?.skipInputValidation) {
       const inputValidation = this.inputSchema.safeParse(input);
       if (!inputValidation.success) {
@@ -62,6 +60,7 @@ export default class TypesafePrompt<
     ];
     // There are only two tools so if it loops more than twice, something is wrong.
     const TOOL_STACK_OVERFLOW_THRESHOLD = 5;
+    let errorCount = 0;
     for (let i = 0; i <= TOOL_STACK_OVERFLOW_THRESHOLD; i++) {
       let chatCompletion = await generateChatCompletion(messages);
       console.log(
@@ -73,37 +72,36 @@ export default class TypesafePrompt<
       });
 
       if (typeof chatCompletion === "string") {
-        const reflectionPrompt = createReflectionPromptForError(
-          "output was not a JSON object. Recieved string."
-        );
-        console.log(chalk.green(`SYSTEM: ${reflectionPrompt}`));
-        messages.push({
-          role: "system",
-          content: reflectionPrompt,
-        });
-        chatCompletion = await generateChatCompletion(messages);
-        console.log(
-          chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion, null, 2)}`)
-        );
-        messages.push({
-          role: "assistant",
-          content: JSON.stringify(chatCompletion),
-        });
-        if (typeof chatCompletion === "string") {
-          const error = "output format error";
-          const content = JSON.stringify({
-            error,
-            msg: "After two attempts, the output format was not correct.",
-          });
-          console.error(chalk.red(`SYSTEM: ${content}`));
+        errorCount++;
+        const error = "output format error"
+        const newMessages = await errorHandlers[error](error, messages);
+        if (newMessages) {
+          messages = newMessages;
+          chatCompletion = await generateChatCompletion(messages);
+          console.log(
+            chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion, null, 2)}`)
+          );
           messages.push({
-            role: "system",
-            content,
+            role: "assistant",
+            content: JSON.stringify(chatCompletion),
           });
-          return { error: 'unknown', messages };
+          if (typeof chatCompletion === "string") {
+            const content = JSON.stringify({
+              error,
+              msg: "After two attempts, the output format was not correct.",
+            });
+            console.error(chalk.red(`SYSTEM: ${content}`));
+            messages.push({
+              role: "system",
+              content,
+            });
+            return { error, messages };
+          }
         }
       }
-
+      if (typeof chatCompletion === "string") {
+        return { error: 'unknown', messages };
+      }
       if ("error" in chatCompletion) {
         console.error(
           chalk.red(`SYSTEM: ${JSON.stringify(chatCompletion, null, 2)}`)
@@ -112,7 +110,7 @@ export default class TypesafePrompt<
       }
 
       if ("tool" in chatCompletion) {
-        if (isValidTool(chatCompletion.tool)) {
+        if (isValidTool(chatCompletion.tool)) { // TODO is valid tool should be generic
           const response = await Tools[chatCompletion.tool](
             chatCompletion.args
           );
