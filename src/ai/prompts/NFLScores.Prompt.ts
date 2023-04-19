@@ -1,5 +1,5 @@
-require('@/ai/prompts/preambles/tools.turbo.Prompt.ts');
-require('@/ai/prompts/examples/NFLScores.Examples.json');
+import '@/ai/prompts/preambles/tools.turbo.Prompt.ts';
+import '@/ai/prompts/examples/NFLScores.Examples.json';
 import { z } from 'zod';
 
 const nflTeamSchema = z.union([

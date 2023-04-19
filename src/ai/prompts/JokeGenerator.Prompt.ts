@@ -1,5 +1,5 @@
-require('@/ai/prompts/preambles/basic.turbo.Prompt.ts');
-require('@/ai/prompts/examples/JokeGenerator.Examples.json');
+import '@/ai/prompts/preambles/basic.turbo.Prompt.ts';
+import '@/ai/prompts/examples/JokeGenerator.Examples.json';
 import { z } from 'zod';
 
 const jokeTypeSchema = z.union([

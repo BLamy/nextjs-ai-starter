@@ -78,9 +78,9 @@ Here are examples of simple (XML, JSON) pairs that show the expected behavior:
     }, file.replace("import { z } from 'zod';", ''));
 
     // This is garbage code, will replace with content/source webpack plugin
-    const requireRegex = new RegExp("require\\(\[\"'`]([^\"'`]*)[\"'`]\\);?", "g");
-    const requireStatements = resolvedPrompt.matchAll(requireRegex); // ? 
-    const finalPrompt = [...requireStatements].reduce((acc, match) => {
+    const requireStatements = resolvedPrompt.matchAll(new RegExp("require\\(\[\"'`]([^\"'`]*)[\"'`]\\);?", "g"));
+    const importStatements = resolvedPrompt.matchAll(new RegExp("import [\"'`]([^\"'`]*)[\"'`];?", "g"));
+    const finalPrompt = [...requireStatements, ...importStatements].reduce((acc, match) => {
       let filePath = match[1];
       if (match[1].startsWith("@/")) {
         filePath = `${match[1].replace("@/", "../../")}`;
