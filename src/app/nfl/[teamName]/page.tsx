@@ -1,20 +1,21 @@
-import * as Prompts from "@/ai/prompts";
+import Prompts from "@/ai/prompts";
+import * as PromptTypes from "@/ai/prompts";
 import Chat from "@/components/Chat";
 import TypesafePrompt from "@/lib/TypesafePrompt";
 import { ChatCompletionRequestMessage } from "openai";
 
 type Props = {
-  params: Prompts.NFLScores.Input;
+  params: PromptTypes.NFLScores.Input;
 }
 
 export default async function ScorePageWithSpread({ params }: Props) {
   const prompt = new TypesafePrompt(
-    process.env.NFLScoresPrompt as string,
-    Prompts.NFLScores.inputSchema,
-    Prompts.NFLScores.outputSchema,
+    Prompts.NFLScores,
+    PromptTypes.NFLScores.inputSchema,
+    PromptTypes.NFLScores.outputSchema,
   );
 
-  const { messages } = await prompt.run<Prompts.NFLScores.Errors>(params, {
+  const { messages } = await prompt.run<PromptTypes.NFLScores.Errors>(params, {
     "json parse error": async (error: string, messages: ChatCompletionRequestMessage[]) => {},
     "no game found": async (error: string, messages: ChatCompletionRequestMessage[]) => {},
     "output format error": async (error: string, messages: ChatCompletionRequestMessage[]) => {},

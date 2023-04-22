@@ -43,7 +43,7 @@ export default class TypesafePrompt<
       const inputValidation = this.inputSchema.safeParse(input);
       if (!inputValidation.success) {
         const error = "zod validation error";
-        const messages: ChatCompletionRequestMessage[] = [{ role: "system", content: "todo error" }];
+        const messages: ChatCompletionRequestMessage[] = [{ role: "system", content: inputValidation.error.message }];
         await errorHandlers[error](error, messages);
         return { error, messages };
       }

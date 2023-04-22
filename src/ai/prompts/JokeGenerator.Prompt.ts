@@ -2,7 +2,7 @@ import '@/ai/prompts/preambles/basic.turbo.Prompt.txt';
 import '@/ai/prompts/examples/JokeGenerator.Examples.json';
 import { z } from 'zod';
 
-const jokeTypeSchema = z.union([
+export const jokeTypeSchema = z.union([
     z.literal("funny"),
     z.literal("dumb"),
     z.literal("dad"),

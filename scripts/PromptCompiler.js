@@ -119,7 +119,7 @@ ${example.role.toUpperCase()}: ${example.content}`;
       });
 
     const staticPrompts = allPrompts
-      .filter((fileName) => fileName.endsWith("Prompt"))
+      .filter((fileName) => fileName.endsWith("Prompt") || fileName.endsWith("Prompt.txt"))
       .reduce(
         (acc, fileName) => ({
           ...acc,
@@ -155,7 +155,5 @@ ${example.role.toUpperCase()}: ${example.content}`;
     return { ...staticPrompts, ...railPrompts, ...typescriptPrompts };
   }
 }
-
-new PromptCompiler().build();
 
 module.exports = PromptCompiler;

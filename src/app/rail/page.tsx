@@ -1,12 +1,13 @@
 import { ChatCompletionRequestMessage } from "openai";
 import { generateChatCompletion } from "@/lib/ChatCompletion";
 import Chat from "@/components/Chat";
+import Prompts from "@/ai/prompts";
 
 export default async function RailExample() {
   const messages: ChatCompletionRequestMessage[] = [
     {
       role: "user",
-      content: process.env.BankRunPrompt as string,
+      content: Prompts.BankRun,
     },
   ];
   const res = await generateChatCompletion(messages, {
