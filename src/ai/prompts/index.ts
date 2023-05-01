@@ -12,9 +12,9 @@ import { z } from "zod";
 // ]);
 // const output: PromptTypes.NFLScores.Output = PromptTypes.JokeGenerator.outputSchema.parse(res.);
 // ```
-export * as NFLScores from "./NFLScores.Prompt";
-export * as JokeGenerator from "./JokeGenerator.Prompt";
-export * as NumberGenerator from "./NumberGenerator.Prompt";
+import * as NFLScores from "./NFLScores.Prompt";
+import * as JokeGenerator from "./JokeGenerator.Prompt";
+import * as NumberGenerator from "./NumberGenerator.Prompt";
 
 // This is a zod schema that validates the environment variables
 export const EnvSchema = z.object({
@@ -35,3 +35,5 @@ export default EnvSchema.parse({
     BankRun: process.env.BankRunPrompt,
     PoemGenerator: process.env.PoemGeneratorPrompt,
 });
+
+export { NFLScores, JokeGenerator, NumberGenerator };
