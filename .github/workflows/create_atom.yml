@@ -24,11 +24,11 @@ jobs:
         run: |
           ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
           RESPONSE=$(curl --request POST "https://api.openai.com/v1/chat/completions"
-            --header 'authorization: Bearer ${{ env.OPENAI_API_KEY }}' \
-            --header 'content-type: application/json' \
-            --data '{
+            -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}"
+            -H "Content-Type: application/json" \
+            -D '{
               "model": "gpt-3.5-turbo",
-              "messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "'"$ESCAPED_ISSUE_BODY"'"}]
+              "messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "$ESCAPED_ISSUE_BODY"}]
             }' \
             --fail)
           echo "::set-output name=response::$RESPONSE"
