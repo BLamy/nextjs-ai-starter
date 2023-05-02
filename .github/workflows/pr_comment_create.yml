@@ -1,0 +1,30 @@
+name: PR Comment Create
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened]
+
+jobs:
+  pr_comment_handler:
+    if: github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
+          fetch-depth: 0
+
+      - name: Make further updates based on user feedback
+        env:
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+        run: |
+          # Your script to parse the user's feedback and call the API with the appropriate instructions
+
+      - name: Commit and push the changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Update based on user feedback"
+          git push

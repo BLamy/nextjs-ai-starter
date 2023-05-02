@@ -1,6 +1,6 @@
-name: 'Chromatic Deployment'
+name: 'New Pull Request'
 
-on: [push, pull_request]
+on: pull_request
 
 jobs:
   chromatic_deployment:
