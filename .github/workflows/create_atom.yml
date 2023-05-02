@@ -22,8 +22,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          RESPONSE=$(curl --request POST \
-            --url https://api.openai.com/v1/chat/completions  \
+          RESPONSE=$(curl --request POST "https://api.openai.com/v1/chat/completions"
             --header 'authorization: Bearer ${{ env.OPENAI_API_KEY }}' \
             --header 'content-type: application/json' \
             --data '{
