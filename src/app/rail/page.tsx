@@ -1,14 +1,11 @@
 import { ChatCompletionRequestMessage } from "openai";
-import { generateChatCompletion } from "@/lib/ChatCompletion";
-import Chat from "@/components/Chat";
+import { generateChatCompletion, user, assistant } from "@/lib/ChatCompletion";
+import Chat from "@/components/organisms/Chat";
 import Prompts from "@/ai/prompts";
 
 export default async function RailExample() {
   const messages: ChatCompletionRequestMessage[] = [
-    {
-      role: "user",
-      content: Prompts.BankRun,
-    },
+    user(Prompts.BankRun),
   ];
   const res = await generateChatCompletion(messages, {
     model: "gpt-4",
@@ -17,10 +14,7 @@ export default async function RailExample() {
     <Chat
       messages={[
         ...messages,
-        {
-          role: "assistant",
-          content: JSON.stringify(res, null, 2),
-        },
+        assistant(JSON.stringify(res, null, 2)),
       ]}
     />
   );

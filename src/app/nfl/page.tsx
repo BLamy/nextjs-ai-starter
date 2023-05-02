@@ -1,8 +1,4 @@
-import Card from "../../components/Card";
-import { Inter } from "next/font/google";
-import styles from "./page.module.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import Card from "@/components/atoms/Card";
 
 export default function NFL() {
   // prettier-ignore

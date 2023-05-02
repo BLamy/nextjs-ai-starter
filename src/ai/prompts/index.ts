@@ -7,7 +7,7 @@ import { z } from "zod";
 // ...
 // const input: PromptTypes.NFLScores.Input = PromptTypes.JokeGenerator.inputSchema.parse(params);
 // const chatCompletion = await generateChatCompletion([
-//   { role: 'system', content: Prompts.NFLScores },
+//   { Guardrails 'system', content: Prompts.NFLScores },
 //   { role: 'user', content: JSON.stringify(input) },
 // ]);
 // const output: PromptTypes.NFLScores.Output = PromptTypes.JokeGenerator.outputSchema.parse(res.);

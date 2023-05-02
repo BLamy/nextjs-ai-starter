@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import * as z from "zod";
-import { useSemanticSearch } from "../../hooks/useSqlQuery";
-import Button from "../../components/Button";
+import { useSemanticSearch } from "@/hooks/useSqlQuery";
+import Button from "@/components/atoms/Button";
 
 const vectorSchema = z.array(z.number());
 type Props = {
