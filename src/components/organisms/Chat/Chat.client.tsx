@@ -2,86 +2,138 @@
 import React, { useRef, useEffect, useState, use } from "react";
 import { ChatCompletionRequestMessage } from "openai";
 import ChatBubbleList from "@/components/molecules/ChatBubbleList";
+import { ChatMessage, ErrorCode, WindowAI, getWindowAI } from "window.ai";
+import Button from "@/components/atoms/Button";
+
+export const EXTENSION_CHROME_URL =
+  "https://chrome.google.com/webstore/detail/window-ai/cbhbgmdpcoelfdoihppookkijpmgahag";
 
 type Props = {
-    defaultMessages: ChatCompletionRequestMessage[];
+  defaultMessages: ChatCompletionRequestMessage[];
 };
 
 export const ClientChat: React.FC<Props> = ({ defaultMessages }) => {
-  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>(defaultMessages);
+  const [messages, setMessages] =
+    useState<ChatCompletionRequestMessage[]>(defaultMessages);
   const [newMessage, setNewMessage] = useState<string>("");
   const inputRef = useRef<HTMLInputElement>(null);
   const sendButtonRef = useRef<HTMLButtonElement>(null);
+  const windowAIRef = useRef<WindowAI>();
+  const [showInstallMessage, setShowInstallMessage] = useState(false);
 
-    useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, []);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
-    // when new message get set to an empty string (after sending), disable the send button for 5 seconds
-    useEffect(() => {
-        if (newMessage === "") {
-            if (sendButtonRef.current) {
-                sendButtonRef.current.disabled = true;
-                setTimeout(() => {
-                    if (sendButtonRef.current) {
-                        sendButtonRef.current.disabled = false;
-                    }
-                }, 5000);
-            }
-        }
-    }, [newMessage]);
+  useEffect(() => {
+    getWindowAI()
+      .then((windowAI) => {
+        windowAIRef.current = windowAI;
+      })
+      .catch((err) => {
+        setShowInstallMessage(true);
+      });
+  }, []);
 
-    const handleNewMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewMessage(event.target.value);
-    };
+  // when new message get set to an empty string (after sending), disable the send button for 5 seconds
+  useEffect(() => {
+    if (newMessage === "") {
+      if (sendButtonRef.current) {
+        sendButtonRef.current.disabled = true;
+        setTimeout(() => {
+          if (sendButtonRef.current) {
+            sendButtonRef.current.disabled = false;
+          }
+        }, 5000);
+      }
+    }
+  }, [newMessage]);
 
-    const handleNewMessageSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        if (newMessage) {
-            console.log(newMessage)
-            // Get the active model from the window.ai API 
-            console.log(await window.ai.getCurrentModel())
+  const handleNewMessageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setNewMessage(event.target.value);
+  };
 
-            // Get completions from the window.ai API
-            const msg = { role: "user" as const, content: newMessage };
-            setMessages(value => [...value, msg]);
-            setNewMessage("");
-            try {
-                await window.ai.getCompletion(
-                {
-                    messages: [...messages,  msg],
-                },
-                {
-                    onStreamResult: (result: any, error: any) => {
-                        setMessages(messages => {
-                            if (messages[messages.length - 1].role === "assistant") {
-                                return [
-                                    ...messages.slice(0, messages.length - 1), 
-                                    { role: "assistant" as const, content: messages[messages.length - 1].content + result.message.content }
-                                ];
-                            } else {
-                                return [...messages, { role: "assistant" as const, content: result.message.content }];
-                            }
-                        });
+  const handleNewMessageSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    if (newMessage) {
+      console.log(newMessage);
+      // Get the active model from the window.ai API
+      console.log(await window.ai.getCurrentModel());
+
+      // Get completions from the window.ai API
+      const msg = { role: "user" as const, content: newMessage };
+      setMessages((value) => [...value, msg]);
+      setNewMessage("");
+      try {
+        await window.ai.getCompletion(
+          {
+            messages: [...messages, msg],
+          },
+          {
+            onStreamResult: (result: any, error: any) => {
+              setMessages((messages) => {
+                if (messages[messages.length - 1].role === "assistant") {
+                  return [
+                    ...messages.slice(0, messages.length - 1),
+                    {
+                      role: "assistant" as const,
+                      content:
+                        messages[messages.length - 1].content +
+                        result.message.content,
                     },
-                });
-            } catch (e) {
-                console.error(e)
-
-                setMessages([
-                ...messages,
-                {
-                    role: "assistant",
-                    content: "Sorry, I had an error. Please try again later."
+                  ];
+                } else {
+                  return [
+                    ...messages,
+                    {
+                      role: "assistant" as const,
+                      content: result.message.content,
+                    },
+                  ];
                 }
-                ])
-            }
+              });
+            },
+          }
+        );
+      } catch (e) {
+        console.error(e);
 
-        }
-    };
+        setMessages([
+          ...messages,
+          {
+            role: "assistant",
+            content: "Sorry, I had an error. Please try again later.",
+          },
+        ]);
+      }
+    }
+  };
 
+  if (showInstallMessage) {
+    return (
+      <div className="w-full h-full flex flex-col justify-end">
+        <ChatBubbleList messages={messages} />
+        <div className="flex gap-2 text-sm">
+          <p className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg mr-2 text-center text-white text-base flex items-center">
+            Continue this conversation using window.ai!
+          </p>
+          <div className="grid">
+            <Button
+              onClick={() => window.open(EXTENSION_CHROME_URL, "_blank")}
+              className=" bg-indigo-600 hover:bg-indigo-500 "
+              text="Get the extension"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full flex flex-col justify-end">
@@ -96,9 +148,9 @@ export const ClientChat: React.FC<Props> = ({ defaultMessages }) => {
           type="text"
           placeholder="Message"
           className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg mr-2"
-        value={newMessage}
-        onChange={handleNewMessageChange}
-        ref={inputRef}
+          value={newMessage}
+          onChange={handleNewMessageChange}
+          ref={inputRef}
         />
         <button
           type="submit"

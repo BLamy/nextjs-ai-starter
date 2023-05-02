@@ -39,6 +39,7 @@ specifiers:
   tailwindcss: ^3.3.1
   typescript: 5.1.0-dev.20230311
   webpack: ^5.77.0
+  window.ai: ^0.1.1
   zod: ^3.21.4
 
 dependencies:
@@ -60,6 +61,7 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   sql.js-httpvfs: 0.8.12
   typescript: 5.1.0-dev.20230311
+  window.ai: 0.1.1
   zod: 3.21.4
 
 devDependencies:
@@ -12431,6 +12433,10 @@ packages:
     dependencies:
       string-width: 4.2.3
     dev: true
+
+  /window.ai/0.1.1:
+    resolution: {integrity: sha512-utrwo3q5OWlKoTm71fFfFE8uUp/66qJthvTAh8aHd9MF+XeCv8hna5OYuC4ws9zf6ggjlVDaDJdMCuKyvC30HA==}
+    dev: false
 
   /word-wrap/1.2.3:
     resolution: {integrity: sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==}
