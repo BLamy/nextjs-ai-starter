@@ -17,41 +17,41 @@ jobs:
           echo "Issue body: ${{ github.event.issue.body }}"
           echo "Issue author: ${{ github.event.issue.user.login }}"
       
-      # - name: Call API and update file
-      #   id: api_call
-      #   env:
-      #     API_TOKEN: ${{ secrets.API_TOKEN }}
-      #   run: |
-      #     RESPONSE=$(curl --request POST \
-      #       --url https://api.openai.com/v1/engines/davinci-codex/completions \
-      #       --header 'authorization: Bearer ${{ env.API_TOKEN }}' \
-      #       --header 'content-type: application/json' \
-      #       --data '{
-      #         "prompt": "Some chat prompt",
-      #         "max_tokens": 100
-      #       }' \
-      #       --fail)
-      #     echo "::set-output name=response::$RESPONSE"
+      - name: Call API and update file
+        id: api_call
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          RESPONSE=$(curl --request POST \
+            --url https://api.openai.com/v1/chat/completions  \
+            --header 'authorization: Bearer ${{ env.OPENAI_API_KEY }}' \
+            --header 'content-type: application/json' \
+            --data '{
+              "model": "gpt-3.5-turbo",
+              "messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "${{ github.event.issue.body }}"}
+            }' \
+            --fail)
+          echo "::set-output name=response::$RESPONSE"
+     
+      - name: Create and switch to new branch
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b issue-${{ github.event.issue.number }}-update
 
-      # - name: Create and switch to new branch
-      #   run: |
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
-      #     git checkout -b issue-${{ github.event.issue.number }}-update
+      - name: Update file with API response
+        run: |
+          echo "${{ steps.api_call.outputs.response }}" > src/components/atoms/Search.tsx
+          git add .
+          git commit -m "Update file with API response"
 
-      # - name: Update file with API response
-      #   run: |
-      #     echo "${{ steps.api_call.outputs.response }}" > updated_file.txt
-      #     git add updated_file.txt
-      #     git commit -m "Update file with API response"
+      - name: Push changes to the new branch
+        run: git push origin issue-${{ github.event.issue.number }}-update
 
-      # - name: Push changes to the new branch
-      #   run: git push origin issue-${{ github.event.issue.number }}-update
-
-      # - name: Create pull request
-      #   uses: peter-evans/create-pull-request@v3
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     title: "Update file with API response for issue #${{ github.event.issue.number }}"
-      #     body: "This PR updates the file with the API response for issue #${{ github.event.issue.number }}."
-      #     branch: issue-${{ github.event.issue.number }}-update
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GH_API_KEY }}
+          title: "Update file with API response for issue #${{ github.event.issue.number }}"
+          body: "This PR updates the file with the API response for issue #${{ github.event.issue.number }}."
+          branch: issue-${{ github.event.issue.number }}-update
