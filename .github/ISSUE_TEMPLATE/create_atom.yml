@@ -2,11 +2,20 @@ name: Create Atom Component
 description: Fill out this form to create a new component
 title: "[Atom]: "
 labels: ["create-atom"]
-body:
+name:
 - type: input
-  id: body
+  id: name
   attributes:
-    label: Body
+    label: Component Name
+    description: Enter the name of the compoent you want to create
+    placeholder: ex. SearchBox
+  validations:
+    required: true
+desc:
+- type: input
+  id: desc
+  attributes:
+    label: Component Description
     description: Enter the description of the component you are trying to make
     placeholder: ex. an input box with large font and a search icon on the left hand side rounded corners 
   validations:
