@@ -2,7 +2,7 @@ name: Create Atom Component
 description: Fill out this form to create a new component
 title: "[Atom]: "
 labels: ["create-atom"]
-name:
+body:
 - type: input
   id: name
   attributes:
@@ -11,7 +11,6 @@ name:
     placeholder: ex. SearchBox
   validations:
     required: true
-desc:
 - type: input
   id: desc
   attributes:
