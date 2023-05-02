@@ -1,7 +1,7 @@
 import { z } from "zod";
 import * as Tools from "@/ai/tools";
 import chalk from "chalk";
-import { generateChatCompletion } from "@/lib/ChatCompletion";
+import { assistant, generateChatCompletion, system, user } from "@/lib/ChatCompletion";
 import { ChatCompletionRequestMessage } from "openai";
 import { isValidTool } from "@/lib/Utils";
 import { ZodSchema } from "zod";
@@ -43,7 +43,7 @@ export default class TypesafePrompt<
       const inputValidation = this.inputSchema.safeParse(input);
       if (!inputValidation.success) {
         const error = "zod validation error";
-        const messages: ChatCompletionRequestMessage[] = [{ role: "system", content: inputValidation.error.message }];
+        const messages: ChatCompletionRequestMessage[] = [system(inputValidation.error.message)];
         await errorHandlers[error](error, messages);
         return { error, messages };
       }
@@ -51,14 +51,8 @@ export default class TypesafePrompt<
     console.log(chalk.green(`SYSTEM: ${this.prompt}`));
     console.log(chalk.blue(`USER: ${JSON.stringify(input, null, 2)}`));
     let messages: ChatCompletionRequestMessage[] = [
-      {
-        role: "system",
-        content: this.prompt,
-      },
-      {
-        role: "user",
-        content: JSON.stringify(input),
-      },
+      system(this.prompt),
+      user(JSON.stringify(input)),
     ];
     // There are only two tools so if it loops more than twice, something is wrong.
     const TOOL_STACK_OVERFLOW_THRESHOLD = 5;
@@ -67,28 +61,19 @@ export default class TypesafePrompt<
       console.log(
         chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion, null, 2)}`)
       );
-      messages.push({
-        role: "assistant",
-        content: JSON.stringify(chatCompletion),
-      });
+      messages.push(assistant(JSON.stringify(chatCompletion)));
 
       if (typeof chatCompletion === "string") {
         const reflectionPrompt = createReflectionPromptForError(
           "output was not a JSON object. Recieved string."
         );
         console.log(chalk.green(`SYSTEM: ${reflectionPrompt}`));
-        messages.push({
-          role: "system",
-          content: reflectionPrompt,
-        });
+        messages.push(system(reflectionPrompt));
         chatCompletion = await generateChatCompletion(messages);
         console.log(
           chalk.gray(`ASSISTANT: ${JSON.stringify(chatCompletion, null, 2)}`)
         );
-        messages.push({
-          role: "assistant",
-          content: JSON.stringify(chatCompletion),
-        });
+        messages.push(assistant(JSON.stringify(chatCompletion)));
         if (typeof chatCompletion === "string") {
           const error = "output format error";
           const content = JSON.stringify({
@@ -96,10 +81,7 @@ export default class TypesafePrompt<
             msg: "After two attempts, the output format was not correct.",
           });
           console.error(chalk.red(`SYSTEM: ${content}`));
-          messages.push({
-            role: "system",
-            content,
-          });
+          messages.push(system(content));
           return { error: 'unknown', messages };
         }
       }
@@ -119,10 +101,7 @@ export default class TypesafePrompt<
           console.log(
             chalk.gray(`ASSISTANT: ${JSON.stringify(response, null, 2)}`)
           );
-          messages.push({
-            role: "assistant",
-            content: response,
-          });
+          messages.push(assistant(response));
         } else {
           const err = `HALLUCINATION: Unknown tool. ${JSON.stringify(
             messages,
@@ -140,10 +119,7 @@ export default class TypesafePrompt<
         const reflectionPromptWithZodError = createReflectionPromptForError(
           response.error.message
         );
-        messages.push({
-          role: "system",
-          content: reflectionPromptWithZodError,
-        });
+        messages.push(system(reflectionPromptWithZodError));
         console.log(chalk.green(`SYSTEM: ${reflectionPromptWithZodError}`));
       }
     }

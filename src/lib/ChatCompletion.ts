@@ -37,3 +37,19 @@ export async function generateChatCompletion<TOutput extends Record<string, any>
     return { error: "json parse error", msg: response.data.choices[0].message?.content || '{ "error": "No response" }'};
   }
 };
+
+
+// ChatMessage creation helpers
+// Ideally these would have been tagged template literals but typescript support for it is not great
+// https://github.com/microsoft/TypeScript/issues/33304
+export function system<const T extends string>(content: T) {
+  return { role: "system" as const, content };
+}
+
+export function user<const T extends string>(content: T) {
+  return { role: "user" as const, content };
+}
+
+export function assistant<const T extends string>(content: T) {
+  return { role: "assistant" as const, content };
+}

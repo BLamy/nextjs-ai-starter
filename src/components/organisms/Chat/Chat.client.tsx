@@ -1,9 +1,10 @@
 "use client";
-import React, { useRef, useEffect, useState, use } from "react";
+import React, { useRef, useEffect, useState,  } from "react";
 import { ChatCompletionRequestMessage } from "openai";
 import ChatBubbleList from "@/components/molecules/ChatBubbleList";
-import { ChatMessage, ErrorCode, WindowAI, getWindowAI } from "window.ai";
+import { WindowAI, getWindowAI } from "window.ai";
 import Button from "@/components/atoms/Button";
+import { assistant, user } from "@/lib/ChatCompletion";
 
 export const EXTENSION_CHROME_URL =
   "https://chrome.google.com/webstore/detail/window-ai/cbhbgmdpcoelfdoihppookkijpmgahag";
@@ -67,7 +68,7 @@ export const ClientChat: React.FC<Props> = ({ defaultMessages }) => {
       console.log(await window.ai.getCurrentModel());
 
       // Get completions from the window.ai API
-      const msg = { role: "user" as const, content: newMessage };
+      const msg = user(newMessage)
       setMessages((value) => [...value, msg]);
       setNewMessage("");
       try {
@@ -81,20 +82,13 @@ export const ClientChat: React.FC<Props> = ({ defaultMessages }) => {
                 if (messages[messages.length - 1].role === "assistant") {
                   return [
                     ...messages.slice(0, messages.length - 1),
-                    {
-                      role: "assistant" as const,
-                      content:
-                        messages[messages.length - 1].content +
-                        result.message.content,
-                    },
+                    assistant(messages[messages.length - 1].content +
+                      result.message.content)
                   ];
                 } else {
                   return [
                     ...messages,
-                    {
-                      role: "assistant" as const,
-                      content: result.message.content,
-                    },
+                    assistant(result.message.content),
                   ];
                 }
               });
@@ -106,10 +100,7 @@ export const ClientChat: React.FC<Props> = ({ defaultMessages }) => {
 
         setMessages([
           ...messages,
-          {
-            role: "assistant",
-            content: "Sorry, I had an error. Please try again later.",
-          },
+          assistant("Sorry, I had an error. Please try again later."),
         ]);
       }
     }
