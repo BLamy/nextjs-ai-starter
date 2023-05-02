@@ -1,6 +1,6 @@
 import { ChatCompletionRequestMessage } from "openai";
 import { generateChatCompletion } from "@/lib/ChatCompletion";
-import Chat from "@/components/Chat";
+import Chat from "@/components/organisms/Chat";
 import Prompts from "@/ai/prompts";
 
 export default async function RailExample() {

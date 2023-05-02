@@ -2,7 +2,7 @@ import React from "react";
 import Prompts from "@/ai/prompts";
 import * as PromptTypes from "@/ai/prompts";
 import { ChatCompletionRequestMessage } from "openai";
-import Chat from "@/components/Chat";
+import Chat from "@/components/organisms/Chat";
 import TypesafePrompt from "@/lib/TypesafePrompt";
 
 // Search params are passed in from the URL are always strings
