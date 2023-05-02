@@ -24,6 +24,12 @@ const demos = [
     href: "https://accesscontrol.nextjs.ai/",
   },
   {
+    title: "Static Embeddings Demo",
+    description:
+      "Uses a static sqlite database to query for embedding on the client side.",
+    href: "/sqlite",
+  },
+  {
     title: "Guardrails Demo",
     description: "Loads prompt from a Guardrails file.",
     href: "/rail",
