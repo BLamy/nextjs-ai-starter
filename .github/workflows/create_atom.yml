@@ -51,7 +51,10 @@ jobs:
       - name: Create Storybook Follow up Prompt
         id: followup    
         run: |
-          echo "ASSISTANT: ${{ steps.create_component_api_call.outputs.response }}"
+          ASSISTANT="${{ steps.create_component_api_call.outputs.response }}"
+          echo "ASSISTANT: $ASSISTANT"
+          echo "----------"
+          echo -e "ASSISTANT: $ASSISTANT"
           ESCAPED_RESPONSE=$(echo -e "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g')
           ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
           echo "$ASSISTANT_MESSAGE"
