@@ -18,6 +18,7 @@ jobs:
           echo "Issue title: ${{ github.event.issue.title }}"
           echo "Issue body: ${{ github.event.issue.body }}"
           echo "Issue author: ${{ github.event.issue.user.login }}"
+          echo '"messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "'"$ESCAPED_ISSUE_BODY"'"}]'
       
       - name: Call GPT 3.5 Turbo
         id: api_call
@@ -38,7 +39,7 @@ jobs:
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
-          git clone https://${{ env.GH_API_KEY }}@github.com/blamy/nextjs-ai-starter.git
+          git clone https://${{ env.GH_API_KEY }}@github.com/$ORG_NAME/.git
           cd nextjs-ai-starter
           git config --global user.email "brettlamy@gmail.com"
           git config --global user.name "Brett Lamy"
@@ -52,6 +53,7 @@ jobs:
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
+          echo "$ESCAPED_ISSUE_BODY"
           PR_URL="https://api.github.com/repos/blamy/nextjs-ai-starter/pulls"
           PR_PAYLOAD=$(echo -n '{"title":"${{ github.event.issue.title }}", "body":"'"$ESCAPED_ISSUE_BODY"'", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}' | base64)
           echo "$PR_URL"
