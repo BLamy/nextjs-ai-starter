@@ -10,6 +10,7 @@ jobs:
     steps:
       - name: Print issue information
         run: |
+          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
           ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
           REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
           echo "Organization: ${ORG_NAME}"
@@ -23,7 +24,6 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
           RESPONSE=$(curl "https://api.openai.com/v1/chat/completions" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
@@ -53,7 +53,7 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
           PR_URL="https://api.github.com/repos/blamy/nextjs-ai-starter/pulls"
-          PR_PAYLOAD=$(echo -n '{"title":"${{ github.event.issue.title }}", "body":"${{ github.event.issue.body }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}' | base64)
+          PR_PAYLOAD=$(echo -n '{"title":"${{ github.event.issue.title }}", "body":"'"$ESCAPED_ISSUE_BODY"'", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}' | base64)
           echo "$PR_URL"
           echo "$PR_PAYLOAD"
           echo 'curl -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d "$PR_PAYLOAD" "$PR_URL"'
