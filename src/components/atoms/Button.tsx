@@ -1,12 +1,12 @@
 import React, { MouseEventHandler } from 'react';
 
-type Props = {
+export type ButtonProps = {
   text: string;
   onClick: MouseEventHandler<HTMLButtonElement>;
   className?: string;
 }
 
-const Button: React.FC<Props> = ({ text, onClick, className }) => {
+const Button: React.FC<ButtonProps> = ({ text, onClick, className }) => {
   return (
     <button
       onClick={onClick}

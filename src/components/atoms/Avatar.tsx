@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface AvatarProps {
+export type AvatarProps = {
   name: string;
   size?: 'small' | 'medium' | 'large';
   className?: string;

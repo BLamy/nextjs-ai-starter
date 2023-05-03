@@ -22,12 +22,14 @@ export function bubbleColorForMessage(role: ChatCompletionRequestMessageRoleEnum
   }
 }
 
-export const ChatBubble: React.FC<{
+export type ChatBubbleProps = {
   role: ChatCompletionRequestMessageRoleEnum;
   content: string;
   name?: string;
   index?: number;
-}> = ({ index = 0, role, content, name }) => {
+};
+
+export const ChatBubble: React.FC<ChatBubbleProps> = ({ index = 0, role, content, name }) => {
   return (
     <div
       key={index}

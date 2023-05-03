@@ -36,3 +36,5 @@ build-storybook.log
 guardrails.log
 
 venv
+
+storybook-static
