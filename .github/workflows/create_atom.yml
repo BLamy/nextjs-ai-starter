@@ -55,6 +55,7 @@ jobs:
       # TODO Create Storybook
       # TODO Format file with precommit hooks
 
+      # TODO Split Update file in git up into multiple steps
       - name: Update file in git
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
@@ -65,7 +66,7 @@ jobs:
           git config --global user.name "Brett Lamy"
           git checkout -b issue-${{ github.event.issue.number }}-update
           echo -e "${{ steps.api_call.outputs.response }}" > src/components/atoms/${{ steps.api_call.outputs.COMPONENT_NAME }}.tsx
-          pnpm run prettier
+          npm run prettier
           git add .
           git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           git push origin issue-${{ github.event.issue.number }}-update
