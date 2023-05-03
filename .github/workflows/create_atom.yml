@@ -9,29 +9,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print issue information
+        id: setup
         run: |
           ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
+          echo "::set-output name=ESCAPED_ISSUE_BODY::${ESCAPED_ISSUE_BODY}"
           ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
+          echo "::set-output name=ORG_NAME::${ORG_NAME}"
           REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
+          echo "::set-output name=REPO_NAME::${REPO_NAME}"
           echo "Organization: ${ORG_NAME}"
           echo "Repository: ${REPO_NAME}"
           echo "Issue title: ${{ github.event.issue.title }}"
           echo "Issue body: ${{ github.event.issue.body }}"
           echo "Issue author: ${{ github.event.issue.user.login }}"
-          echo '"messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "'"$ESCAPED_ISSUE_BODY"'"}]'
+          echo '"messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"}]'
       
       - name: Call GPT 3.5 Turbo
         id: api_call
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          echo '"messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "'"$ESCAPED_ISSUE_BODY"'"}]'
+          echo '"messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"}]'
           RESPONSE=$(curl "https://api.openai.com/v1/chat/completions" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
             -d '{
               "model": "gpt-3.5-turbo",
-              "messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "'"$ESCAPED_ISSUE_BODY"'"}]
+              "messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"}]
             }' \
             --fail)
           echo "::set-output name=response::$RESPONSE"
