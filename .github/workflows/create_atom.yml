@@ -56,7 +56,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          STORYBOOK_FOLLOW_UP_PROMPT='Can you create a storybook for the above component using import ${{ steps.setup.create_component_api_call.COMPONENT_NAME }}, { ${{ steps.setup.create_component_api_call.ASSISTANT_MESSAGE }}Props } from "../${{ steps.setup.create_component_api_call.ASSISTANT_MESSAGE }}"'
+          STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.setup.create_component_api_call.COMPONENT_NAME }}, { ${{ steps.setup.create_component_api_call.ASSISTANT_MESSAGE }}Props } from \"../${{ steps.setup.create_component_api_call.ASSISTANT_MESSAGE }}\""
           RESPONSE=$(curl "https://api.openai.com/v1/chat/completions" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
