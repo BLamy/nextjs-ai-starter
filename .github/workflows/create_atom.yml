@@ -49,6 +49,8 @@ jobs:
           ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
           echo "$ESCAPED_CODE_BLOCK"
           echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
+          COMPONENT_NAME=$(echo "$RESPONSE_BODY" | grep -oP 'default export\([a-zA-Z_$][0-9a-zA-Z_$]*\)')
+          echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
 
 # TODO Create Storybook 
 # TODO Format file with precommit hooks
@@ -62,7 +64,7 @@ jobs:
           git config --global user.email "brettlamy@gmail.com"
           git config --global user.name "Brett Lamy"
           git checkout -b issue-${{ github.event.issue.number }}-update
-          echo -e "${{ steps.api_call.outputs.response }}" > src/components/atoms/Search.tsx
+          echo -e "${{ steps.api_call.outputs.response }}" > src/components/atoms/${{ steps.api_call.outputs.COMPONENT_NAME }}.tsx
           git add .
           git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           git push origin issue-${{ github.event.issue.number }}-update
