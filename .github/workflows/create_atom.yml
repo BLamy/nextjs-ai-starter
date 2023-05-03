@@ -90,7 +90,6 @@ jobs:
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
-          git 
           git clone https://${{ env.GH_API_KEY }}@github.com/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}.git
           cd nextjs-ai-starter
           git config --global user.email "brettlamy@gmail.com"
