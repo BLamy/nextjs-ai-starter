@@ -41,10 +41,10 @@ jobs:
             }' \
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
-          CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/p' | sed '/^```[a-zA-Z]*\|^```$/d')
+          CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/{/^```[a-zA-Z]*\|^```$/!p}' | awk 'BEGIN {ORS=""; flag=0} {if (flag) print "\\n"; else flag=1; print}')
           ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/`/\\`/g; s/\$/\\$/g' | awk '{printf "%s\\n", $0}')
           echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
-          echo "ASSISTANT: $ESCAPED_CODE_BLOCK"
+          echo -e "ASSISTANT: $RESPONSE_BODY"
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
           echo "$COMPONENT_NAME"
           echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
@@ -90,6 +90,7 @@ jobs:
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
+          git 
           git clone https://${{ env.GH_API_KEY }}@github.com/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}.git
           cd nextjs-ai-starter
           git config --global user.email "brettlamy@gmail.com"
