@@ -46,7 +46,7 @@ jobs:
           CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/p' | sed '/^```[a-zA-Z]*\|^```$/d')
           echo "$CODE_BLOCK"
           echo "----------------------"
-          ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/`/\\`/g; s/\$/_TEMP_DOLLAR_PLACEHOLDER_/g; s/_TEMP_DOLLAR_PLACEHOLDER_\({[^}]*}\)/\${\1}/g' | awk '{printf "%s\\n", $0}')
+          ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/`/\\`/g; s/\$/\\$/g' | awk '{printf "%s\\n", $0}')
           echo "$ESCAPED_CODE_BLOCK"
           echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
