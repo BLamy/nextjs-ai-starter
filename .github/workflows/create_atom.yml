@@ -56,10 +56,5 @@ jobs:
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
-          echo "$ESCAPED_ISSUE_BODY"
-          PR_URL="https://api.github.com/repos/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}/pulls"
-          PR_PAYLOAD=$(echo -n '{"title":"${{ github.event.issue.title }}", "body":"'"$ESCAPED_ISSUE_BODY"'", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}' | base64)
-          echo "$PR_URL"
-          echo "$PR_PAYLOAD"
-          echo 'curl -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d "$PR_PAYLOAD" "$PR_URL"'
-          curl -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d "$PR_PAYLOAD" "$PR_URL"
+          echo 'curl https://api.github.com/repos/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}/pulls -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d '{"title":"${{ github.event.issue.title }}", "body":"${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}'
+          curl https://api.github.com/repos/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}/pulls -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d '{"title":"${{ github.event.issue.title }}", "body":"${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}'
