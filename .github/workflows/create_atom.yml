@@ -45,26 +45,26 @@ jobs:
           echo "$CODE_BLOCK"
           echo "---------"
           echo -e "$CODE_BLOCK"
-
+          echo "::set-output name=response::$CODE_BLOCK"
       #     # CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/{/^```[a-zA-Z]*\|^```$/!p}' | awk 'BEGIN {ORS=""; flag=0} {if (flag) print "\\n"; else flag=1; print}')
       #     ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/`/\\`/g; s/\$/\\$/g' | awk '{printf "%s\\n", $0}')
       #     echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
       #     echo -e "ASSISTANT: $RESPONSE_BODY"
-      #     COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
-      #     echo "$COMPONENT_NAME"
-      #     echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
+          COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
+          echo "$COMPONENT_NAME"
+          echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
 
-      # - name: Create Storybook Follow up Prompt
-      #   id: followup    
-      #   run: |
-      #     echo "ASSISTANT: ${{ steps.create_component_api_call.outputs.response }}"
-      #     ESCAPED_RESPONSE=$(echo -e "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
-      #     ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
-      #     echo "$ASSISTANT_MESSAGE"
-      #     echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
-      #     STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from '../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}'"
-      #     STORYBOOK_FOLLOW_UP_MESSAGE='{ "role": "user", "content":"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}'
-      #     echo "::set-output name=STORYBOOK_FOLLOW_UP_MESSAGE::$STORYBOOK_FOLLOW_UP_MESSAGE"
+      - name: Create Storybook Follow up Prompt
+        id: followup    
+        run: |
+          echo "ASSISTANT: ${{ steps.create_component_api_call.outputs.response }}"
+          ESCAPED_RESPONSE=$(echo -e "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g')
+          ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
+          echo "$ASSISTANT_MESSAGE"
+          echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
+          STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from '../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}'"
+          STORYBOOK_FOLLOW_UP_MESSAGE='{ "role": "user", "content":"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}'
+          echo "::set-output name=STORYBOOK_FOLLOW_UP_MESSAGE::$STORYBOOK_FOLLOW_UP_MESSAGE"
 
       # - name: Create Storybook (GPT 3.5 Turbo)
       #   id: create_storybook_api_call
