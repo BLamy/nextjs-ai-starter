@@ -38,8 +38,10 @@ jobs:
             --fail)
           echo "$RESPONSE"
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].content')
+          echo "$RESPONSE_BODY"
           CODE_BLOCK=$(echo "$RESPONSE_BODY" | grep -oP '(?<=```tsx)[^`]*(?=```)' | sed 's/^[ \t]*//;s/[ \t]*$//')
-          echo "::set-output name=response::$CODE_BLOCK"
+          echo "$CODE_BLOCK"
+          echo "::set-output name=response::$RESPONSE"
 
       - name: Update file in git
         env:
