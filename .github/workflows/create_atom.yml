@@ -20,6 +20,7 @@ jobs:
           SYSTEM_MESSAGE='{"role":"system","content":"'"$SYSTEM_PROMPT"'"}'
           echo "SYSTEM: $SYSTEM_PROMPT"
           echo "SYSTEM_PROMPT=$SYSTEM_PROMPT" >> $GITHUB_OUTPUT
+          echo "SYSTEM_MESSAGE=$SYSTEM_MESSAGE" >> $GITHUB_OUTPUT
           ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
           USER_MESSAGE='{"role":"user","content":"'"$ESCAPED_ISSUE_BODY"'"}'
           echo "USER: $ESCAPED_ISSUE_BODY"
@@ -39,7 +40,7 @@ jobs:
             }' \
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
-          CODE_BLOCK=$(echo "$RESPONSE_BODY" | awk '/^```/{flag=!flag;next}flag')
+          CODE_BLOCK=$(echo "$RESPONSE_BODY" | awk '/^```/{flag=!flag;next}flag'| awk '{printf "%s\\n", $0}')
           echo "$CODE_BLOCK"
           echo "---------"
           echo -e "$CODE_BLOCK"
