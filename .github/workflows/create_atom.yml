@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: Print issue information
         run: |
+          ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
+          REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
+          echo "Organization: ${ORG_NAME}"
+          echo "Repository: ${REPO_NAME}"
           echo "Issue title: ${{ github.event.issue.title }}"
           echo "Issue body: ${{ github.event.issue.body }}"
           echo "Issue author: ${{ github.event.issue.user.login }}"
@@ -42,13 +46,13 @@ jobs:
           git checkout -b issue-${{ github.event.issue.number }}-update
           echo "${{ steps.api_call.outputs.response }}" > src/components/atoms/Search.tsx
           git add .
-          git commit -m "Update file with API response"
+          git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           git push origin issue-${{ github.event.issue.number }}-update
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GH_API_KEY }}
-          title: "Update file with API response for issue #${{ github.event.issue.number }}"
-          body: "This PR updates the file with the API response for issue #${{ github.event.issue.number }}."
-          branch: issue-${{ github.event.issue.number }}-update
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+        run: |
+          PR_URL="https://api.github.com/repos/blamy/nextjs-ai-starter/pulls"
+          PR_PAYLOAD=$(echo -n '{"title":"${{ github.event.issue.title }}", "body":"${{ github.event.issue.body }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}' | base64)
+          curl -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d "$PR_PAYLOAD" "$PR_URL"
