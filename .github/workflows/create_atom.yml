@@ -37,7 +37,7 @@ jobs:
             }' \
             --fail)
           echo "$RESPONSE"
-          RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].content')
+          RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
           echo "$RESPONSE_BODY"
           CODE_BLOCK=$(echo "$RESPONSE_BODY" | grep -oP '(?<=```tsx)[^`]*(?=```)' | sed 's/^[ \t]*//;s/[ \t]*$//')
           echo "$CODE_BLOCK"
