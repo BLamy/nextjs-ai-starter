@@ -43,7 +43,7 @@ jobs:
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
           echo "$RESPONSE_BODY"
           echo "----------------------"
-          CODE_BLOCK=$(echo "$RESPONSE_BODY" | sed -n '/^```tsx$/,/^```$/p' | sed '/^```tsx\|^```$/d')
+          CODE_BLOCK=$(echo "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/p' | sed '/^```[a-zA-Z]*\|^```$/d')
           echo "$CODE_BLOCK"
           echo "::set-output name=response::$CODE_BLOCK"
 
