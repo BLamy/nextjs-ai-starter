@@ -1,0 +1,1 @@
+{id:chatcmpl-7Bwk99JYiX2nPX5lz2vtISUbYwrtA,object:chat.completion,created:1683081773,model:gpt-3.5-turbo-0301,usage:{prompt_tokens:133,completion_tokens:242,total_tokens:375},choices:[{message:{role:assistant,content:},finish_reason:stop,index:0}]}
