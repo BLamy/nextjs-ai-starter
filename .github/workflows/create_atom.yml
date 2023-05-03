@@ -57,12 +57,13 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from \"../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}\""
+          USER_MESSAGE='{ role: "user", content:"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}'
           RESPONSE=$(curl "https://api.openai.com/v1/chat/completions" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
             -d '{
               "model": "gpt-3.5-turbo",
-              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }}, ${{ steps.create_component_api_call.outputs.ASSISTANT_MESSAGE }}, { role: "user", content:"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}]
+              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }}, ${{ steps.create_component_api_call.outputs.ASSISTANT_MESSAGE }}, $USER_MESSAGE]
             }' \
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
