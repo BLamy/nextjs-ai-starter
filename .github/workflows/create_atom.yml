@@ -16,7 +16,7 @@ jobs:
           REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
           echo "REPO_NAME=$REPO_NAME" >> $GITHUB_OUTPUT
           echo "Creating Atom Component for: ${ORG_NAME}/${REPO_NAME}"
-          SYSTEM_PROMPT="You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind. Please include a default export & export the Prop as a typescript type. Do not add any additional libraries or dependencies. Your response should only have 1 tsx code block which is the implementation of the component."
+          SYSTEM_PROMPT="You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind. Please include a default export & export the Prop as a typescript type named ComponentNameProps. Do not add any additional libraries or dependencies. Your response should only have 1 tsx code block which is the implementation of the component."
           SYSTEM_MESSAGE='{"role":"system","content":"'"$SYSTEM_PROMPT"'"}'
           echo "SYSTEM: $SYSTEM_PROMPT"
           echo "SYSTEM_PROMPT=$SYSTEM_PROMPT" >> $GITHUB_OUTPUT
@@ -44,15 +44,15 @@ jobs:
           echo "$CODE_BLOCK"
           echo "---------"
           echo -e "$CODE_BLOCK"
-          echo "response=$CODE_BLOCK" >> $GITHUB_OUTPUT
-          echo "CODE_BLOCK=$CODE_BLOCK" >> $GITHUB_OUTPUT
+          echo -e "response=$CODE_BLOCK" >> $GITHUB_OUTPUT
+          echo -e "CODE_BLOCK=$CODE_BLOCK" >> $GITHUB_OUTPUT
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
           echo "$COMPONENT_NAME"
           echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
       - name: Create Storybook Follow up Prompt
         id: followup    
         run: |
-          ESCAPED_RESPONSE=$(echo -e "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g')
+          ESCAPED_RESPONSE=$(echo "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g')
           echo -e "ASSISTANT: $ESCAPED_RESPONSE"
           ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
           echo "$ASSISTANT_MESSAGE"
