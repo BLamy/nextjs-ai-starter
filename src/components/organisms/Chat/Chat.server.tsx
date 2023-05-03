@@ -11,9 +11,11 @@ export const ServerChat: React.FC<Props> = ({ messages, onMessageSend }) => (
   <div className="w-full h-full flex flex-col justify-end">
     <ChatBubbleList messages={messages} />
     <form
-      onSubmit={event => {
+      onSubmit={(event) => {
         event.preventDefault();
-        const input = event.currentTarget.elements.namedItem("new") as HTMLInputElement;
+        const input = event.currentTarget.elements.namedItem(
+          "new"
+        ) as HTMLInputElement;
         if (input.value && onMessageSend) {
           onMessageSend(input.value);
         }

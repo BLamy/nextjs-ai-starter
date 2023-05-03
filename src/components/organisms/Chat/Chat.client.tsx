@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useState,  } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { ChatCompletionRequestMessage } from "openai";
 import ChatBubbleList from "@/components/molecules/ChatBubbleList";
 import { WindowAI, getWindowAI } from "window.ai";
@@ -68,7 +68,7 @@ export const ClientChat: React.FC<Props> = ({ defaultMessages }) => {
       console.log(await window.ai.getCurrentModel());
 
       // Get completions from the window.ai API
-      const msg = user(newMessage)
+      const msg = user(newMessage);
       setMessages((value) => [...value, msg]);
       setNewMessage("");
       try {
@@ -82,14 +82,13 @@ export const ClientChat: React.FC<Props> = ({ defaultMessages }) => {
                 if (messages[messages.length - 1].role === "assistant") {
                   return [
                     ...messages.slice(0, messages.length - 1),
-                    assistant(messages[messages.length - 1].content +
-                      result.message.content)
+                    assistant(
+                      messages[messages.length - 1].content +
+                        result.message.content
+                    ),
                   ];
                 } else {
-                  return [
-                    ...messages,
-                    assistant(result.message.content),
-                  ];
+                  return [...messages, assistant(result.message.content)];
                 }
               });
             },

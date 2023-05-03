@@ -15,4 +15,4 @@ export function colorForRole(role: string) {
 
 export function isValidTool(tool: string): tool is "search" | "calculator" {
   return tool === "search" || tool === "calculator";
-};
+}

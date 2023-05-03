@@ -1,19 +1,19 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from "@storybook/react";
 
-import ClientChat from '../Chat.client';
-import { system, user, assistant } from '@/lib/ChatCompletion';
+import ClientChat from "../Chat.client";
+import { system, user, assistant } from "@/lib/ChatCompletion";
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction
 const meta: Meta<typeof ClientChat> = {
-  title: 'Example/ClientChat',
+  title: "Example/ClientChat",
   component: ClientChat,
-  tags: ['autodocs'],
-  argTypes: {   
+  tags: ["autodocs"],
+  argTypes: {
     defaultMessages: {
-        control: {
-            type: 'array',
-        }
-    }
+      control: {
+        type: "array",
+      },
+    },
   },
 };
 
@@ -24,10 +24,16 @@ type Story = StoryObj<typeof ClientChat>;
 export const DefaultClientChat: Story = {
   args: {
     defaultMessages: [
-      system('Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s'),
-      user('Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s'),
-      assistant('Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s'),
+      system(
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s"
+      ),
+      user(
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s"
+      ),
+      assistant(
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s"
+      ),
       assistant('{ "error": "this is an error message" }'),
-    ]
+    ],
   },
 };

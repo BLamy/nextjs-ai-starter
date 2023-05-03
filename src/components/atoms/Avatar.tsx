@@ -1,24 +1,28 @@
-import React from 'react';
+import React from "react";
 
 export type AvatarProps = {
   name: string;
-  size?: 'small' | 'medium' | 'large';
+  size?: "small" | "medium" | "large";
   className?: string;
-}
+};
 
-const Avatar: React.FC<AvatarProps> = ({ name, size = 'medium', className }) => {
+const Avatar: React.FC<AvatarProps> = ({
+  name,
+  size = "medium",
+  className,
+}) => {
   const getInitials = (fullName: string) => {
     return fullName
-      .split(' ')
+      .split(" ")
       .map((word) => word[0])
-      .join('')
+      .join("")
       .toUpperCase();
   };
 
   const sizeClasses = {
-    small: 'w-8 h-8 text-xs',
-    medium: 'w-12 h-12 text-sm',
-    large: 'w-16 h-16 text-base',
+    small: "w-8 h-8 text-xs",
+    medium: "w-12 h-12 text-sm",
+    large: "w-16 h-16 text-base",
   };
 
   return (

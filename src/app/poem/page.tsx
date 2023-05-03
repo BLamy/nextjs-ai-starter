@@ -10,12 +10,5 @@ export default async function Joke() {
   const res = await generateChatCompletion(messages, {
     parseResponse: false,
   });
-  return (
-    <Chat
-      messages={[
-        ...messages,
-        assistant(res as string),
-      ]}
-    />
-  );
+  return <Chat messages={[...messages, assistant(res as string)]} />;
 }

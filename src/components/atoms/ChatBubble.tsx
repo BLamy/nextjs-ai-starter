@@ -10,7 +10,9 @@ export function isJsonString(str: string) {
   return true;
 }
 
-export function bubbleColorForMessage(role: ChatCompletionRequestMessageRoleEnum) {
+export function bubbleColorForMessage(
+  role: ChatCompletionRequestMessageRoleEnum
+) {
   switch (role) {
     case "system":
       return "bg-green-bubble";
@@ -29,13 +31,16 @@ export type ChatBubbleProps = {
   index?: number;
 };
 
-export const ChatBubble: React.FC<ChatBubbleProps> = ({ index = 0, role, content, name }) => {
+export const ChatBubble: React.FC<ChatBubbleProps> = ({
+  index = 0,
+  role,
+  content,
+  name,
+}) => {
   return (
     <div
       key={index}
-      className={`chat ${
-        role === "assistant" ? "chat-start" : "chat-end"
-      }`}
+      className={`chat ${role === "assistant" ? "chat-start" : "chat-end"}`}
     >
       <div className="chat-header capitalize">
         {role} {name && `(${name})`}

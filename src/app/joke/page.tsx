@@ -9,7 +9,7 @@ import TypesafePrompt from "@/lib/TypesafePrompt";
 type Props = {
   searchParams: {
     [key in keyof PromptTypes.JokeGenerator.Input]: string;
-  }
+  };
 };
 
 // This is a map of error types to error handlers
@@ -17,13 +17,28 @@ type Props = {
 // You can return a new set of messages which will be used in the chat as an attempt to fix the error
 // If you return nothing the chat will terminate and the error will be displayed to the user
 const errorHandlers = {
-  "unknown": async (error: string, messages: ChatCompletionRequestMessage[]) => {},
-  "prompt injection attempt detected": async (error: string, messages: ChatCompletionRequestMessage[]) => {},
-  "json parse error": async (error: string, messages: ChatCompletionRequestMessage[]) => {},
-  "zod validation error": async (error: string, messages: ChatCompletionRequestMessage[]) => {
+  unknown: async (
+    error: string,
+    messages: ChatCompletionRequestMessage[]
+  ) => {},
+  "prompt injection attempt detected": async (
+    error: string,
+    messages: ChatCompletionRequestMessage[]
+  ) => {},
+  "json parse error": async (
+    error: string,
+    messages: ChatCompletionRequestMessage[]
+  ) => {},
+  "zod validation error": async (
+    error: string,
+    messages: ChatCompletionRequestMessage[]
+  ) => {
     console.log(error, messages);
   },
-  "output formatting": async (error: string, messages: ChatCompletionRequestMessage[]) => {},
+  "output formatting": async (
+    error: string,
+    messages: ChatCompletionRequestMessage[]
+  ) => {},
 };
 
 // Force dynamic is required to use URLSearchParams otherwise it will
@@ -38,8 +53,13 @@ export default async function Joke({ searchParams }: Props) {
   );
   const params = {
     count: Number.parseInt(searchParams["count"] || "1"),
-    jokeType: PromptTypes.JokeGenerator.jokeTypeSchema.parse(searchParams["jokeType"]),
-  }
-  const { messages } = await prompt.run<PromptTypes.JokeGenerator.Errors>(params, errorHandlers);
+    jokeType: PromptTypes.JokeGenerator.jokeTypeSchema.parse(
+      searchParams["jokeType"]
+    ),
+  };
+  const { messages } = await prompt.run<PromptTypes.JokeGenerator.Errors>(
+    params,
+    errorHandlers
+  );
   return <Chat messages={messages} />;
 }

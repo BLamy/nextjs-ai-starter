@@ -57,25 +57,31 @@ ${game_spotlight.teams[1].name}: ${game_spotlight.teams[1].score.total}`;
 
   const relatedQuestions = relatedQuestionsSchema.safeParse(data);
   if (relatedQuestions.success) {
-    return "### Observation\n" + relatedQuestions.data.related_questions
-      .map(
-        (question) => `${question.title}
+    return (
+      "### Observation\n" +
+      relatedQuestions.data.related_questions
+        .map((question) =>
+          `${question.title}
 ${question.date}
 ${question.question}
 ${question.snippet}
-`.replace(new RegExp("undefined[\S\s]*", "gm"), "")
-      )
-      .join("\n\n\n");
+`.replace(new RegExp("undefined[Ss]*", "gm"), "")
+        )
+        .join("\n\n\n")
+    );
   }
 
   const organicResults = organicResultsSchema.safeParse(data);
   if (organicResults.success) {
-    return "### Observation" + organicResults.data.organic_results
-      .map(
-        (result) => `${result.title}
-${result.snippet}`.replace(new RegExp("undefined[\S\s]*", "gm"), "")
-      )
-      .join("\n\n\n");
+    return (
+      "### Observation" +
+      organicResults.data.organic_results
+        .map((result) =>
+          `${result.title}
+${result.snippet}`.replace(new RegExp("undefined[Ss]*", "gm"), "")
+        )
+        .join("\n\n\n")
+    );
   }
 
   return "ERROR: No results found";

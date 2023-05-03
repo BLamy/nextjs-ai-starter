@@ -3,12 +3,14 @@ import Card from "@/components/atoms/Card";
 const demos = [
   {
     title: "Basic Poem Demo",
-    description: "A static prompt. No arguments. No specific ouput. Just a poem.",
+    description:
+      "A static prompt. No arguments. No specific ouput. Just a poem.",
     href: "/poem",
   },
   {
     title: "Joke Generator Basic Demo",
-    description: "A simple joke generator, can take 2 arguments to customize response.",
+    description:
+      "A simple joke generator, can take 2 arguments to customize response.",
     href: "/joke?jokeType=dad&count=3",
   },
   {

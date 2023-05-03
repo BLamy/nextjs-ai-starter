@@ -1,7 +1,12 @@
 import { z } from "zod";
 import * as Tools from "@/ai/tools";
 import chalk from "chalk";
-import { assistant, generateChatCompletion, system, user } from "@/lib/ChatCompletion";
+import {
+  assistant,
+  generateChatCompletion,
+  system,
+  user,
+} from "@/lib/ChatCompletion";
 import { ChatCompletionRequestMessage } from "openai";
 import { isValidTool } from "@/lib/Utils";
 import { ZodSchema } from "zod";
@@ -9,7 +14,10 @@ import { ZodSchema } from "zod";
 type Result<TOutput, TError> = ({ res: TOutput } | { error: TError }) & {
   messages: ChatCompletionRequestMessage[];
 };
-type ErrorHandler = (error: string, messages: ChatCompletionRequestMessage[]) => Promise<ChatCompletionRequestMessage[] | void>;
+type ErrorHandler = (
+  error: string,
+  messages: ChatCompletionRequestMessage[]
+) => Promise<ChatCompletionRequestMessage[] | void>;
 
 // TODO move this prompt to the prompt file
 const createReflectionPromptForError = (
@@ -37,13 +45,17 @@ export default class TypesafePrompt<
 
   async run<TError extends string>(
     input: z.infer<TInput>,
-    errorHandlers: { [TKey in (TError | "unknown" | "zod validation error")]: ErrorHandler }
-  ): Promise<Result<TOutput, (TError | "unknown" | "zod validation error")>> {
+    errorHandlers: {
+      [TKey in TError | "unknown" | "zod validation error"]: ErrorHandler;
+    }
+  ): Promise<Result<TOutput, TError | "unknown" | "zod validation error">> {
     if (!this.config?.skipInputValidation) {
       const inputValidation = this.inputSchema.safeParse(input);
       if (!inputValidation.success) {
         const error = "zod validation error";
-        const messages: ChatCompletionRequestMessage[] = [system(inputValidation.error.message)];
+        const messages: ChatCompletionRequestMessage[] = [
+          system(inputValidation.error.message),
+        ];
         await errorHandlers[error](error, messages);
         return { error, messages };
       }
@@ -82,7 +94,7 @@ export default class TypesafePrompt<
           });
           console.error(chalk.red(`SYSTEM: ${content}`));
           messages.push(system(content));
-          return { error: 'unknown', messages };
+          return { error: "unknown", messages };
         }
       }
 
@@ -131,6 +143,4 @@ export default class TypesafePrompt<
   }
 }
 
-
-type tests = [
-]
+type tests = [];

@@ -6,8 +6,14 @@ const useSql = (url: string) => {
   const [worker, setWorker] = useState<WorkerHttpvfs>();
 
   useEffect(() => {
-    const workerUrl = new URL("sql.js-httpvfs/dist/sqlite.worker.js", import.meta.url);
-    const wasmUrl = new URL("sql.js-httpvfs/dist/sql-wasm.wasm", import.meta.url);
+    const workerUrl = new URL(
+      "sql.js-httpvfs/dist/sqlite.worker.js",
+      import.meta.url
+    );
+    const wasmUrl = new URL(
+      "sql.js-httpvfs/dist/sql-wasm.wasm",
+      import.meta.url
+    );
     createDbWorker(
       [
         {
@@ -58,11 +64,17 @@ const useSqlQuery = (query: string, url: string = "/example.sqlite3") => {
 };
 
 // WIP
-export const useSemanticSearch = (vectorToLookup: number[], url: string = "/example.sqlite3") => {
+export const useSemanticSearch = (
+  vectorToLookup: number[],
+  url: string = "/example.sqlite3"
+) => {
   const sql = useSql(url);
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const memoizedVector = useMemo(() => vectorToLookup, [JSON.stringify(vectorToLookup)]);
+  const memoizedVector = useMemo(
+    () => vectorToLookup,
+    [JSON.stringify(vectorToLookup)]
+  );
 
   useEffect(() => {
     if (sql) {
@@ -70,7 +82,7 @@ export const useSemanticSearch = (vectorToLookup: number[], url: string = "/exam
         setLoading(true);
         try {
           // Todo update this so the input is not json and instead is a BLOB that we convert into json
-         await sql.worker.evalCode(`
+          await sql.worker.evalCode(`
          function cosineSimilarity(input) {
            const vec1 = JSON.parse(input);
            const vec2 = ${JSON.stringify(vectorToLookup)};
@@ -80,14 +92,14 @@ export const useSemanticSearch = (vectorToLookup: number[], url: string = "/exam
            const similarity = dotProduct / (magnitudeVec1 * magnitudeVec2);
            return similarity;
          }
-         await db.create_function("cosine_similarity", cosineSimilarity)`)
-       
-         // find the most similar vectors
-         const data = await sql.db.query(`
+         await db.create_function("cosine_similarity", cosineSimilarity)`);
+
+          // find the most similar vectors
+          const data = await sql.db.query(`
          select vector, cosine_similarity("vector") as cosine from Vectors
            order by cosine desc limit 3;
-       `)
-       console.log("data", data)
+       `);
+          console.log("data", data);
           setResults(data || []);
         } catch (error) {
           console.error("Error executing query:", error);
