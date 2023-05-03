@@ -2,29 +2,34 @@ name: PR Comment Create
 on:
   issue_comment:
     types: [created]
-  pull_request:
-    types: [opened]
 
 jobs:
   pr_comment_handler:
-    if: github.event.issue.pull_request
+    if: github.event.issue.pull_request && (contains(github.event.comment.body, 'gpt3') || contains(github.event.comment.body, 'gpt-3'))
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          ref: refs/pull/${{ github.event.issue.number }}/head
-          fetch-depth: 0
-
-      - name: Make further updates based on user feedback
+      - name: Checkout branch
         env:
-          API_TOKEN: ${{ secrets.API_TOKEN }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
-          # Your script to parse the user's feedback and call the API with the appropriate instructions
+          TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
+          echo "$TICKET_NUMBER"
+          git clone https://${{ env.GH_API_KEY }}@github.com/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}.git
+          cd nextjs-ai-starter
+          git config --global user.email "brettlamy@gmail.com"
+          git config --global user.name "Brett Lamy"
+          git checkout issue-$TICKET_NUMBER-update
+          git status
 
-      - name: Commit and push the changes
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -am "Update based on user feedback"
-          git push
+      # - name: Make further updates based on user feedback
+      #   env:
+      #     API_TOKEN: ${{ secrets.API_TOKEN }}
+      #   run: |
+      #     # Your script to parse the user's feedback and call the API with the appropriate instructions
+
+      # - name: Commit and push the changes
+      #   run: |
+      #     git config --local user.email "action@github.com"
+      #     git config --local user.name "GitHub Action"
+      #     git commit -am "Update based on user feedback"
+      #     git push
