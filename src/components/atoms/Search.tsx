@@ -1,0 +1,1 @@
+{id:chatcmpl-7BwHoPEHtdSSHToYXDn6LqGYATnaG,object:chat.completion,created:1683080016,model:gpt-3.5-turbo-0301,usage:{prompt_tokens:104,completion_tokens:21,total_tokens:125},choices:[{message:{role:assistant,content:Sure, I can do that! Please provide me with the markdown file containing the component name and description.},finish_reason:stop,index:0}]}
