@@ -41,70 +41,75 @@ jobs:
             }' \
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
-          CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/{/^```[a-zA-Z]*\|^```$/!p}' | awk 'BEGIN {ORS=""; flag=0} {if (flag) print "\\n"; else flag=1; print}')
-          ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/`/\\`/g; s/\$/\\$/g' | awk '{printf "%s\\n", $0}')
-          echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
-          echo -e "ASSISTANT: $RESPONSE_BODY"
-          COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
-          echo "$COMPONENT_NAME"
-          echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
-
-      - name: Create Storybook Follow up Prompt
-        id: followup    
-        run: |
-          echo "ASSISTANT: ${{ steps.create_component_api_call.outputs.response }}"
-          ESCAPED_RESPONSE=$(echo -e "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
-          ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
-          echo "$ASSISTANT_MESSAGE"
-          echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
-          STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from '../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}'"
-          STORYBOOK_FOLLOW_UP_MESSAGE='{ "role": "user", "content":"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}'
-          echo "::set-output name=STORYBOOK_FOLLOW_UP_MESSAGE::$STORYBOOK_FOLLOW_UP_MESSAGE"
-
-      - name: Create Storybook (GPT 3.5 Turbo)
-        id: create_storybook_api_call
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          RESPONSE=$(curl "https://api.openai.com/v1/chat/completions" \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
-            -d '{
-              "model": "gpt-3.5-turbo",
-              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }},${{ steps.followup.outputs.ASSISTANT_MESSAGE }},${{ steps.followup.outputs.STORYBOOK_FOLLOW_UP_MESSAGE }}]
-            }' \
-            --fail)
-          RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
-          echo "$RESPONSE_BODY"
-          echo "----------------------"
-          CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/p' | sed '/^```[a-zA-Z]*\|^```$/d')
+          CODE_BLOCK=$(echo "$RESPONSE_BODY" | awk '/^```/{flag=!flag;next}flag')
           echo "$CODE_BLOCK"
-          echo "----------------------"
-          ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/`/\\`/g; s/\$/\\$/g' | awk '{printf "%s\\n", $0}')
-          echo "$ESCAPED_CODE_BLOCK"
-          echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
-          COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
-          echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
+          echo "---------"
+          echo -e "$CODE_BLOCK"
 
-      # TODO Split Update file in git up into multiple steps
-      - name: Update file in git
-        env:
-          GH_API_KEY: ${{ secrets.GH_API_KEY }}
-        run: |
-          git clone https://${{ env.GH_API_KEY }}@github.com/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}.git
-          cd nextjs-ai-starter
-          git config --global user.email "brettlamy@gmail.com"
-          git config --global user.name "Brett Lamy"
-          git checkout -b issue-${{ github.event.issue.number }}-update
-          echo -e "${{ steps.create_component_api_call.outputs.response }}" > src/components/atoms/${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}.tsx
-          echo -e "${{ steps.create_storybook_api_call.outputs.response }}" > src/components/atoms/__tests__/${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}.stories.tsx
-          npm run prettier
-          git add .
-          git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
-          git push origin issue-${{ github.event.issue.number }}-update
+      #     # CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/{/^```[a-zA-Z]*\|^```$/!p}' | awk 'BEGIN {ORS=""; flag=0} {if (flag) print "\\n"; else flag=1; print}')
+      #     ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/`/\\`/g; s/\$/\\$/g' | awk '{printf "%s\\n", $0}')
+      #     echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
+      #     echo -e "ASSISTANT: $RESPONSE_BODY"
+      #     COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
+      #     echo "$COMPONENT_NAME"
+      #     echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
 
-      - name: Create pull request
-        env:
-          GH_API_KEY: ${{ secrets.GH_API_KEY }}
-        run: |
-          curl https://api.github.com/repos/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}/pulls -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d '{"title":"${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}", "body":"${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}'
+      # - name: Create Storybook Follow up Prompt
+      #   id: followup    
+      #   run: |
+      #     echo "ASSISTANT: ${{ steps.create_component_api_call.outputs.response }}"
+      #     ESCAPED_RESPONSE=$(echo -e "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
+      #     ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
+      #     echo "$ASSISTANT_MESSAGE"
+      #     echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
+      #     STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from '../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}'"
+      #     STORYBOOK_FOLLOW_UP_MESSAGE='{ "role": "user", "content":"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}'
+      #     echo "::set-output name=STORYBOOK_FOLLOW_UP_MESSAGE::$STORYBOOK_FOLLOW_UP_MESSAGE"
+
+      # - name: Create Storybook (GPT 3.5 Turbo)
+      #   id: create_storybook_api_call
+      #   env:
+      #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      #   run: |
+      #     RESPONSE=$(curl "https://api.openai.com/v1/chat/completions" \
+      #       -H "Content-Type: application/json" \
+      #       -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
+      #       -d '{
+      #         "model": "gpt-3.5-turbo",
+      #         "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }},${{ steps.followup.outputs.ASSISTANT_MESSAGE }},${{ steps.followup.outputs.STORYBOOK_FOLLOW_UP_MESSAGE }}]
+      #       }' \
+      #       --fail)
+      #     RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+      #     echo "$RESPONSE_BODY"
+      #     echo "----------------------"
+      #     CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/p' | sed '/^```[a-zA-Z]*\|^```$/d')
+      #     echo "$CODE_BLOCK"
+      #     echo "----------------------"
+      #     ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/`/\\`/g; s/\$/\\$/g' | awk '{printf "%s\\n", $0}')
+      #     echo "$ESCAPED_CODE_BLOCK"
+      #     echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
+      #     COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
+      #     echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
+
+      # # TODO Split Update file in git up into multiple steps
+      # - name: Update file in git
+      #   env:
+      #     GH_API_KEY: ${{ secrets.GH_API_KEY }}
+      #   run: |
+      #     git clone https://${{ env.GH_API_KEY }}@github.com/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}.git
+      #     cd nextjs-ai-starter
+      #     git config --global user.email "brettlamy@gmail.com"
+      #     git config --global user.name "Brett Lamy"
+      #     git checkout -b issue-${{ github.event.issue.number }}-update
+      #     echo -e "${{ steps.create_component_api_call.outputs.response }}" > src/components/atoms/${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}.tsx
+      #     echo -e "${{ steps.create_storybook_api_call.outputs.response }}" > src/components/atoms/__tests__/${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}.stories.tsx
+      #     npm run prettier
+      #     git add .
+      #     git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
+      #     git push origin issue-${{ github.event.issue.number }}-update
+
+      # - name: Create pull request
+      #   env:
+      #     GH_API_KEY: ${{ secrets.GH_API_KEY }}
+      #   run: |
+      #     curl https://api.github.com/repos/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}/pulls -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d '{"title":"${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}", "body":"${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}'
