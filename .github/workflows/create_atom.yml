@@ -43,10 +43,7 @@ jobs:
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
           echo "$RESPONSE_BODY"
           echo "----------------------"
-          ESCAPED_RESPONSE_BODY=$(echo "$RESPONSE_BODY" | awk '{printf "%s\\n", $0}')
-          echo "$ESCAPED_RESPONSE_BODY"
-          echo "----------------------"
-          CODE_BLOCK=$(echo "$ESCAPED_RESPONSE_BODY" | sed -n '/^```tsx$/,/^```$/p' | sed '/^```tsx\|^```$/d')
+          CODE_BLOCK=$(echo "$RESPONSE_BODY" | sed -n '/^```tsx$/,/^```$/p' | sed '/^```tsx\|^```$/d')
           echo "$CODE_BLOCK"
           echo "----------------------"
           ESCAPED_CODE_BLOCK=$(echo "$CODE_BLOCK" | sed 's/"/\\"/g')
