@@ -23,7 +23,7 @@ jobs:
           echo "::set-output name=SYSTEM_MESSAGE::$SYSTEM_MESSAGE"
           
           ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
-          USER_MESSAGE=`{"role":"user","content":"'"$ESCAPED_ISSUE_BODY"'"}'
+          USER_MESSAGE='{"role":"user","content":"'"$ESCAPED_ISSUE_BODY"'"}'
           echo "USER: $ESCAPED_ISSUE_BODY"
           echo "::set-output name=USER_MESSAGE::$USER_MESSAGE"
       
