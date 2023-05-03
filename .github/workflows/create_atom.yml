@@ -65,7 +65,7 @@ jobs:
             -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
             -d '{
               "model": "gpt-3.5-turbo",
-              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }}, $ASSISTANT_MESSAGE, $STORYBOOK_FOLLOW_UP_MESSAGE}]
+              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }}, "'"$ASSISTANT_MESSAGE"'", "'"$STORYBOOK_FOLLOW_UP_MESSAGE"'"}]
             }' \
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
@@ -79,8 +79,6 @@ jobs:
           echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
           echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
-      # TODO Create Storybook
-      # TODO Format file with precommit hooks
 
       # TODO Split Update file in git up into multiple steps
       - name: Update file in git
