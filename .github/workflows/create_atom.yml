@@ -45,10 +45,7 @@ jobs:
           echo "----------------------"
           CODE_BLOCK=$(echo "$RESPONSE_BODY" | sed -n '/^```tsx$/,/^```$/p' | sed '/^```tsx\|^```$/d')
           echo "$CODE_BLOCK"
-          echo "----------------------"
-          ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | awk '{printf "%s\\n", $0}')
-          echo "$ESCAPED_CODE_BLOCK"
-          echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
+          echo "::set-output name=response::$CODE_BLOCK"
 
 # TODO Create Storybook 
 # TODO Format file with precommit hooks
