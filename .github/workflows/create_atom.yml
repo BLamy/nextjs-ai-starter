@@ -8,9 +8,6 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'create-atom')
     runs-on: ubuntu-latest
     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v2
-
       - name: Print issue information
         run: |
           echo "Issue title: ${{ github.event.issue.title }}"
@@ -39,6 +36,7 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
           git clone https://${{ env.GH_API_KEY }}@github.com/blamy/nextjs-ai-starter.git
+          cd nextjs-ai-starter
           git config --global user.email "brettlamy@gmail.com"
           git config --global user.name "Brett Lamy"
           git checkout -b issue-${{ github.event.issue.number }}-update
