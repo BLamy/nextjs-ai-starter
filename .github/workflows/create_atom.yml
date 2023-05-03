@@ -41,7 +41,7 @@ jobs:
           echo "$RESPONSE_BODY"
           CODE_BLOCK=$(echo "$RESPONSE_BODY" | grep -oP '(?<=```tsx)[^`]*(?=```)' | sed 's/^[ \t]*//;s/[ \t]*$//')
           echo "$CODE_BLOCK"
-          echo "::set-output name=response::$CODE_BLOCK"
+          echo "::set-output name=response::$RESPONSE_BODY"
 
       - name: Update file in git
         env:
