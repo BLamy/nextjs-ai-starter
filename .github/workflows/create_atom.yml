@@ -36,7 +36,8 @@ jobs:
               "messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"}]
             }' \
             --fail)
-          RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].text')
+          echo "$RESPONSE"
+          RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].content')
           CODE_BLOCK=$(echo "$RESPONSE_BODY" | grep -oP '(?<=```tsx)[^`]*(?=```)' | sed 's/^[ \t]*//;s/[ \t]*$//')
           echo "::set-output name=response::$CODE_BLOCK"
 
