@@ -14,16 +14,16 @@ jobs:
           ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
           echo "::set-output name=ORG_NAME::$ORG_NAME"
           REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
-          echo "::set-output name=REPO_NAME::$REPO_NAME"
+          echo "REPO_NAME=$REPO_NAME" >> $GITHUB_OUTPUT
           echo "Creating Atom Component for: ${ORG_NAME}/${REPO_NAME}"
           SYSTEM_PROMPT="You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind. Please include a default export & export the Prop as a typescript type. Do not add any additional libraries or dependencies. Your response should only have 1 tsx code block which is the implementation of the component."
           SYSTEM_MESSAGE='{"role":"system","content":"'"$SYSTEM_PROMPT"'"}'
           echo "SYSTEM: $SYSTEM_PROMPT"
-          echo "::set-output name=SYSTEM_MESSAGE::$SYSTEM_MESSAGE"
+          echo "SYSTEM_PROMPT=$SYSTEM_PROMPT" >> $GITHUB_OUTPUT
           ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
           USER_MESSAGE='{"role":"user","content":"'"$ESCAPED_ISSUE_BODY"'"}'
           echo "USER: $ESCAPED_ISSUE_BODY"
-          echo "::set-output name=USER_MESSAGE::$USER_MESSAGE"
+          echo "USER_MESSAGE=$USER_MESSAGE" >> $GITHUB_OUTPUT
 
       - name: Create Component (GPT 3.5 Turbo)
         id: create_component_api_call
@@ -43,11 +43,11 @@ jobs:
           echo "$CODE_BLOCK"
           echo "---------"
           echo -e "$CODE_BLOCK"
-          echo "::set-output name=response::$CODE_BLOCK"
+          echo "response=$CODE_BLOCK" >> $GITHUB_OUTPUT
+          echo "CODE_BLOCK=$CODE_BLOCK" >> $GITHUB_OUTPUT
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
           echo "$COMPONENT_NAME"
-          echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
-
+          echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
       - name: Create Storybook Follow up Prompt
         id: followup    
         run: |
@@ -58,10 +58,10 @@ jobs:
           ESCAPED_RESPONSE=$(echo -e "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g')
           ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
           echo "$ASSISTANT_MESSAGE"
-          echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
+          echo "ASSISTANT_MESSAGE=$ASSISTANT_MESSAGE" >> $GITHUB_OUTPUT
           STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from '../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}'"
           STORYBOOK_FOLLOW_UP_MESSAGE='{ "role": "user", "content":"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}'
-          echo "::set-output name=STORYBOOK_FOLLOW_UP_MESSAGE::$STORYBOOK_FOLLOW_UP_MESSAGE"
+          echo "STORYBOOK_FOLLOW_UP_MESSAGE=$STORYBOOK_FOLLOW_UP_MESSAGE" >> $GITHUB_OUTPUT
 
       # - name: Create Storybook (GPT 3.5 Turbo)
       #   id: create_storybook_api_call
