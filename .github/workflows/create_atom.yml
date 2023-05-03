@@ -56,7 +56,7 @@ jobs:
           ESCAPED_RESPONSE=$(echo "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\\\`/g' | sed "s/'/\\'/g" | sed 's/"/\\"/g')
           ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
           echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
-          STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from \"../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}\""
+          STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from \\"../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}\\""
           STORYBOOK_FOLLOW_UP_MESSAGE='{ "role": "user", "content":"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}'
           echo "::set-output name=STORYBOOK_FOLLOW_UP_MESSAGE::$STORYBOOK_FOLLOW_UP_MESSAGE"
 
