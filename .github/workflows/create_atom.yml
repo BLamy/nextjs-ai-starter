@@ -18,7 +18,7 @@ jobs:
           echo "Issue body: ${{ github.event.issue.body }}"
           echo "Issue author: ${{ github.event.issue.user.login }}"
       
-      - name: Call API and update file
+      - name: Call GPT 3.5 Turbo
         id: api_call
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -34,8 +34,7 @@ jobs:
             --fail)
           echo "::set-output name=response::$RESPONSE"
 
-
-      - name: Update file with API response.
+      - name: Update file in git
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
@@ -55,4 +54,7 @@ jobs:
         run: |
           PR_URL="https://api.github.com/repos/blamy/nextjs-ai-starter/pulls"
           PR_PAYLOAD=$(echo -n '{"title":"${{ github.event.issue.title }}", "body":"${{ github.event.issue.body }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}' | base64)
+          echo "$PR_URL"
+          echo "$PR_PAYLOAD"
+          echo 'curl -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d "$PR_PAYLOAD" "$PR_URL"'
           curl -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d "$PR_PAYLOAD" "$PR_URL"
