@@ -65,6 +65,7 @@ jobs:
           git config --global user.name "Brett Lamy"
           git checkout -b issue-${{ github.event.issue.number }}-update
           echo -e "${{ steps.api_call.outputs.response }}" > src/components/atoms/${{ steps.api_call.outputs.COMPONENT_NAME }}.tsx
+          pnpm run prettier
           git add .
           git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           git push origin issue-${{ github.event.issue.number }}-update
