@@ -48,18 +48,17 @@ jobs:
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
           echo "$COMPONENT_NAME"
           echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
+
+      - name: Create Storybook Follow up Prompt
+        id: followup    
+        run: |
           echo "ASSISTANT: ${{ steps.create_component_api_call.outputs.response }}"
           ESCAPED_RESPONSE=$(echo "${{ steps.create_component_api_call.outputs.response }}" | sed 's/`/\\`/g')
           ASSISTANT_MESSAGE='{"role":"assistant","content":"'"$ESCAPED_RESPONSE"'"}'
           echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
-
-          echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
           STORYBOOK_FOLLOW_UP_PROMPT="Can you create a storybook for the above component using import ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}, { ${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}Props } from \"../${{ steps.create_component_api_call.outputs.COMPONENT_NAME }}\""
           STORYBOOK_FOLLOW_UP_MESSAGE='{ "role": "user", "content":"'"$STORYBOOK_FOLLOW_UP_PROMPT"'"}'
           echo "::set-output name=STORYBOOK_FOLLOW_UP_MESSAGE::$STORYBOOK_FOLLOW_UP_MESSAGE"
-
-
-      
 
       - name: Create Storybook (GPT 3.5 Turbo)
         id: create_storybook_api_call
@@ -71,7 +70,7 @@ jobs:
             -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
             -d '{
               "model": "gpt-3.5-turbo",
-              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }},${{ steps.create_component_api_call.outputs.ASSISTANT_MESSAGE }},${{ steps.create_component_api_call.outputs.STORYBOOK_FOLLOW_UP_MESSAGE }}]
+              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }},${{ steps.followup.outputs.ASSISTANT_MESSAGE }},${{ steps.followup.outputs.STORYBOOK_FOLLOW_UP_MESSAGE }}]
             }' \
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
