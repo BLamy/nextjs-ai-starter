@@ -41,11 +41,11 @@ jobs:
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
           CODE_BLOCK=$(echo "$RESPONSE_BODY" | awk '/^```/{flag=!flag;next}flag'| awk '{printf "%s\\n", $0}')
-          echo "$CODE_BLOCK"
+          ESCAPED_CODE_BLOCK=$(printf '%q' "$CODE_BLOCK")
+          echo "$ESCAPED_CODE_BLOCK"
           echo "---------"
-          echo -e "$CODE_BLOCK"
-          echo -e "response=$CODE_BLOCK" >> $GITHUB_OUTPUT
-          echo -e "CODE_BLOCK=$CODE_BLOCK" >> $GITHUB_OUTPUT
+          echo -e "$ESCAPED_CODE_BLOCK"
+          echo "response=$ESCAPED_CODE_BLOCK" >> $GITHUB_OUTPUT
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
           echo "$COMPONENT_NAME"
           echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
