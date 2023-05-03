@@ -48,6 +48,7 @@ jobs:
           echo "ASSISTANT: $ASSISTANT_MESSAGE"
           echo "::set-output name=ASSISTANT_MESSAGE::$ASSISTANT_MESSAGE"
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
+          echo "$COMPONENT_NAME"
           echo "::set-output name=COMPONENT_NAME::$COMPONENT_NAME"
 
       - name: Create Storybook (GPT 3.5 Turbo)
