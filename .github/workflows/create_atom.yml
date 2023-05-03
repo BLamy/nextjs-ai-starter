@@ -36,14 +36,11 @@ jobs:
               "messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"}]
             }' \
             --fail)
-          echo "$RESPONSE"
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
+          echo "$RESPONSE_BODY"
           ESCAPED_RESPONSE_BODY=$(echo "$RESPONSE_BODY" | awk '{printf "%s\\n", $0}')
-
-          echo "$ESCAPED_RESPONSE_BODY"
           CODE_BLOCK=$(echo "$ESCAPED_RESPONSE_BODY" | grep -oP '(?<=```tsx)[^`]*(?=```)' | sed 's/^[ \t]*//;s/[ \t]*$//')
           ESCAPED_CODE_BLOCK=$(echo "$CODE_BLOCK" | sed 's/"/\\"/g')
-          echo "$ESCAPED_CODE_BLOCK"
           echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
 
       - name: Update file in git
@@ -55,7 +52,7 @@ jobs:
           git config --global user.email "brettlamy@gmail.com"
           git config --global user.name "Brett Lamy"
           git checkout -b issue-${{ github.event.issue.number }}-update
-          echo "${{ steps.api_call.outputs.response }}" > src/components/atoms/Search.tsx
+          echo -e "${{ steps.api_call.outputs.response }}" > src/components/atoms/Search.tsx
           git add .
           git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           git push origin issue-${{ github.event.issue.number }}-update
