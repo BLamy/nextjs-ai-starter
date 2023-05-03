@@ -63,7 +63,7 @@ jobs:
             -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
             -d '{
               "model": "gpt-3.5-turbo",
-              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }}, ${{ steps.create_component_api_call.outputs.ASSISTANT_MESSAGE }}, $USER_MESSAGE]
+              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }}, ${{ steps.create_component_api_call.outputs.ASSISTANT_MESSAGE }}, { role: "user", content: "create a storybook for the above component"}]
             }' \
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
