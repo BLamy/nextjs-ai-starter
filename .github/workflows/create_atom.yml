@@ -38,10 +38,12 @@ jobs:
             --fail)
           echo "$RESPONSE"
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
-          echo "$RESPONSE_BODY"
-          CODE_BLOCK=$(echo "$RESPONSE_BODY" | grep -oP '(?<=```tsx)[^`]*(?=```)' | sed 's/^[ \t]*//;s/[ \t]*$//')
+          ESCAPED_RESPONSE_BODY=$(echo "$RESPONSE_BODY" | awk '{printf "%s\\n", $0}')
+
+          echo "$ESCAPED_RESPONSE_BODY"
+          CODE_BLOCK=$(echo "$ESCAPED_RESPONSE_BODY" | grep -oP '(?<=```tsx)[^`]*(?=```)' | sed 's/^[ \t]*//;s/[ \t]*$//')
           echo "$CODE_BLOCK"
-          echo "::set-output name=response::$RESPONSE_BODY"
+          echo "::set-output name=response::$ESCAPED_RESPONSE_BODY"
 
       - name: Update file in git
         env:
