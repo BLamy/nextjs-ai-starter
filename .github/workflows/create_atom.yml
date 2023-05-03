@@ -17,7 +17,7 @@ jobs:
           echo "::set-output name=REPO_NAME::$REPO_NAME"
           echo "Creating Atom Component for: ${ORG_NAME}/${REPO_NAME}"
           
-          SYSTEM_PROMPT="You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind. Please include a default export & export the Prop types. Do not add any additional libraries or dependencies. Your response should only have 1 tsx code block which is the implementation of the component."
+          SYSTEM_PROMPT="You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind. Please include a default export & export the Prop as a typescript type. Do not add any additional libraries or dependencies. Your response should only have 1 tsx code block which is the implementation of the component."
           SYSTEM_MESSAGE='{"role":"system","content":"'"$SYSTEM_PROMPT"'"}'
           echo "SYSTEM: $SYSTEM_PROMPT"
           echo "::set-output name=SYSTEM_MESSAGE::$SYSTEM_MESSAGE"
@@ -46,7 +46,7 @@ jobs:
           CODE_BLOCK=$(echo -e "$RESPONSE_BODY" | sed -n '/^```[a-zA-Z]*$/,/^```$/p' | sed '/^```[a-zA-Z]*\|^```$/d')
           echo "$CODE_BLOCK"
           echo "----------------------"
-          ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/'"'"'/\\'"'"'/g; s/`/\\`/g' | awk '{printf "%s\\n", $0}')
+          ESCAPED_CODE_BLOCK=$(echo -e "$CODE_BLOCK" | sed 's/"/\\"/g; s/'"'"'/\\'"'"'/g; s/`/\\`/g; s/\$\({[^}]*}\)/\\\1/g' | awk '{printf "%s\\n", $0}')
           echo "$ESCAPED_CODE_BLOCK"
           echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
           COMPONENT_NAME=$(echo -e "$RESPONSE_BODY" | sed -n 's/.*export default \([a-zA-Z_$][0-9a-zA-Z_$]*\).*/\1/p')
