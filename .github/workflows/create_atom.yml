@@ -36,7 +36,7 @@ jobs:
 
       - name: Update file with API response.
         env:
-          token: ${{ secrets.GH_API_KEY }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
           git clone https://${{ env.GH_API_KEY }}@github.com/blamy/nextjs-ai-starter.git
           git config --global user.email "brettlamy@gmail.com"
