@@ -11,17 +11,21 @@ jobs:
       - name: Print issue information
         id: setup
         run: |
-          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
-          echo "::set-output name=ESCAPED_ISSUE_BODY::$ESCAPED_ISSUE_BODY"
           ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
           echo "::set-output name=ORG_NAME::$ORG_NAME"
           REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
           echo "::set-output name=REPO_NAME::$REPO_NAME"
-          echo "Organization: ${ORG_NAME}"
-          echo "Repository: ${REPO_NAME}"
-          echo "Issue title: ${{ github.event.issue.title }}"
-          echo "Issue body: ${{ github.event.issue.body }}"
-          echo "Issue author: ${{ github.event.issue.user.login }}"
+          echo "Creating Atom Component for: ${ORG_NAME}/${REPO_NAME}"
+          
+          SYSTEM_PROMPT="You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind. Please include a default export. Do not add any additional libraries or dependencies. Your response should only have 1 tsx code block which is the implementation of the component."
+          SYSTEM_MESSAGE=`{"role":"system","content":"$SYSTEM_PROMPT"}`
+          echo "SYSTEM: $SYSTEM_PROMPT"
+          echo "::set-output name=SYSTEM_MESSAGE::$SYSTEM_MESSAGE"
+          
+          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
+          USER_MESSAGE=`{"role":"user","content":"$ESCAPED_ISSUE_BODY"}`
+          echo "USER: $ESCAPED_ISSUE_BODY"
+          echo "::set-output name=USER_MESSAGE::$USER_MESSAGE"
       
       - name: Call GPT 3.5 Turbo
         id: api_call
@@ -33,7 +37,7 @@ jobs:
             -H "Authorization: Bearer ${{ env.OPENAI_API_KEY }}" \
             -d '{
               "model": "gpt-3.5-turbo",
-              "messages": [{"role":"system","content":"You are a react component generator I will feed you a markdown file that contains a component name and description your job is to create a nextjs component using typescript and tailwind do not add any additional libraries or dependencies. Remember if you import useState, useEffect, or useRef you must prefix the file with \"use client\". Your response should only have 1 tsx code block which is the implementation of the component. Do not wrap the code in anything."},{"role": "user", "content": "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"}]
+              "messages": [${{ steps.setup.outputs.SYSTEM_MESSAGE }}, ${{ steps.setup.outputs.USER_MESSAGE }}]
             }' \
             --fail)
           RESPONSE_BODY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content')
@@ -48,6 +52,9 @@ jobs:
           ESCAPED_CODE_BLOCK=$(echo "$CODE_BLOCK" | sed 's/"/\\"/g')
           echo "$ESCAPED_CODE_BLOCK"
           echo "::set-output name=response::$ESCAPED_CODE_BLOCK"
+
+# TODO Create Storybook 
+# TODO Format file with precommit hooks
 
       - name: Update file in git
         env:
