@@ -52,7 +52,8 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     const STORYBOOK_FOLLOW_UP_PROMPT=dedent`
       Can you create a storybook for the above component by importing it using:  
       Your response should only have 1 tsx code block which is the implementation of the story.
-      Do not include the import for ${componentName}.
+      Start with:
+      import ${componentName}, { ${componentName}Props } from "../${componentName}"
     `;
     const STORYBOOK_FOLLOW_UP_MESSAGE = { role: "user", content: STORYBOOK_FOLLOW_UP_PROMPT };
     console.log(chalk.gray(`USER: ${STORYBOOK_FOLLOW_UP_PROMPT}`));
@@ -62,9 +63,7 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
       messages: [SYSTEM_MESSAGE, USER_MESSAGE, ASSISTANT_MESSAGE, STORYBOOK_FOLLOW_UP_MESSAGE],
     });
 
-    const storybookCodeBlock = dedent`import ${componentName}, { ${componentName}Props } from "../${componentName}" 
-    ${generateStorybookResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1]}`;
-    
+    const storybookCodeBlock = generateStorybookResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
     console.log(storybookCodeBlock);
     console.log(chalk.blue(`ASSISTANT: ${storybookCodeBlock}`));
     await fs.writeFile(`./src/components/atoms/__tests__/${componentName}.stories.tsx`, storybookCodeBlock, 'utf8');
