@@ -4,7 +4,7 @@ on:
     types: [opened]
 
 jobs:
-  issue_handler:
+  update_comment:
     if: contains(github.event.issue.labels.*.name, 'update-component')
     runs-on: ubuntu-latest
     steps:

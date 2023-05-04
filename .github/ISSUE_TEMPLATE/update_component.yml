@@ -1,7 +1,18 @@
-name: Create Atom Component
+name: Update Component
 description: Fill out this form to create a new component
-labels: ["create-atom"]
+labels: ["update-component"]
 body:
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component Name
+      description: Name of the component being updated
+      options: 
+      - Avatar
+      - Button
+      - ChatBubble
+    validations:
+      required: true
   - type: input
     id: desc
     attributes:

@@ -5,7 +5,7 @@ on:
 
 jobs:
   issue_handler:
-    if: contains(github.event.issue.labels.*.name, 'create-atom')
+    if: contains(github.event.issue.labels.*.name, 'create-component')
     runs-on: ubuntu-latest
     steps:
       - name: Set Env Vars
