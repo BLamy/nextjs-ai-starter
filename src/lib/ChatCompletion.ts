@@ -57,14 +57,14 @@ export async function generateChatCompletion<
 // ChatMessage creation helpers
 // Ideally these would have been tagged template literals but typescript support for it is not great
 // https://github.com/microsoft/TypeScript/issues/33304
-export function system<const T extends string>(content: T) {
+export function system<const T extends string>(content: TemplateStringsArray | T) {
   return { role: "system" as const, content };
 }
 
-export function user<const T extends string>(content: T) {
+export function user<const T extends string>(content: TemplateStringsArray | T) {
   return { role: "user" as const, content };
 }
 
-export function assistant<const T extends string>(content: T) {
+export function assistant<const T extends string>(content: TemplateStringsArray | T) {
   return { role: "assistant" as const, content };
 }
