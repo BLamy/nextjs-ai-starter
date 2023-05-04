@@ -2,7 +2,7 @@ import React from "react";
 
 export type AvatarProps = {
   name: string;
-  size?: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large" | "xlarge"; // added "xlarge" option
   className?: string;
 };
 
@@ -23,11 +23,13 @@ const Avatar: React.FC<AvatarProps> = ({
     small: "w-8 h-8 text-xs",
     medium: "w-12 h-12 text-sm",
     large: "w-16 h-16 text-base",
+    xlarge: "w-20 h-20 text-2xl", // added "xlarge" size class
   };
 
   return (
     <div
-      className={`bg-blue-500 text-white font-bold flex items-center justify-center rounded-full ${sizeClasses[size]} ${className}`}
+      className={`bg-blue-500 text-white font-bold flex items-center justify-center rounded-full 
+        ${sizeClasses[size]} ${className}`}
     >
       {getInitials(name)}
     </div>
