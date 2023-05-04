@@ -10,11 +10,10 @@ const envSchema = z.object({
   GH_REPO_NAME: z.string(),
   GH_ORG_NAME: z.string(),
   OPENAI_API_KEY: z.string(),
-  ISSUE_NUMBER: z.string(),
   ISSUE_BODY: z.string(),
 });
 
-async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPENAI_API_KEY, ISSUE_NUMBER }) {
+async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPENAI_API_KEY, LLM_MODEL }) {
     const openai = new OpenAIApi(new Configuration({ apiKey: OPENAI_API_KEY }));
   
     console.log(
@@ -32,7 +31,7 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     const USER_MESSAGE = { role: "user", content: ISSUE_BODY };
     
     const generateComponentResponse = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
+        model: LLM_MODEL,
         messages: [SYSTEM_MESSAGE, USER_MESSAGE],
     });
 
