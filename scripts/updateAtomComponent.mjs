@@ -11,14 +11,14 @@ const envSchema = z.object({
   GH_ORG_NAME: z.string(),
   OPENAI_API_KEY: z.string(),
   COMPONENT_NAME: z.string(),
-  PR_COMMENT: z.string(),
+  UPDATE_INSTRUCTIONS: z.string(),
 });
 
-async function updateAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, COMPONENT_NAME, OPENAI_API_KEY, LLM_MODEL, PR_COMMENT }) {
+async function updateAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, COMPONENT_NAME, OPENAI_API_KEY, LLM_MODEL, UPDATE_INSTRUCTIONS }) {
     const openai = new OpenAIApi(new Configuration({ apiKey: OPENAI_API_KEY }));
   
     console.log(
-      `Updating ${COMPONENT_NAME} for ${GH_ORG_NAME}/${GH_REPO_NAME} with description ${PR_COMMENT}`
+      `Updating ${COMPONENT_NAME} for ${GH_ORG_NAME}/${GH_REPO_NAME} with description ${UPDATE_INSTRUCTIONS}`
     );
     const SYSTEM_PROMPT = dedent`
       You are a react component generator I will feed you a react component and a markdown file that contains update instructions.
@@ -32,7 +32,7 @@ async function updateAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, COMPONENT_NAME, 
     console.log(chalk.green(`SYSTEM: ${SYSTEM_PROMPT}`));
     const SYSTEM_MESSAGE = { role: "system", content: SYSTEM_PROMPT };
     const componentFileContents = await fs.readFile(`./src/components/atoms/${COMPONENT_NAME}.tsx`, 'utf8');
-    const userMessageContent = "```tsx\n"+componentFileContents+'\n```\n```md\n'+PR_COMMENT+"\n```";
+    const userMessageContent = "```tsx\n"+componentFileContents+'\n```\n```md\n'+UPDATE_INSTRUCTIONS+"\n```";
 
     console.log(chalk.gray(`USER: ${userMessageContent}`));
     const USER_MESSAGE = { role: "user", content: userMessageContent };

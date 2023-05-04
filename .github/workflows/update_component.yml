@@ -8,6 +8,22 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'update-component')
     runs-on: ubuntu-latest
     steps:
+      - name: Set Env Vars
+        id: setup
+        run: |
+          LLM_MODEL="gpt-3.5-turbo"
+          echo "LLM_MODEL=$LLM_MODEL" >> $GITHUB_OUTPUT
+          GH_ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
+          echo "GH_ORG_NAME=$GH_ORG_NAME" >> $GITHUB_OUTPUT
+          GH_REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
+          echo "GH_REPO_NAME=$GH_REPO_NAME" >> $GITHUB_OUTPUT
+          COMPONENT_NAME=$(echo "${{ github.event.issue.body }}" | sed -n -e '/^### Component Name$/,/^### Update Instructions$/{//!p}')
+          echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
+          UPDATE_INSTRUCTIONS=$(echo "${{ github.event.issue.body }}" | sed -n -e '/^### Update Instructions$/,/^###/{//!p}')
+          echo "UPDATE_INSTRUCTIONS=$UPDATE_INSTRUCTIONS" >> $GITHUB_OUTPU
+          TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
+          echo "TICKET_NUMBER=$TICKET_NUMBER" >> $GITHUB_OUTPUT
+
       - name: Checkout branch
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
@@ -49,8 +65,8 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
           GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
-          GH_API_KEY: ${{ secrets.GH_API_KEY }},
-          COMPONENT_NAME: ${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}
+          COMPONENT_NAME: ${{ steps.setup.outputs.COMPONENT_NAME }}
+          UPDATE_INSTRUCTIONS: ${{ steps.setup.outputs.UPDATE_INSTRUCTIONS }}
           LLM_MODEL: ${{ steps.setup.outputs.LLM_MODEL }}
         run: |
           node scripts/updateAtomComponent.mjs
