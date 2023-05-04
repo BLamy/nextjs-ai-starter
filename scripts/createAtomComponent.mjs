@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { Configuration, OpenAIApi } from 'openai';
 import { promises as fs } from 'fs';
 import { runCommand, generateRandomHash } from './utils.mjs';
-import { dedent } from 'ts-dedent';
+import { dedent } from 'dedent';
 import chalk from 'chalk';
 
 const envSchema = z.object({
