@@ -1,22 +1,23 @@
 jsx;
+// Import the required dependencies
 import React from "react";
-import { Meta } from "@storybook/react";
-import { BasicInput, BasicInputProps } from "../components/BasicInput";
+import { Meta, Story } from "@storybook/react";
 
+// Import the component and its props
+import InputBox, { InputBoxProps } from "../InputBox";
+
+// Define the metadata for the storybook
 export default {
-  title: "Components/BasicInput",
-  component: BasicInput,
-  argTypes: {
-    placeholder: {
-      control: { type: "text" },
-    },
-  },
+  title: "Components/InputBox",
+  component: InputBox,
 } as Meta;
 
-const Template: Story<BasicInputProps> = (args) => <BasicInput {...args} />;
+// Define a Template for the story
+const Template: Story<InputBoxProps> = (args) => <InputBox {...args} />;
 
-export const Default = Template.bind({});
-Default.args = {};
+// Define stories with different arguments
+export const Basic = Template.bind({});
+Basic.args = {};
 
 export const WithPlaceholder = Template.bind({});
 WithPlaceholder.args = {

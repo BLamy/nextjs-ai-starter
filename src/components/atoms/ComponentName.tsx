@@ -1,18 +1,17 @@
 import React from "react";
 
-interface BasicInputProps {
+type InputBoxProps = {
   placeholder?: string;
-}
+};
 
-const BasicInput: React.FC<BasicInputProps> = ({ placeholder }) => {
+const InputBox = ({ placeholder = "" }: InputBoxProps) => {
   return (
     <input
-      type="text"
+      className="border-red-500 border-2 p-2 rounded-md w-40"
       placeholder={placeholder}
-      className="border border-red-500 p-2 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
     />
   );
 };
 
-export default BasicInput;
-export type BasicInputProps = { placeholder?: string };
+export default InputBox;
+export type { InputBoxProps };
