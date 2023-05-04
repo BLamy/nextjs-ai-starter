@@ -10,13 +10,20 @@ const envSchema = z.object({
   GH_REPO_NAME: z.string(),
   GH_ORG_NAME: z.string(),
   OPENAI_API_KEY: z.string(),
-  COMPONENT_NAME: z.string(),
-  UPDATE_INSTRUCTIONS: z.string(),
+  ISSUE_BODY: z.string(),
 });
 
-async function updateAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, COMPONENT_NAME, OPENAI_API_KEY, LLM_MODEL, UPDATE_INSTRUCTIONS }) {
+async function updateAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPENAI_API_KEY, LLM_MODEL }) {
     const openai = new OpenAIApi(new Configuration({ apiKey: OPENAI_API_KEY }));
+
+    const componentNameMatch = ISSUE_BODY.match(/### Component Name\s*\n\s*([\w\s]+)\s*\n/);
+    const COMPONENT_NAME = componentNameMatch ? componentNameMatch[1].trim() : null;
   
+    const updateInstructionsMatch = ISSUE_BODY.match(/### Update Instructions\s*\n\s*([\s\S]+)/);
+    const UPDATE_INSTRUCTIONS = updateInstructionsMatch
+      ? updateInstructionsMatch[1].trim()
+      : null;
+
     console.log(
       `Updating ${COMPONENT_NAME} for ${GH_ORG_NAME}/${GH_REPO_NAME} with description ${UPDATE_INSTRUCTIONS}`
     );

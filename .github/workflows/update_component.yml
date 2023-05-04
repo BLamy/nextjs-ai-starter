@@ -59,14 +59,13 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install
-      - name: Create Component (GPT 3.5 Turbo)
-        id: create_component
+      - name: Update Component (GPT 3.5 Turbo)
+        id: update_component
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
           GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
-          COMPONENT_NAME: ${{ steps.setup.outputs.COMPONENT_NAME }}
-          UPDATE_INSTRUCTIONS: ${{ steps.setup.outputs.UPDATE_INSTRUCTIONS }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
           LLM_MODEL: ${{ steps.setup.outputs.LLM_MODEL }}
         run: |
           node scripts/updateAtomComponent.mjs
