@@ -28,13 +28,14 @@ jobs:
       - name: Checkout branch
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
+          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
+          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
+          TICKET_NUMBER: ${{ steps.setup.outputs.TICKET_NUMBER }}
         run: |
-          TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
-          echo "$TICKET_NUMBER"
-          git clone https://${{ env.GH_API_KEY }}@github.com/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}.git .
+          git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git .
           git config --global user.email "brettlamy@gmail.com"
           git config --global user.name "Brett Lamy"
-          git checkout issue-$TICKET_NUMBER-update
+          git checkout issue-${{ env.TICKET_NUMBER }}-update
           git status
       - name: Install Node.js
         uses: actions/setup-node@v2
