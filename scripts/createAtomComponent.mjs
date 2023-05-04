@@ -6,7 +6,7 @@ import dedent from 'dedent';
 import chalk from 'chalk';
 
 const envSchema = z.object({
-  LLM_MODEL: z.enum([z.literal("gpt-3.5-turbo"), z.literal("gpt-4")]),
+  LLM_MODEL: z.union([z.literal("gpt-3.5-turbo"), z.literal("gpt-4")]),
   GH_REPO_NAME: z.string(),
   GH_ORG_NAME: z.string(),
   OPENAI_API_KEY: z.string(),
