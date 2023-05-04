@@ -52,7 +52,7 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     const STORYBOOK_FOLLOW_UP_PROMPT=dedent`
       Can you create a storybook for the above component by importing it using:  
       Your response should only have 1 tsx code block which is the implementation of the story.
-      Start with:
+      This story will be 1 directory deeper than the above componnt so Start with:
       import ${componentName}, { ${componentName}Props } from "../${componentName}"
     `;
     const STORYBOOK_FOLLOW_UP_MESSAGE = { role: "user", content: STORYBOOK_FOLLOW_UP_PROMPT };
