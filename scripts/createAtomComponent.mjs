@@ -21,9 +21,12 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     );
     const SYSTEM_PROMPT = dedent`
       You are a react component generator I will feed you a markdown file that contains a component description.
-      Your job is to create a nextjs component using tailwind and typescript, export all types.
+      Your job is to create a nextjs component using tailwind and typescript.
       Please include a default export. Do not add any additional libraries or dependencies. 
       Your response should only have 1 tsx code block which is the implementation of the component.
+      Remember to export the component & types like this:
+      export default ComponentName
+      export { ComponentNameProps }
     `;
     console.log(chalk.green(`SYSTEM: ${SYSTEM_PROMPT}`));
     const SYSTEM_MESSAGE = { role: "system", content: SYSTEM_PROMPT };
