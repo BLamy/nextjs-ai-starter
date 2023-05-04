@@ -1,19 +1,22 @@
-jsx;
 import React from "react";
-import { Meta, Story } from "@storybook/react";
-import InputBox, { InputBoxProps } from "../components/InputBox";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+import InputBox, { InputBoxProps } from "../InputBox";
 
 export default {
   title: "Example/InputBox",
   component: InputBox,
   argTypes: {
-    placeholder: { control: "text" },
+    placeholder: {
+      control: "text",
+    },
   },
-} as Meta;
+} as ComponentMeta<typeof InputBox>;
 
-const Template: Story<InputBoxProps> = (args) => <InputBox {...args} />;
+const Template: ComponentStory<typeof InputBox> = (args) => (
+  <InputBox {...args} />
+);
 
 export const Default = Template.bind({});
 Default.args = {
-  placeholder: "Enter text here",
+  placeholder: "Enter your name",
 };

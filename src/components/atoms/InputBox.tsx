@@ -7,9 +7,9 @@ type InputBoxProps = {
 const InputBox: React.FC<InputBoxProps> = ({ placeholder }) => {
   return (
     <input
+      className="border-red-500 border-2 p-2 rounded-lg focus:outline-none focus:border-red-700"
       type="text"
       placeholder={placeholder}
-      className="border border-red-500 px-4 py-2 rounded-md"
     />
   );
 };
