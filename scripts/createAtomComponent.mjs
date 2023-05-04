@@ -29,8 +29,8 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     `;
     console.log(chalk.green(`SYSTEM: ${SYSTEM_PROMPT}`));
     const SYSTEM_MESSAGE = { role: "system", content: SYSTEM_PROMPT };
-    console.log(chalk.gray(`USER: ${desc}`));
-    const USER_MESSAGE = { role: "user", content: desc };
+    console.log(chalk.gray(`USER: ${ISSUE_BODY}`));
+    const USER_MESSAGE = { role: "user", content: ISSUE_BODY };
     
     const generateComponentResponse = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
