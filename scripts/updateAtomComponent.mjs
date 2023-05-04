@@ -49,7 +49,12 @@ async function updateAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
         messages: [SYSTEM_MESSAGE, USER_MESSAGE],
     });
 
-    const codeBlock = generateComponentResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
+    let codeBlock = generateComponentResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
+    if (codeBlock.includes(`export { ${componentName}Props }`) && !codeBlock.includes(`export type ${componentName}Props`)) {
+      // If the props are exported twice then remove the second export
+      codeBlock = codeBlock.replace(`export { ${componentName}Props }`, "");
+    }
+
     console.log(chalk.blue(`ASSISTANT: ${codeBlock}`));
     const ASSISTANT_MESSAGE = { role: "assistant", content: codeBlock };
     await fs.writeFile(`./src/components/atoms/${COMPONENT_NAME}.tsx`, codeBlock, 'utf8');
