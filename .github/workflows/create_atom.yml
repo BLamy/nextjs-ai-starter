@@ -8,6 +8,26 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'create-atom')
     runs-on: ubuntu-latest
     steps:
+      - name: Set Env Vars
+        id: setup
+        run: |
+          GH_ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
+          echo "::set-output name=GH_ORG_NAME::$GH_ORG_NAME"
+          GH_REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
+          echo "GH_REPO_NAME=$GH_REPO_NAME" >> $GITHUB_OUTPUT
+          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
+          echo "ESCAPED_ISSUE_BODY=$ESCAPED_ISSUE_BODY" >> $GITHUB_OUTPUT
+      - name: Clone Repo
+        id: clone_repo
+        env:
+          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
+          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }},
+        run: |
+          git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git
+          cd nextjs-ai-starter
+          git config --global user.email "brettlamy@gmail.com"
+          git config --global user.name "Brett Lamy"
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
@@ -32,15 +52,6 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install
-      - name: Set Env Vars
-        id: setup
-        run: |
-          GH_ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
-          echo "::set-output name=GH_ORG_NAME::$GH_ORG_NAME"
-          GH_REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
-          echo "GH_REPO_NAME=$GH_REPO_NAME" >> $GITHUB_OUTPUT
-          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
-          echo "ESCAPED_ISSUE_BODY=$ESCAPED_ISSUE_BODY" >> $GITHUB_OUTPUT
       - name: Create Component (GPT 3.5 Turbo)
         id: create_component
         env:
@@ -49,8 +60,4 @@ jobs:
           GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }},
         run: |
-          git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git
-          cd nextjs-ai-starter
-          git config --global user.email "brettlamy@gmail.com"
-          git config --global user.name "Brett Lamy"
           node scripts/createAtomComponent.mjs ${{ github.event.issue.number }} "${{ github.event.issue.title }}" "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"
