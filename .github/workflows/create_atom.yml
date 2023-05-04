@@ -60,3 +60,16 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }},
         run: |
           node scripts/createAtomComponent.mjs ${{ github.event.issue.number }} "${{ github.event.issue.title }}" "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"
+      - name: Update file in git
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+        run: |
+          npx prettier --write src/components/atoms
+          git add src/components/atoms
+          git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
+          git push origin issue-${{ github.event.issue.number }}-update
+      - name: Create pull request
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+        run: |
+          curl https://api.github.com/repos/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}/pulls -H "Authorization: token ${{ env.GH_API_KEY }}" -H "Accept: application/vnd.github+json" -X POST -d '{"title":"${{ github.event.issue.title }}", "body":"${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}'
