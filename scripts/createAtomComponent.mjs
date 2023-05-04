@@ -12,7 +12,7 @@ const envSchema = z.object({
 });
 const argsSchema = z.object({
   desc: z.string(),
-  issueNumber: z.number(),
+  issueNumber: z.string(),
   issueTitle: z.string(),
 });
 
