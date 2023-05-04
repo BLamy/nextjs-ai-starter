@@ -22,11 +22,13 @@ jobs:
         env:
           GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
           GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
-          GH_API_KEY: ${{ secrets.GH_API_KEY }},
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
           git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git .
           git config --global user.email "brettlamy@gmail.com"
           git config --global user.name "Brett Lamy"
+          git checkout -b issue-${{ github.event.issue.number }}-update
+
       - name: Install Node.js
         uses: actions/setup-node@v2
         with:
@@ -64,6 +66,8 @@ jobs:
           node scripts/createAtomComponent.mjs
       - name: Update file in git
         env:
+          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
+          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
           npx prettier --write src/components/atoms
