@@ -1,6 +1,5 @@
 import React from "react";
 import { Story, Meta } from "@storybook/react/types-6-0";
-
 import Avatar, { AvatarProps } from "../Avatar";
 
 export default {
@@ -17,7 +16,7 @@ export default {
       defaultValue: "medium",
       control: {
         type: "select",
-        options: ["small", "medium", "large"],
+        options: ["extra-small", "small", "medium", "large", "extra-large"],
       },
     },
     className: {
@@ -51,4 +50,16 @@ export const WithClassName = Template.bind({});
 WithClassName.args = {
   name: "Brett Lamy",
   className: "bg-red-500",
+};
+
+export const ExtraSmall = Template.bind({});
+ExtraSmall.args = {
+  name: "Brett Lamy",
+  size: "extra-small",
+};
+
+export const ExtraLarge = Template.bind({});
+ExtraLarge.args = {
+  name: "Brett Lamy",
+  size: "extra-large",
 };

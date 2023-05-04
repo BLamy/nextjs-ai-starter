@@ -2,7 +2,7 @@ import React from "react";
 
 export type AvatarProps = {
   name: string;
-  size?: "small" | "medium" | "large";
+  size?: "extra-small" | "small" | "medium" | "large" | "extra-large";
   className?: string;
 };
 
@@ -20,9 +20,11 @@ const Avatar: React.FC<AvatarProps> = ({
   };
 
   const sizeClasses = {
+    "extra-small": "w-6 h-6 text-xxs",
     small: "w-8 h-8 text-xs",
     medium: "w-12 h-12 text-sm",
     large: "w-16 h-16 text-base",
+    "extra-large": "w-20 h-20 text-lg",
   };
 
   return (
