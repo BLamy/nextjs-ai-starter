@@ -2,7 +2,7 @@ import React from "react";
 
 export type AvatarProps = {
   name: string;
-  size?: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large" | "extraLarge";
   className?: string;
 };
 
@@ -23,6 +23,7 @@ const Avatar: React.FC<AvatarProps> = ({
     small: "w-8 h-8 text-xs",
     medium: "w-12 h-12 text-sm",
     large: "w-16 h-16 text-base",
+    extraLarge: "w-20 h-20 text-lg",
   };
 
   return (
@@ -35,3 +36,4 @@ const Avatar: React.FC<AvatarProps> = ({
 };
 
 export default Avatar;
+export { AvatarProps };
