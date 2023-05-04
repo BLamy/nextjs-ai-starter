@@ -14,7 +14,6 @@ const envSchema = z.object({
 });
 
 async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPENAI_API_KEY, ISSUE_NUMBER }) {
-    await runCommand(`git checkout -b issue-${ISSUE_NUMBER}-update`);
     const openai = new OpenAIApi(new Configuration({ apiKey: OPENAI_API_KEY }));
   
     console.log(
