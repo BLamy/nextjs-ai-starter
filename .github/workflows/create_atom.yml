@@ -58,8 +58,10 @@ jobs:
           GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
           GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
           GH_API_KEY: ${{ secrets.GH_API_KEY }},
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_BODY: ${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}
         run: |
-          node scripts/createAtomComponent.mjs ${{ github.event.issue.number }} "${{ github.event.issue.title }}" "${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}"
+          node scripts/createAtomComponent.mjs
       - name: Update file in git
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}

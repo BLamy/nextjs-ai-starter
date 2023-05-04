@@ -9,21 +9,16 @@ const envSchema = z.object({
   GH_REPO_NAME: z.string(),
   GH_ORG_NAME: z.string(),
   OPENAI_API_KEY: z.string(),
-  GH_API_KEY: z.string(),
-});
-const argsSchema = z.object({
-  desc: z.string(),
-  issueNumber: z.string(),
-  issueTitle: z.string(),
+  ISSUE_NUMBER: z.string(),
+  ISSUE_BODY: z.string(),
 });
 
-async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, desc, OPENAI_API_KEY, GH_API_KEY, issueNumber, issueTitle }) {
-  issueNumber=generateRandomHash() // TODO remove this
-    await runCommand(`git checkout -b issue-${issueNumber}-update`);
+async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPENAI_API_KEY, ISSUE_NUMBER }) {
+    await runCommand(`git checkout -b issue-${ISSUE_NUMBER}-update`);
     const openai = new OpenAIApi(new Configuration({ apiKey: OPENAI_API_KEY }));
   
     console.log(
-      `Creating component for ${GH_ORG_NAME}/${GH_REPO_NAME} with description ${desc}`
+      `Creating component for ${GH_ORG_NAME}/${GH_REPO_NAME} with description ${ISSUE_BODY}`
     );
     const SYSTEM_PROMPT = dedent`
       You are a react component generator I will feed you a markdown file that contains a component description.
@@ -68,15 +63,6 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, desc, OPENAI_API
     console.log(chalk.blue(`ASSISTANT: ${storybookCodeBlock}`));
     await fs.writeFile(`./src/components/atoms/__tests__/${componentName}.stories.tsx`, storybookCodeBlock, 'utf8');
     await runCommand(`npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`);
-
-    await runCommand(`git add ./src`);
-    await runCommand(`git commit -m "${issueTitle} closes #${issueNumber}"`);
 }
 
-const env = envSchema.parse(process.env);
-const args = argsSchema.parse({
-  issueNumber: process.argv[1],
-  issueTitle: process.argv[2],
-  desc: process.argv[3],
-});
-createAtomComponent({ ...env, ...args });
+createAtomComponent(envSchema.parse(process.env));
