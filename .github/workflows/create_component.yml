@@ -1,4 +1,4 @@
-name: Create Atom Component
+name: Create Component
 on:
   issues:
     types: [opened]

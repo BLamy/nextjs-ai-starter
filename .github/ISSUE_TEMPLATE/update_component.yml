@@ -16,7 +16,7 @@ body:
   - type: input
     id: desc
     attributes:
-      label: Component Description
+      label: Update Instructions
       description: Enter the description of the component you are trying to make
       placeholder: ex. an input box with large font and a search icon on the left hand side rounded corners
     validations:
