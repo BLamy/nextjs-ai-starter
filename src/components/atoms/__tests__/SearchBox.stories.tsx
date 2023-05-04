@@ -1,0 +1,12 @@
+import React from "react";
+import { Story, Meta } from "@storybook/react";
+import SearchBox, { SearchBoxProps } from "../SearchBox";
+
+export default {
+  title: "Components/SearchBox",
+  component: SearchBox,
+} as Meta;
+
+const Template: Story<SearchBoxProps> = (args) => <SearchBox {...args} />;
+
+export const Default = Template.bind({});
