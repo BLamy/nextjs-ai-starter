@@ -22,15 +22,13 @@ jobs:
           echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
           UPDATE_INSTRUCTIONS=$(echo "$ESCAPED_ISSUE_BODY" | sed -n -e '/^### Update Instructions$/,/^###/{//!p}')
           echo "UPDATE_INSTRUCTIONS=$UPDATE_INSTRUCTIONS" >> $GITHUB_OUTPUT
-          TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
-          echo "TICKET_NUMBER=$TICKET_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Checkout branch
         env:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
           GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
           GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
-          TICKET_NUMBER: ${{ steps.setup.outputs.TICKET_NUMBER }}
+          TICKET_NUMBER: ${{ github.event.issue.number }}
         run: |
           git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git .
           git config --global user.email "brettlamy@gmail.com"
