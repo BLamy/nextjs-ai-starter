@@ -20,7 +20,7 @@ jobs:
           COMPONENT_NAME=$(echo "${{ github.event.issue.body }}" | sed -n -e '/^### Component Name$/,/^### Update Instructions$/{//!p}')
           echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
           UPDATE_INSTRUCTIONS=$(echo "${{ github.event.issue.body }}" | sed -n -e '/^### Update Instructions$/,/^###/{//!p}')
-          echo "UPDATE_INSTRUCTIONS=$UPDATE_INSTRUCTIONS" >> $GITHUB_OUTPU
+          echo "UPDATE_INSTRUCTIONS=$UPDATE_INSTRUCTIONS" >> $GITHUB_OUTPUT
           TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
           echo "TICKET_NUMBER=$TICKET_NUMBER" >> $GITHUB_OUTPUT
 
