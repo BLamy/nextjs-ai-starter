@@ -39,10 +39,14 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     });
 
     // grab the text inside the code block
-    const codeBlock = generateComponentResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
     let componentName = generateComponentResponse.data.choices[0].message?.content.match(/export\s+default\s+([\w]+)/s)?.[1];
-    if (componentName === "function") {
+    if (componentName === "function") { // if the component name is function then we need to grab the next word
       componentName = generateComponentResponse.data.choices[0].message?.content.match(/export\s+default\s+function\s+([\w]+)/s)?.[1];
+    }
+    let codeBlock = generateComponentResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
+    if (codeBlock.includes(`export { ${componentName}Props }`) && !codeBlock.includes(`export type ${componentName}Props`)) {
+      // If the props are exported twice then remove the second export
+      codeBlock = codeBlock.replace(`export { ${componentName}Props }`, "");
     }
     console.log(chalk.blue(`ASSISTANT: ${codeBlock}`));
     await fs.writeFile(`./src/components/atoms/${componentName}.tsx`, codeBlock, 'utf8');
