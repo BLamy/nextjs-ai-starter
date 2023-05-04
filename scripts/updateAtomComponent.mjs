@@ -50,9 +50,9 @@ async function updateAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     });
 
     let codeBlock = generateComponentResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
-    if (codeBlock.includes(`export { ${componentName}Props }`) && !codeBlock.includes(`export type ${componentName}Props`)) {
+    if (codeBlock.includes(`export { ${COMPONENT_NAME}Props }`) && !codeBlock.includes(`export type ${COMPONENT_NAME}Props`)) {
       // If the props are exported twice then remove the second export
-      codeBlock = codeBlock.replace(`export { ${componentName}Props }`, "");
+      codeBlock = codeBlock.replace(`export { ${COMPONENT_NAME}Props }`, "");
     }
 
     console.log(chalk.blue(`ASSISTANT: ${codeBlock}`));
