@@ -6,6 +6,7 @@ import dedent from 'dedent';
 import chalk from 'chalk';
 
 const envSchema = z.object({
+  LLM_MODEL: z.enum([z.literal("gpt-3.5-turbo"), z.literal("gpt-4")]),
   GH_REPO_NAME: z.string(),
   GH_ORG_NAME: z.string(),
   OPENAI_API_KEY: z.string(),
@@ -21,9 +22,8 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     );
     const SYSTEM_PROMPT = dedent`
       You are a react component generator I will feed you a markdown file that contains a component description.
-      Your job is to create a nextjs component using typescript and tailwind. 
-      Please include a default export & export the Prop as a typescript type named ComponentNameProps. 
-      Do not add any additional libraries or dependencies. 
+      Your job is to create a nextjs component using tailwind and typescript, export all types.
+      Please include a default export. Do not add any additional libraries or dependencies. 
       Your response should only have 1 tsx code block which is the implementation of the component.
     `;
     console.log(chalk.green(`SYSTEM: ${SYSTEM_PROMPT}`));
@@ -53,7 +53,7 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
     console.log(chalk.gray(`USER: ${STORYBOOK_FOLLOW_UP_PROMPT}`));
 
     const generateStorybookResponse = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
+      model: LLM_MODEL,
       messages: [SYSTEM_MESSAGE, USER_MESSAGE, ASSISTANT_MESSAGE, STORYBOOK_FOLLOW_UP_MESSAGE],
     });
 

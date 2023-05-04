@@ -11,8 +11,10 @@ jobs:
       - name: Set Env Vars
         id: setup
         run: |
+          LLM_MODEL="gpt-3.5-turbo"
+          echo "LLM_MODEL=$LLM_MODEL" >> $GITHUB_OUTPUT
           GH_ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
-          echo "::set-output name=GH_ORG_NAME::$GH_ORG_NAME"
+          echo "GH_ORG_NAME=$GH_ORG_NAME" >> $GITHUB_OUTPUT
           GH_REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
           echo "GH_REPO_NAME=$GH_REPO_NAME" >> $GITHUB_OUTPUT
           ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
@@ -62,6 +64,7 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }},
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_BODY: ${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}
+          LLM_MODEL: ${{ steps.setup.outputs.LLM_MODEL }}
         run: |
           node scripts/createAtomComponent.mjs
       - name: Update file in git
