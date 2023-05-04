@@ -1,0 +1,66 @@
+name: Update Component
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  issue_handler:
+    if: contains(github.event.issue.labels.*.name, 'update-component')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        env:
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+        run: |
+          TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
+          echo "$TICKET_NUMBER"
+          git clone https://${{ env.GH_API_KEY }}@github.com/${{ steps.setup.outputs.ORG_NAME }}/${{ steps.setup.outputs.REPO_NAME }}.git .
+          git config --global user.email "brettlamy@gmail.com"
+          git config --global user.name "Brett Lamy"
+          git checkout issue-$TICKET_NUMBER-update
+          git status
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Setup pnpm cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install
+      - name: Create Component (GPT 3.5 Turbo)
+        id: create_component
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
+          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }},
+          COMPONENT_NAME: ${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}
+          LLM_MODEL: ${{ steps.setup.outputs.LLM_MODEL }}
+        run: |
+          node scripts/updateAtomComponent.mjs
+      - name: Update file in git
+        env:
+          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
+          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
+          GH_API_KEY: ${{ secrets.GH_API_KEY }}
+        run: |
+          npx prettier --write src/components/atoms
+          git add src/components/atoms
+          git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
+          git push origin issue-${{ github.event.issue.number }}-update
