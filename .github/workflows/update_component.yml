@@ -33,7 +33,7 @@ jobs:
           git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git .
           git config --global user.email "brettlamy@gmail.com"
           git config --global user.name "Brett Lamy"
-          git checkout issue-${{ env.TICKET_NUMBER }}-update
+          git checkout -b issue-${{ env.TICKET_NUMBER }}-update
           git status
       - name: Install Node.js
         uses: actions/setup-node@v2
