@@ -35,6 +35,7 @@
     "react-element-to-jsx-string": "14.3.4",
     "require-from-string": "^2.0.2",
     "sql.js-httpvfs": "^0.8.12",
+    "ts-dedent": "^2.2.0",
     "typescript": "5.1.0-dev.20230311",
     "window.ai": "^0.1.1",
     "zod": "^3.21.4"
