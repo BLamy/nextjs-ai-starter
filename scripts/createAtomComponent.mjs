@@ -44,7 +44,7 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
       componentName = generateComponentResponse.data.choices[0].message?.content.match(/export\s+default\s+function\s+([\w]+)/s)?.[1];
     }
     let codeBlock = generateComponentResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
-    if (codeBlock.includes(`export { ${componentName}Props }`) && !codeBlock.includes(`export type ${componentName}Props`)) {
+    if (codeBlock.includes(`export { ${componentName}Props }`) && codeBlock.includes(`export type ${componentName}Props`)) {
       // If the props are exported twice then remove the second export
       codeBlock = codeBlock.replace(`export { ${componentName}Props }`, "");
     }
