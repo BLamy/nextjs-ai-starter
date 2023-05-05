@@ -27,9 +27,6 @@ jobs:
           GH_API_KEY: ${{ secrets.GH_API_KEY }}
         run: |
           git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git .
-          git config --global user.email "brettlamy@gmail.com"
-          git config --global user.name "Brett Lamy"
-          git checkout -b issue-${{ github.event.issue.number }}-update
 
       - name: Install Node.js
         uses: actions/setup-node@v2
@@ -86,7 +83,7 @@ jobs:
           title: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           commit-message: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           body: ${{ github.event.issue.body }}
-          branch: "issue-${{ github.event.issue.number }}-update"
+          base: "issue-${{ github.event.issue.number }}-update"
           add-paths: |
             src/components/atoms
 
