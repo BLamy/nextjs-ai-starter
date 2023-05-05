@@ -19,14 +19,18 @@ jobs:
           echo "GH_REPO_NAME=$GH_REPO_NAME" >> $GITHUB_OUTPUT
           ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
           echo "ESCAPED_ISSUE_BODY=$ESCAPED_ISSUE_BODY" >> $GITHUB_OUTPUT
-      - name: Clone Repo
-        id: clone_repo
-        env:
-          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
-          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
-          GH_API_KEY: ${{ secrets.GH_API_KEY }}
-        run: |
-          git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git .
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # - name: Clone Repo
+      #   id: clone_repo
+      #   env:
+      #     GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
+      #     GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
+      #     GH_API_KEY: ${{ secrets.GH_API_KEY }}
+      #   run: |
+      #     git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git .
 
       - name: Install Node.js
         uses: actions/setup-node@v2
