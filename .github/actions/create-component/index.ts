@@ -36,8 +36,6 @@ function assistant(
 const tsxCodeBlockRegex = /```(?:tsx)?(.*)```/s;
 const envSchema = z.object({
   LLM_MODEL: z.union([z.literal("gpt-3.5-turbo"), z.literal("gpt-4")]),
-  GH_REPO_NAME: z.string(),
-  GH_ORG_NAME: z.string(),
   OPENAI_API_KEY: z.string(),
   ISSUE_BODY: z.string(),
 });
@@ -60,13 +58,10 @@ export function runCommand(command) {
 }
 
 async function updateAtomComponent(input) {
-  const { GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPENAI_API_KEY, LLM_MODEL } =
+  const { ISSUE_BODY, OPENAI_API_KEY, LLM_MODEL } =
     envSchema.parse(input);
   const openai = new OpenAIApi(new Configuration({ apiKey: OPENAI_API_KEY }));
 
-  console.log(
-    `Creating component for ${GH_ORG_NAME}/${GH_REPO_NAME} with description ${ISSUE_BODY}`
-  );
   const systemPrompt = system`
       You are a react component generator I will feed you a markdown file that contains a component description.
       Your job is to create a nextjs component using tailwind and typescript.
