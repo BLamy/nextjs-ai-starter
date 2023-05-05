@@ -23,7 +23,7 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
       You are a react component generator I will feed you a markdown file that contains a component description.
       Your job is to create a nextjs component using tailwind and typescript.
       Please include a default export. Do not add any additional libraries or dependencies. 
-      Your response should only have 1 tsx code block which is the implementation of the component.
+      Your response should only have 1 tsx code block which is the implementation of the component. No other text should be included.
       Remember to export the component & types like this:
       export default ComponentName
       export { ComponentNameProps }
@@ -61,7 +61,7 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
       
       import ${componentName}, { ${componentName}Props } from "../${componentName}"
       
-      Your response should only have 1 tsx code block which is the implementation of the story.
+      Your response should only have 1 tsx code block which is the implementation of the story. No other text should be included.
     `;
     const STORYBOOK_FOLLOW_UP_MESSAGE = { role: "user", content: STORYBOOK_FOLLOW_UP_PROMPT };
     console.log(chalk.gray(`USER: ${STORYBOOK_FOLLOW_UP_PROMPT}`));
@@ -70,7 +70,9 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
       model: LLM_MODEL,
       messages: [SYSTEM_MESSAGE, USER_MESSAGE, ASSISTANT_MESSAGE, STORYBOOK_FOLLOW_UP_MESSAGE],
     });
-
+    console.log('------------')
+    console.log(generateStorybookResponse.data.choices[0].message?.content);
+    console.log('------------')
     const storybookCodeBlock = generateStorybookResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
     console.log(storybookCodeBlock);
     console.log(chalk.blue(`ASSISTANT: ${storybookCodeBlock}`));
