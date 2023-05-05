@@ -1,0 +1,21 @@
+name: "Create Component"
+description: "A GitHub action to create a React component using OpenAI API"
+inputs:
+  LLM_MODEL:
+    description: "Language model to use (either gpt-3.5-turbo or gpt-4)"
+    required: true
+  GH_REPO_NAME:
+    description: "GitHub repository name"
+    required: true
+  GH_ORG_NAME:
+    description: "GitHub organization name"
+    required: true
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+  ISSUE_BODY:
+    description: "Issue body containing component update instructions"
+    required: true
+runs:
+  using: "node12"
+  main: "dist/index.js"
