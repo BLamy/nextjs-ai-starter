@@ -107,4 +107,5 @@ function createReactComponent(input) {
         yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`);
     });
 }
+console.log("create react component");
 exports.default = createReactComponent;
