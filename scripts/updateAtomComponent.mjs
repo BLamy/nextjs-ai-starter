@@ -1,9 +1,26 @@
 import { z } from 'zod';
 import { Configuration, OpenAIApi } from 'openai';
 import { promises as fs } from 'fs';
-import { runCommand } from './utils.mjs';
-import dedent from 'dedent';
 import chalk from 'chalk';
+import dedent from 'dedent';
+import { exec } from 'child_process';
+
+export function runCommand(command) {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(new Error(`Error executing command: ${error.message}`));
+        return;
+      }
+
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+      }
+
+      resolve(stdout);
+    });
+  });
+}
 
 const envSchema = z.object({
   LLM_MODEL: z.union([z.literal("gpt-3.5-turbo"), z.literal("gpt-4")]),
