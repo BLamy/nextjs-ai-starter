@@ -1,66 +1,43 @@
-import { z } from "zod";
-import { Configuration, OpenAIApi } from "openai";
 import { promises as fs } from "fs";
-import chalk from "chalk";
-import { exec } from "child_process";
+import {
+  colorLog,
+  system,
+  user,
+  assistant,
+  tsxCodeBlockRegex,
+  exportDefaultRegex,
+  exportDefaultFunctionRegex,
+  runCommand
+} from "./util";
 
-import dedent from "ts-dedent";
-function system(
-  literals: TemplateStringsArray | string,
-  ...placeholders: unknown[]
-) {
-  return {
-    role: "system" as const,
-    content: dedent(literals, ...placeholders),
-  };
-}
-function user(
-  literals: TemplateStringsArray | string,
-  ...placeholders: unknown[]
-) {
-  return {
-    role: "user" as const,
-    content: dedent(literals, ...placeholders),
-  };
-}
-function assistant(
-  literals: TemplateStringsArray | string,
-  ...placeholders: unknown[]
-) {
-  return {
-    role: "assistant" as const,
-    content: dedent(literals, ...placeholders),
-  };
-}
+type Input = {
+  LLM_MODEL: "gpt-3.5-turbo" | "gpt-4";
+  OPENAI_API_KEY: string;
+  ISSUE_BODY: string;
+};
 
-const tsxCodeBlockRegex = /```(?:tsx)?(.*)```/s;
-const envSchema = z.object({
-  LLM_MODEL: z.union([z.literal("gpt-3.5-turbo"), z.literal("gpt-4")]),
-  OPENAI_API_KEY: z.string(),
-  ISSUE_BODY: z.string(),
-});
-
-export function runCommand(command) {
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        reject(new Error(`Error executing command: ${error.message}`));
-        return;
-      }
-
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-      }
-
-      resolve(stdout);
-    });
-  });
+// Doing this instead of zod so we don't have to install dependencies
+function isValidInput(input: {[key: string]: any }): input is Input {
+  if (
+    typeof input.LLM_MODEL !== "string" ||
+    !["gpt-3.5-turbo", "gpt-4"].includes(input.LLM_MODEL)
+  ) {
+    return false;
+  }
+  if (typeof input.OPENAI_API_KEY !== "string" || input.OPENAI_API_KEY === "") {
+    return false;
+  }
+  if (typeof input.ISSUE_BODY !== "string" || input.ISSUE_BODY === "") {
+    return false;
+  }
+  return true;
 }
 
-async function updateAtomComponent(input) {
-  const { ISSUE_BODY, OPENAI_API_KEY, LLM_MODEL } =
-    envSchema.parse(input);
-  const openai = new OpenAIApi(new Configuration({ apiKey: OPENAI_API_KEY }));
+async function createReactComponent(input: {[key: string]: any }) {
+  if (!isValidInput(input)) {
+    throw new Error("Invalid input");
+  }
+  const { ISSUE_BODY, OPENAI_API_KEY, LLM_MODEL } = input;
 
   const systemPrompt = system`
       You are a react component generator I will feed you a markdown file that contains a component description.
@@ -71,23 +48,30 @@ async function updateAtomComponent(input) {
       export default ComponentName
       export { ComponentNameProps }
     `;
+  colorLog("green", `SYSTEM: ${systemPrompt.content}`);
+  colorLog("gray", `USER: ${ISSUE_BODY}`);
 
-  console.log(chalk.green(`SYSTEM: ${systemPrompt.content}`));
-  console.log(chalk.gray(`USER: ${ISSUE_BODY}`));
+  const generateComponentResponse = await fetch(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`, // Replace API_KEY with your actual OpenAI API key
+      },
+      body: JSON.stringify({
+        model: LLM_MODEL,
+        messages: [systemPrompt, user(ISSUE_BODY)],
+      }),
+    }
+  );
 
-  const generateComponentResponse = await openai.createChatCompletion({
-    model: LLM_MODEL,
-    messages: [systemPrompt, user(ISSUE_BODY)],
-  });
-
-  const rawComponentResponse =
-    generateComponentResponse.data.choices[0].message?.content;
+  const rawComponentResponse = (await generateComponentResponse.json()).data
+    .choices[0].message?.content;
   // grab the text inside the code block
-  const exportDefaultRegex = /export\s+default\s+([\w]+)/s;
   let componentName = rawComponentResponse.match(exportDefaultRegex)?.[1];
   if (componentName === "function") {
     // if the component name is function then we need to grab the next word
-    const exportDefaultFunctionRegex = /export\s+default\s+function\s+([\w]+)/s;
     componentName = rawComponentResponse.match(exportDefaultFunctionRegex)?.[1];
   }
   let codeBlock = rawComponentResponse.match(tsxCodeBlockRegex)?.[1];
@@ -98,7 +82,7 @@ async function updateAtomComponent(input) {
     // If the props are exported twice then remove the second export
     codeBlock = codeBlock.replace(`export { ${componentName}Props }`, "");
   }
-  console.log(chalk.blue(`ASSISTANT: ${codeBlock}`));
+  colorLog("blue", `ASSISTANT: ${codeBlock}`);
   await fs.writeFile(
     `./src/components/atoms/${componentName}.tsx`,
     codeBlock,
@@ -111,29 +95,39 @@ async function updateAtomComponent(input) {
   //----------------------------------------------
   // Create the storybook
   //----------------------------------------------
-  const STORYBOOK_FOLLOW_UP_PROMPT = dedent`
+  const storybookFollowUpPrompt = user(`
       Can you create a storybook for the above component by importing it using:  
       Because the story will be 1 directory deeper than the component so start with:
       
       import ${componentName}, { ${componentName}Props } from "../${componentName}"
       
       Your response should only have 1 tsx code block which is the implementation of the story. No other text should be included.
-    `;
-  console.log(chalk.gray(`USER: ${STORYBOOK_FOLLOW_UP_PROMPT}`));
+    `);
+  colorLog("gray", `USER: ${storybookFollowUpPrompt.content}`);
+  const generateStorybookResponse = await fetch(
+    "https://api.openai.com/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${OPENAI_API_KEY}`, // Replace API_KEY with your actual OpenAI API key
+      },
+      body: JSON.stringify({
+        model: LLM_MODEL,
+        messages: [
+          systemPrompt,
+          user(ISSUE_BODY),
+          assistant(codeBlock),
+          storybookFollowUpPrompt,
+        ],
+      }),
+    }
+  );
 
-  const generateStorybookResponse = await openai.createChatCompletion({
-    model: LLM_MODEL,
-    messages: [
-      systemPrompt,
-      user(ISSUE_BODY),
-      assistant(codeBlock),
-      user(STORYBOOK_FOLLOW_UP_PROMPT),
-    ],
-  });
-  const rawStoryBookResponse =
-    generateStorybookResponse.data.choices[0].message?.content;
+  const rawStoryBookResponse = (await generateStorybookResponse.json()).data
+    .choices[0].message?.content;
   const storybookCodeBlock = rawStoryBookResponse.match(tsxCodeBlockRegex)?.[1];
-  console.log(chalk.blue(`ASSISTANT: ${storybookCodeBlock}`));
+  colorLog("blue", `ASSISTANT: ${storybookCodeBlock}`);
   await fs.writeFile(
     `./src/components/atoms/__tests__/${componentName}.stories.tsx`,
     storybookCodeBlock,
@@ -144,4 +138,4 @@ async function updateAtomComponent(input) {
   );
 }
 
-export default updateAtomComponent;
+export default createReactComponent;
