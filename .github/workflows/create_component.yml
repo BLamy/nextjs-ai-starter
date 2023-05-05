@@ -69,7 +69,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_API_KEY }}
           labels: "create-component"
           title: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           commit-message: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
