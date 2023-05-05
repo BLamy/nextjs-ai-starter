@@ -13,7 +13,7 @@ function dedent(templ, ...values) {
     const indentLengths = strings.reduce((arr, str) => {
         const matches = str.match(/\n([\t ]+|(?!\s).)/g);
         if (matches) {
-            return arr.concat(matches.map((match) => match.match(/[\t ]/g)?.length ?? 0));
+            return arr.concat(matches.map((match) => { var _a, _b; return (_b = (_a = match.match(/[\t ]/g)) === null || _a === void 0 ? void 0 : _a.length) !== null && _b !== void 0 ? _b : 0; }));
         }
         return arr;
     }, []);
