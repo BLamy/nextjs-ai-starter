@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import SquareButton, { SquareButtonProps } from "../components/SquareButton";
+import SquareButton, { SquareButtonProps } from "../SquareButton";
 
 export default {
   title: "Example/SquareButton",
