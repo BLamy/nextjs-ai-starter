@@ -37,7 +37,9 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
         model: LLM_MODEL,
         messages: [SYSTEM_MESSAGE, USER_MESSAGE],
     });
-
+    console.log('------------')
+    console.log(generateComponentResponse.data.choices[0].message?.content);
+    console.log('------------')
     // grab the text inside the code block
     let componentName = generateComponentResponse.data.choices[0].message?.content.match(/export\s+default\s+([\w]+)/s)?.[1];
     if (componentName === "function") { // if the component name is function then we need to grab the next word
