@@ -13,15 +13,15 @@ const fs_1 = require("fs");
 const util_1 = require("./util");
 // Doing this instead of zod so we don't have to install dependencies
 function isValidInput(input) {
-    if (typeof input.LLM_MODEL !== "string" ||
-        !["gpt-3.5-turbo", "gpt-4"].includes(input.LLM_MODEL)) {
-        throw new Error(`Invalid LLM_MODEL: ${input.LLM_MODEL}`);
+    if (typeof input.INPUT_LLM_MODEL !== "string" ||
+        !["gpt-3.5-turbo", "gpt-4"].includes(input.INPUT_LLM_MODEL)) {
+        throw new Error(`Invalid INPUT_LLM_MODEL: ${input.INPUT_LLM_MODEL}`);
     }
-    if (typeof input.OPENAI_API_KEY !== "string" || input.OPENAI_API_KEY === "") {
-        throw new Error(`Invalid OPENAI_API_KEY: ${input.OPENAI_API_KEY}`);
+    if (typeof input.INPUT_OPENAI_API_KEY !== "string" || input.INPUT_OPENAI_API_KEY === "") {
+        throw new Error(`Invalid INPUT_OPENAI_API_KEY: ${input.INPUT_OPENAI_API_KEY}`);
     }
-    if (typeof input.ISSUE_BODY !== "string" || input.ISSUE_BODY === "") {
-        throw new Error(`Invalid ISSUE_BODY: ${input.ISSUE_BODY}`);
+    if (typeof input.INPUT_ISSUE_BODY !== "string" || input.INPUT_ISSUE_BODY === "") {
+        throw new Error(`Invalid INPUT_ISSUE_BODY: ${input.INPUT_ISSUE_BODY}`);
     }
     return true;
 }
@@ -31,7 +31,7 @@ function createReactComponent(input) {
         if (!isValidInput(input)) {
             throw new Error("Invalid input");
         }
-        const { ISSUE_BODY, OPENAI_API_KEY, LLM_MODEL } = input;
+        const { INPUT_ISSUE_BODY, INPUT_OPENAI_API_KEY, INPUT_LLM_MODEL } = input;
         const systemPrompt = (0, util_1.system) `
       You are a react component generator I will feed you a markdown file that contains a component description.
       Your job is to create a nextjs component using tailwind and typescript.
@@ -42,16 +42,16 @@ function createReactComponent(input) {
       export { ComponentNameProps }
     `;
         (0, util_1.colorLog)("green", `SYSTEM: ${systemPrompt.content}`);
-        (0, util_1.colorLog)("gray", `USER: ${ISSUE_BODY}`);
+        (0, util_1.colorLog)("gray", `USER: ${INPUT_ISSUE_BODY}`);
         const generateComponentResponse = yield fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${OPENAI_API_KEY}`, // Replace API_KEY with your actual OpenAI API key
+                Authorization: `Bearer ${INPUT_OPENAI_API_KEY}`, // Replace API_KEY with your actual OpenAI API key
             },
             body: JSON.stringify({
-                model: LLM_MODEL,
-                messages: [systemPrompt, (0, util_1.user)(ISSUE_BODY)],
+                model: INPUT_LLM_MODEL,
+                messages: [systemPrompt, (0, util_1.user)(INPUT_ISSUE_BODY)],
             }),
         });
         const rawComponentResponse = (_a = (yield generateComponentResponse.json()).data
@@ -87,13 +87,13 @@ function createReactComponent(input) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${OPENAI_API_KEY}`, // Replace API_KEY with your actual OpenAI API key
+                Authorization: `Bearer ${INPUT_OPENAI_API_KEY}`, // Replace API_KEY with your actual OpenAI API key
             },
             body: JSON.stringify({
-                model: LLM_MODEL,
+                model: INPUT_LLM_MODEL,
                 messages: [
                     systemPrompt,
-                    (0, util_1.user)(ISSUE_BODY),
+                    (0, util_1.user)(INPUT_ISSUE_BODY),
                     (0, util_1.assistant)(codeBlock),
                     storybookFollowUpPrompt,
                 ],
