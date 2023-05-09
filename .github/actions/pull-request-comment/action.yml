@@ -1,0 +1,15 @@
+name: "Update Component"
+description: "A GitHub action to update a React component using OpenAI API"
+inputs:
+  LLM_MODEL:
+    description: "Language model to use (either gpt-3.5-turbo or gpt-4)"
+    required: true
+  OPENAI_API_KEY:
+    description: "OpenAI API key"
+    required: true
+  ISSUE_BODY:
+    description: "Issue body containing component update instructions"
+    required: true
+runs:
+  using: "node12"
+  main: "dist/index.js"
