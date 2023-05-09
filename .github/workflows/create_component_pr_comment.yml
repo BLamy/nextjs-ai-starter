@@ -11,6 +11,7 @@ jobs:
       - name: Set Env Vars
         id: setup
         run: |
+          echo "${{ github.event.issue.title }}"
           TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
           echo "TICKET_NUMBER=$TICKET_NUMBER" >> $GITHUB_OUTPUT
       - name: Checkout repository
