@@ -17,10 +17,12 @@ function isValidInput(input) {
         !["gpt-3.5-turbo", "gpt-4"].includes(input.INPUT_LLM_MODEL)) {
         throw new Error(`Invalid INPUT_LLM_MODEL: ${input.INPUT_LLM_MODEL}`);
     }
-    if (typeof input.INPUT_OPENAI_API_KEY !== "string" || input.INPUT_OPENAI_API_KEY === "") {
+    if (typeof input.INPUT_OPENAI_API_KEY !== "string" ||
+        input.INPUT_OPENAI_API_KEY === "") {
         throw new Error(`Invalid INPUT_OPENAI_API_KEY: ${input.INPUT_OPENAI_API_KEY}`);
     }
-    if (typeof input.INPUT_COMMENT_BODY !== "string" || input.INPUT_COMMENT_BODY === "") {
+    if (typeof input.INPUT_COMMENT_BODY !== "string" ||
+        input.INPUT_COMMENT_BODY === "") {
         throw new Error(`Invalid INPUT_COMMENT_BODY: ${input.INPUT_COMMENT_BODY}`);
     }
     if (typeof input.COMPONENT_NAME !== "string" || input.COMPONENT_NAME === "") {
@@ -29,13 +31,13 @@ function isValidInput(input) {
     return true;
 }
 function updateReactComponent(input) {
-    var _a, _b;
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         console.log(input);
         if (!isValidInput(input)) {
             throw new Error("Invalid input");
         }
-        const { INPUT_COMMENT_BODY, INPUT_OPENAI_API_KEY, INPUT_LLM_MODEL, COMPONENT_NAME } = input;
+        const { INPUT_COMMENT_BODY, INPUT_OPENAI_API_KEY, INPUT_LLM_MODEL, COMPONENT_NAME, } = input;
         const systemPrompt = (0, util_1.system) `
     You are a react component generator I will feed you a react component and a comment that came from code review.
     Your job is to update the nextjs component using tailwind and typescript.
@@ -76,11 +78,41 @@ function updateReactComponent(input) {
         (0, util_1.colorLog)("blue", `ASSISTANT: ${codeBlock}`);
         yield fs_1.promises.writeFile(`./src/components/atoms/${COMPONENT_NAME}.tsx`, codeBlock, "utf8");
         yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/${COMPONENT_NAME}.tsx`);
+        //----------------------------------------------
+        // Create the storybook
+        //----------------------------------------------
+        const storyFileContents = yield fs_1.promises.readFile(`./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`, "utf8");
+        const storybookFollowUpPrompt = (0, util_1.user)(`
+    Please update this storybook file to include the changes you made to the component.
+    \`\`\`tsx
+    ${storyFileContents}
+    \`\`\`
+    Your response should only have 1 tsx code block which is the implementation of the story.
+  `);
+        (0, util_1.colorLog)("gray", `USER: ${storybookFollowUpPrompt.content}`);
+        const generateStorybookResponse = yield (0, util_1.simpleFetch)("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${INPUT_OPENAI_API_KEY}`, // Replace API_KEY with your actual OpenAI API key
+            },
+            body: JSON.stringify({
+                model: INPUT_LLM_MODEL,
+                messages: [
+                    systemPrompt,
+                    userMessage,
+                    (0, util_1.assistant)(codeBlock),
+                    storybookFollowUpPrompt,
+                ],
+            }),
+        });
+        const rawStoryBookResponse = (_c = (yield generateStorybookResponse.json()).data
+            .choices[0].message) === null || _c === void 0 ? void 0 : _c.content;
+        const storybookCodeBlock = (_d = rawStoryBookResponse.match(util_1.tsxCodeBlockRegex)) === null || _d === void 0 ? void 0 : _d[1];
+        (0, util_1.colorLog)("blue", `ASSISTANT: ${storybookCodeBlock}`);
+        yield fs_1.promises.writeFile(`./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`, storybookCodeBlock, "utf8");
+        yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`);
     });
 }
-updateReactComponent({
-    INPUT_LLM_MODEL: "gpt-3.5-turbo",
-    INPUT_OPENAI_API_KEY: "sk-123",
-    INPUT_COMMENT_BODY: "```gpt-3.5-turbo\nCan You add And wextra small size\n```\n"
-});
+updateReactComponent(process.env);
 exports.default = updateReactComponent;
