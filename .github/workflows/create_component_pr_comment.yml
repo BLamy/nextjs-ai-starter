@@ -22,7 +22,7 @@ jobs:
 
       - name: Update Component based on comment (GPT 3.5 Turbo)
         uses: ./.github/actions/pull-request-comment
-        id: pull_request_comment
+        id: component_code_gen
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COMMENT_BODY: ${{ github.event.comment.body }}
@@ -34,5 +34,5 @@ jobs:
           git config user.email "brettlamy@gmail.com"
           git config user.name "Brett Lamy"
           git add src/components/atoms
-          git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
+          git commit -m "${{ steps.component_code_gen.outputs.componentName }} - closes #${{ github.event.issue.number }}"
           git push origin issue-${{ github.event.issue.number }}-update

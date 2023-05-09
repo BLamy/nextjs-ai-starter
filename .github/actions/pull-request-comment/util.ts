@@ -3,6 +3,7 @@ import * as https from 'https';
 import { IncomingHttpHeaders } from "http";
 
 export const tsxCodeBlockRegex = /```(?:tsx)?(.*)```/s;
+export const gptCodeBlockRegex = /```(gpt3|gpt4|gpt-3\.5-turbo|gpt-4)?(.*)```/s;
 export const exportDefaultRegex = /export\s+default\s+([\w]+)/s;
 export const exportDefaultFunctionRegex = /export\s+default\s+function\s+([\w]+)/s;
 

@@ -10,6 +10,9 @@ inputs:
   COMMENT_BODY:
     description: "Issue body containing component update instructions"
     required: true
+  COMPONENT_NAME:
+    description: "Nam of the component"
+    required: true
 runs:
   using: "node12"
   main: "dist/index.js"

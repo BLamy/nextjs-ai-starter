@@ -23,10 +23,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.simpleFetch = exports.runCommand = exports.colorLog = exports.assistant = exports.user = exports.system = exports.dedent = exports.exportDefaultFunctionRegex = exports.exportDefaultRegex = exports.tsxCodeBlockRegex = void 0;
+exports.simpleFetch = exports.runCommand = exports.colorLog = exports.assistant = exports.user = exports.system = exports.dedent = exports.exportDefaultFunctionRegex = exports.exportDefaultRegex = exports.gptCodeBlockRegex = exports.tsxCodeBlockRegex = void 0;
 const child_process_1 = require("child_process");
 const https = __importStar(require("https"));
 exports.tsxCodeBlockRegex = /```(?:tsx)?(.*)```/s;
+exports.gptCodeBlockRegex = /```(gpt3|gpt4|gpt-3\.5-turbo|gpt-4)?(.*)```/s;
 exports.exportDefaultRegex = /export\s+default\s+([\w]+)/s;
 exports.exportDefaultFunctionRegex = /export\s+default\s+function\s+([\w]+)/s;
 function dedent(templ, ...values) {
