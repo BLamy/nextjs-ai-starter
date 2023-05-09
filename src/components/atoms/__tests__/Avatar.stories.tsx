@@ -17,7 +17,7 @@ export default {
       defaultValue: "medium",
       control: {
         type: "select",
-        options: ["small", "medium", "large"],
+        options: ["small", "medium", "large", "extra-large"], // update size options
       },
     },
     className: {
@@ -45,6 +45,12 @@ export const Small = Template.bind({});
 Small.args = {
   name: "Brett Lamy",
   size: "small",
+};
+
+export const ExtraLarge = Template.bind({}); // add extra-large size story
+ExtraLarge.args = {
+  name: "Brett Lamy",
+  size: "extra-large",
 };
 
 export const WithClassName = Template.bind({});
