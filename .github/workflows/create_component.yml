@@ -15,7 +15,7 @@ jobs:
 
       - name: Create Component (GPT 3.5 Turbo)
         uses: ./.github/actions/create-component
-        id: create_component
+        id: code_gen
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -26,7 +26,7 @@ jobs:
         with:
           token: ${{ secrets.GH_API_KEY }}
           labels: "create-component"
-          title: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
+          title: "${{ steps.code_gen.outputs.componentName }} - closes #${{ github.event.issue.number }}"
           commit-message: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           body: ${{ github.event.issue.body }}
           branch: "issue-${{ github.event.issue.number }}-update"
