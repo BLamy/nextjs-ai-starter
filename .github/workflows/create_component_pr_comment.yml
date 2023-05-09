@@ -11,7 +11,9 @@ jobs:
       - name: Set Env Vars
         id: setup
         run: |
-          echo "${{ github.event.issue.title }}"
+          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
+          COMPONENT_NAME=$(echo "$ESCAPED_ISSUE_BODY" | sed -n -e '/^### Component Name$/,/^### Update Instructions$/{//!p}')
+          echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
           TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
           echo "TICKET_NUMBER=$TICKET_NUMBER" >> $GITHUB_OUTPUT
       - name: Checkout repository
@@ -26,6 +28,7 @@ jobs:
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           COMMENT_BODY: ${{ github.event.comment.body }}
+          COMPONENT_NAME: ${{ steps.setup.outputs.COMPONENT_NAME }}
           LLM_MODEL: "gpt-3.5-turbo"
 
       - name: Update file in git
@@ -34,5 +37,5 @@ jobs:
           git config user.email "brettlamy@gmail.com"
           git config user.name "Brett Lamy"
           git add src/components/atoms
-          git commit -m "${{ steps.code_gen.outputs.componentName }} - closes #${{ github.event.issue.number }}"
+          git commit -m "${{ steps.setup.outputs.COMPONENT_NAME }} - closes #${{ github.event.issue.number }}"
           git push origin issue-${{ github.event.issue.number }}-update
