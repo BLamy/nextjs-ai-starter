@@ -17,7 +17,7 @@ export default {
       defaultValue: "medium",
       control: {
         type: "select",
-        options: ["small", "medium", "large"],
+        options: ["small", "medium", "large", "xl"],
       },
     },
     className: {
@@ -45,6 +45,12 @@ export const Small = Template.bind({});
 Small.args = {
   name: "Brett Lamy",
   size: "small",
+};
+
+export const ExtraLarge = Template.bind({});
+ExtraLarge.args = {
+  name: "Brett Lamy",
+  size: "xl",
 };
 
 export const WithClassName = Template.bind({});
