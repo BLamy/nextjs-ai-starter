@@ -25,8 +25,8 @@ function isValidInput(input) {
         input.INPUT_COMMENT_BODY === "") {
         throw new Error(`Invalid INPUT_COMMENT_BODY: ${input.INPUT_COMMENT_BODY}`);
     }
-    if (typeof input.COMPONENT_NAME !== "string" || input.COMPONENT_NAME === "") {
-        throw new Error(`Invalid COMPONENT_NAME: ${input.COMPONENT_NAME}`);
+    if (typeof input.INPUT_COMPONENT_NAME !== "string" || input.INPUT_COMPONENT_NAME === "") {
+        throw new Error(`Invalid INPUT_COMPONENT_NAME: ${input.INPUT_COMPONENT_NAME}`);
     }
     return true;
 }
@@ -37,7 +37,7 @@ function updateReactComponent(input) {
         if (!isValidInput(input)) {
             throw new Error("Invalid input");
         }
-        const { INPUT_COMMENT_BODY, INPUT_OPENAI_API_KEY, INPUT_LLM_MODEL, COMPONENT_NAME, } = input;
+        const { INPUT_COMMENT_BODY, INPUT_OPENAI_API_KEY, INPUT_LLM_MODEL, INPUT_COMPONENT_NAME, } = input;
         const systemPrompt = (0, util_1.system) `
     You are a react component generator I will feed you a react component and a comment that came from code review.
     Your job is to update the nextjs component using tailwind and typescript.
@@ -70,18 +70,18 @@ function updateReactComponent(input) {
         const rawComponentResponse = (_a = (yield generateComponentResponse.json()).data
             .choices[0].message) === null || _a === void 0 ? void 0 : _a.content;
         let codeBlock = (_b = rawComponentResponse.match(util_1.tsxCodeBlockRegex)) === null || _b === void 0 ? void 0 : _b[1];
-        if (codeBlock.includes(`export { ${COMPONENT_NAME}Props }`) &&
-            codeBlock.includes(`export type ${COMPONENT_NAME}Props`)) {
+        if (codeBlock.includes(`export { ${INPUT_COMPONENT_NAME}Props }`) &&
+            codeBlock.includes(`export type ${INPUT_COMPONENT_NAME}Props`)) {
             // If the props are exported twice then remove the second export
-            codeBlock = codeBlock.replace(`export { ${COMPONENT_NAME}Props }`, "");
+            codeBlock = codeBlock.replace(`export { ${INPUT_COMPONENT_NAME}Props }`, "");
         }
         (0, util_1.colorLog)("blue", `ASSISTANT: ${codeBlock}`);
-        yield fs_1.promises.writeFile(`./src/components/atoms/${COMPONENT_NAME}.tsx`, codeBlock, "utf8");
-        yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/${COMPONENT_NAME}.tsx`);
+        yield fs_1.promises.writeFile(`./src/components/atoms/${INPUT_COMPONENT_NAME}.tsx`, codeBlock, "utf8");
+        yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/${INPUT_COMPONENT_NAME}.tsx`);
         //----------------------------------------------
         // Create the storybook
         //----------------------------------------------
-        const storyFileContents = yield fs_1.promises.readFile(`./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`, "utf8");
+        const storyFileContents = yield fs_1.promises.readFile(`./src/components/atoms/__tests__/${INPUT_COMPONENT_NAME}.stories.tsx`, "utf8");
         const storybookFollowUpPrompt = (0, util_1.user)(`
     Please update this storybook file to include the changes you made to the component.
     \`\`\`tsx
@@ -110,8 +110,8 @@ function updateReactComponent(input) {
             .choices[0].message) === null || _c === void 0 ? void 0 : _c.content;
         const storybookCodeBlock = (_d = rawStoryBookResponse.match(util_1.tsxCodeBlockRegex)) === null || _d === void 0 ? void 0 : _d[1];
         (0, util_1.colorLog)("blue", `ASSISTANT: ${storybookCodeBlock}`);
-        yield fs_1.promises.writeFile(`./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`, storybookCodeBlock, "utf8");
-        yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`);
+        yield fs_1.promises.writeFile(`./src/components/atoms/__tests__/${INPUT_COMPONENT_NAME}.stories.tsx`, storybookCodeBlock, "utf8");
+        yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/__tests__/${INPUT_COMPONENT_NAME}.stories.tsx`);
     });
 }
 updateReactComponent(process.env);

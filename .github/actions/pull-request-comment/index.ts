@@ -16,7 +16,7 @@ type Input = {
   INPUT_LLM_MODEL: "gpt-3.5-turbo" | "gpt-4";
   INPUT_OPENAI_API_KEY: string;
   INPUT_COMMENT_BODY: string;
-  COMPONENT_NAME: string;
+  INPUT_COMPONENT_NAME: string;
 };
 
 // Doing this instead of zod so we don't have to install dependencies
@@ -41,8 +41,8 @@ function isValidInput(input: { [key: string]: any }): input is Input {
   ) {
     throw new Error(`Invalid INPUT_COMMENT_BODY: ${input.INPUT_COMMENT_BODY}`);
   }
-  if (typeof input.COMPONENT_NAME !== "string" || input.COMPONENT_NAME === "") {
-    throw new Error(`Invalid COMPONENT_NAME: ${input.COMPONENT_NAME}`);
+  if (typeof input.INPUT_COMPONENT_NAME !== "string" || input.INPUT_COMPONENT_NAME === "") {
+    throw new Error(`Invalid INPUT_COMPONENT_NAME: ${input.INPUT_COMPONENT_NAME}`);
   }
   return true;
 }
@@ -57,7 +57,7 @@ async function updateReactComponent(input: { [key: string]: any }) {
     INPUT_COMMENT_BODY,
     INPUT_OPENAI_API_KEY,
     INPUT_LLM_MODEL,
-    COMPONENT_NAME,
+    INPUT_COMPONENT_NAME,
   } = input;
 
   const systemPrompt = system`
@@ -98,27 +98,27 @@ async function updateReactComponent(input: { [key: string]: any }) {
     .choices[0].message?.content;
   let codeBlock = rawComponentResponse.match(tsxCodeBlockRegex)?.[1];
   if (
-    codeBlock.includes(`export { ${COMPONENT_NAME}Props }`) &&
-    codeBlock.includes(`export type ${COMPONENT_NAME}Props`)
+    codeBlock.includes(`export { ${INPUT_COMPONENT_NAME}Props }`) &&
+    codeBlock.includes(`export type ${INPUT_COMPONENT_NAME}Props`)
   ) {
     // If the props are exported twice then remove the second export
-    codeBlock = codeBlock.replace(`export { ${COMPONENT_NAME}Props }`, "");
+    codeBlock = codeBlock.replace(`export { ${INPUT_COMPONENT_NAME}Props }`, "");
   }
   colorLog("blue", `ASSISTANT: ${codeBlock}`);
   await fs.writeFile(
-    `./src/components/atoms/${COMPONENT_NAME}.tsx`,
+    `./src/components/atoms/${INPUT_COMPONENT_NAME}.tsx`,
     codeBlock,
     "utf8"
   );
   await runCommand(
-    `npx prettier --write ./src/components/atoms/${COMPONENT_NAME}.tsx`
+    `npx prettier --write ./src/components/atoms/${INPUT_COMPONENT_NAME}.tsx`
   );
 
   //----------------------------------------------
   // Create the storybook
   //----------------------------------------------
   const storyFileContents = await fs.readFile(
-    `./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`,
+    `./src/components/atoms/__tests__/${INPUT_COMPONENT_NAME}.stories.tsx`,
     "utf8"
   );
 
@@ -155,12 +155,12 @@ async function updateReactComponent(input: { [key: string]: any }) {
   const storybookCodeBlock = rawStoryBookResponse.match(tsxCodeBlockRegex)?.[1];
   colorLog("blue", `ASSISTANT: ${storybookCodeBlock}`);
   await fs.writeFile(
-    `./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`,
+    `./src/components/atoms/__tests__/${INPUT_COMPONENT_NAME}.stories.tsx`,
     storybookCodeBlock,
     "utf8"
   );
   await runCommand(
-    `npx prettier --write ./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`
+    `npx prettier --write ./src/components/atoms/__tests__/${INPUT_COMPONENT_NAME}.stories.tsx`
   );
 }
 
