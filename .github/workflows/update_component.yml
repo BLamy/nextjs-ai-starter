@@ -8,85 +8,27 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'update-component')
     runs-on: ubuntu-latest
     steps:
-      - name: Set Env Vars
-        id: setup
-        run: |
-          LLM_MODEL="gpt-3.5-turbo"
-          echo "LLM_MODEL=$LLM_MODEL" >> $GITHUB_OUTPUT
-          GH_ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f1)
-          echo "GH_ORG_NAME=$GH_ORG_NAME" >> $GITHUB_OUTPUT
-          GH_REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d'/' -f2)
-          echo "GH_REPO_NAME=$GH_REPO_NAME" >> $GITHUB_OUTPUT
-          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
-          COMPONENT_NAME=$(echo "$ESCAPED_ISSUE_BODY" | sed -n -e '/^### Component Name$/,/^### Update Instructions$/{//!p}')
-          echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
-          UPDATE_INSTRUCTIONS=$(echo "$ESCAPED_ISSUE_BODY" | sed -n -e '/^### Update Instructions$/,/^###/{//!p}')
-          echo "UPDATE_INSTRUCTIONS=$UPDATE_INSTRUCTIONS" >> $GITHUB_OUTPUT
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-      - name: Checkout branch
-        env:
-          GH_API_KEY: ${{ secrets.GH_API_KEY }}
-          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
-          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
-          TICKET_NUMBER: ${{ github.event.issue.number }}
-        run: |
-          git clone https://${{ env.GH_API_KEY }}@github.com/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}.git .
-          git config --global user.email "brettlamy@gmail.com"
-          git config --global user.name "Brett Lamy"
-          git checkout -b issue-${{ env.TICKET_NUMBER }}-update
-          git status
-      - name: Install Node.js
-        uses: actions/setup-node@v2
+      - name: Create Component (GPT 3.5 Turbo)
+        uses: ./.github/actions/update-component
+        id: create_component
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        id: pnpm-install
-        with:
-          version: 7
-          run_install: false
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - name: Setup pnpm cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: Install dependencies
-        run: pnpm install
-      - name: Update Component (GPT 3.5 Turbo)
-        id: update_component
-        env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
-          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
           ISSUE_BODY: ${{ github.event.issue.body }}
-          LLM_MODEL: ${{ steps.setup.outputs.LLM_MODEL }}
-        run: |
-          node scripts/updateAtomComponent.mjs
-      - name: Update file in git
-        env:
-          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
-          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
-          GH_API_KEY: ${{ secrets.GH_API_KEY }}
-        run: |
-          npx prettier --write src/components/atoms
-          git add src/components/atoms
-          git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
-          git push origin issue-${{ github.event.issue.number }}-update
-      - name: Create pull request
-        env:
-          GH_REPO_NAME: ${{ steps.setup.outputs.GH_REPO_NAME }}
-          GH_ORG_NAME: ${{ steps.setup.outputs.GH_ORG_NAME }}
-          GH_API_KEY: ${{ secrets.GH_API_KEY }}
-        run: |
-          curl https://api.github.com/repos/${{ env.GH_ORG_NAME }}/${{ env.GH_REPO_NAME }}/pulls \
-          -H "Authorization: token ${{ env.GH_API_KEY }}" \
-          -H "Accept: application/vnd.github+json" \
-          -X POST \
-          -d '{"title":"${{ github.event.issue.title }}", "body":"${{ steps.setup.outputs.ESCAPED_ISSUE_BODY }}", "head":"issue-${{ github.event.issue.number }}-update", "base":"main"}'
+          LLM_MODEL: "gpt-3.5-turbo"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GH_API_KEY }}
+          labels: "update-component"
+          title: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
+          commit-message: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
+          body: ${{ github.event.issue.body }}
+          branch: "issue-${{ github.event.issue.number }}-update"
+          add-paths: |
+            src/components/atoms
