@@ -15,13 +15,13 @@ const util_1 = require("./util");
 function isValidInput(input) {
     if (typeof input.LLM_MODEL !== "string" ||
         !["gpt-3.5-turbo", "gpt-4"].includes(input.LLM_MODEL)) {
-        return false;
+        throw new Error(`Invalid LLM_MODEL: ${input.LLM_MODEL}`);
     }
     if (typeof input.OPENAI_API_KEY !== "string" || input.OPENAI_API_KEY === "") {
-        return false;
+        throw new Error(`Invalid OPENAI_API_KEY: ${input.OPENAI_API_KEY}`);
     }
     if (typeof input.ISSUE_BODY !== "string" || input.ISSUE_BODY === "") {
-        return false;
+        throw new Error(`Invalid ISSUE_BODY: ${input.ISSUE_BODY}`);
     }
     return true;
 }
