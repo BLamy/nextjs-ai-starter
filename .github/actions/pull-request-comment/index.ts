@@ -14,7 +14,7 @@ import {
 type Input = {
   INPUT_LLM_MODEL: "gpt-3.5-turbo" | "gpt-4";
   INPUT_OPENAI_API_KEY: string;
-  INPUT_ISSUE_BODY: string;
+  INPUT_COMMENT_BODY: string;
 };
 
 // Doing this instead of zod so we don't have to install dependencies
@@ -28,8 +28,8 @@ function isValidInput(input: {[key: string]: any }): input is Input {
   if (typeof input.INPUT_OPENAI_API_KEY !== "string" || input.INPUT_OPENAI_API_KEY === "") {
     throw new Error(`Invalid INPUT_OPENAI_API_KEY: ${input.INPUT_OPENAI_API_KEY}`);
   }
-  if (typeof input.INPUT_ISSUE_BODY !== "string" || input.INPUT_ISSUE_BODY === "") {
-    throw new Error(`Invalid INPUT_ISSUE_BODY: ${input.INPUT_ISSUE_BODY}`);
+  if (typeof input.INPUT_COMMENT_BODY !== "string" || input.INPUT_COMMENT_BODY === "") {
+    throw new Error(`Invalid INPUT_COMMENT_BODY: ${input.INPUT_COMMENT_BODY}`);
   }
   return true;
 }
