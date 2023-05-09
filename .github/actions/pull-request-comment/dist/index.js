@@ -26,9 +26,9 @@ function isValidInput(input) {
 function updateReactComponent(input) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(input);
-        if (!isValidInput(input)) {
-            throw new Error("Invalid input");
-        }
+        // if (!isValidInput(input)) {
+        //   throw new Error("Invalid input");
+        // }
     });
 }
 updateReactComponent(process.env);

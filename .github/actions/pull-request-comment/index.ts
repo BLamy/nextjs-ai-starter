@@ -36,9 +36,9 @@ function isValidInput(input: {[key: string]: any }): input is Input {
 
 async function updateReactComponent(input: {[key: string]: any }) {
   console.log(input);
-  if (!isValidInput(input)) {
-    throw new Error("Invalid input");
-  }
+  // if (!isValidInput(input)) {
+  //   throw new Error("Invalid input");
+  // }
 }
 
 updateReactComponent(process.env);
