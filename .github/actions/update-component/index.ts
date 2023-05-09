@@ -10,6 +10,7 @@ import {
   runCommand,
   simpleFetch
 } from "./util";
+import os from "os";
 
 type Input = {
   INPUT_LLM_MODEL: "gpt-3.5-turbo" | "gpt-4";
@@ -147,6 +148,10 @@ async function updateReactComponent(input: {[key: string]: any }) {
   await runCommand(
     `npx prettier --write ./src/components/atoms/__tests__/${COMPONENT_NAME}.stories.tsx`
   );
+
+ 
+  const output = process.env['GITHUB_OUTPUT'] as string;
+  await fs.appendFile(output, `componentName=${COMPONENT_NAME}${os.EOL}`) 
 }
 
 updateReactComponent(process.env);

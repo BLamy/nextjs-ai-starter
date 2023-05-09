@@ -10,6 +10,10 @@ inputs:
   ISSUE_BODY:
     description: "Issue body containing component update instructions"
     required: true
+outputs:
+  componentName:
+    description: "The name of the component that was created"
+
 runs:
   using: "node12"
   main: "dist/index.js"

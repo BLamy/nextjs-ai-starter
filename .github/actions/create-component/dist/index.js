@@ -8,9 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
 const util_1 = require("./util");
+const os_1 = __importDefault(require("os"));
 // Doing this instead of zod so we don't have to install dependencies
 function isValidInput(input) {
     if (typeof input.INPUT_LLM_MODEL !== "string" ||
@@ -105,6 +109,8 @@ function createReactComponent(input) {
         (0, util_1.colorLog)("blue", `ASSISTANT: ${storybookCodeBlock}`);
         yield fs_1.promises.writeFile(`./src/components/atoms/__tests__/${componentName}.stories.tsx`, storybookCodeBlock, "utf8");
         yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`);
+        const output = process.env['GITHUB_OUTPUT'];
+        yield fs_1.promises.appendFile(output, `componentName=${componentName}${os_1.default.EOL}`);
     });
 }
 createReactComponent(process.env);
