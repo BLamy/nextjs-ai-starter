@@ -18,8 +18,8 @@ function isValidInput(input) {
     if (typeof input.INPUT_OPENAI_API_KEY !== "string" || input.INPUT_OPENAI_API_KEY === "") {
         throw new Error(`Invalid INPUT_OPENAI_API_KEY: ${input.INPUT_OPENAI_API_KEY}`);
     }
-    if (typeof input.INPUT_ISSUE_BODY !== "string" || input.INPUT_ISSUE_BODY === "") {
-        throw new Error(`Invalid INPUT_ISSUE_BODY: ${input.INPUT_ISSUE_BODY}`);
+    if (typeof input.INPUT_COMMENT_BODY !== "string" || input.INPUT_COMMENT_BODY === "") {
+        throw new Error(`Invalid INPUT_COMMENT_BODY: ${input.INPUT_COMMENT_BODY}`);
     }
     return true;
 }
