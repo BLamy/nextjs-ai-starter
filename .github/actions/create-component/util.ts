@@ -160,7 +160,7 @@ export function simpleFetch(url: string, options: RequestOptions = {}): Promise<
       // The whole response has been received.
       response.on('end', () => {
         resolve({
-          json: () => Promise.resolve(JSON.parse(responseData)),
+          json: () => Promise.resolve({ data: JSON.parse(responseData)}),
           status: response.statusCode as number,
           headers: response.headers,
         });

@@ -138,7 +138,7 @@ function simpleFetch(url, options = {}) {
             // The whole response has been received.
             response.on('end', () => {
                 resolve({
-                    json: () => Promise.resolve(JSON.parse(responseData)),
+                    json: () => Promise.resolve({ data: JSON.parse(responseData) }),
                     status: response.statusCode,
                     headers: response.headers,
                 });
