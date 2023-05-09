@@ -1,5 +1,5 @@
-name: "Create Component"
-description: "A GitHub action to create a React component using OpenAI API"
+name: "Update Component"
+description: "A GitHub action to update a React component using OpenAI API"
 inputs:
   LLM_MODEL:
     description: "Language model to use (either gpt-3.5-turbo or gpt-4)"
