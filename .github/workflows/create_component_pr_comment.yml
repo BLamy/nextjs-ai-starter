@@ -32,5 +32,7 @@ jobs:
         run: |
           npx prettier --write src/components/atoms
           git add src/components/atoms
+          git config --global user.email "brettlamy@gmail.com"
+          git config --global user.name "Brett Lamy"
           git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
           git push origin issue-${{ github.event.issue.number }}-update
