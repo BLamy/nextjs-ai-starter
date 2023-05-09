@@ -70,9 +70,6 @@ async function createAtomComponent({ GH_REPO_NAME, GH_ORG_NAME, ISSUE_BODY, OPEN
       model: LLM_MODEL,
       messages: [SYSTEM_MESSAGE, USER_MESSAGE, ASSISTANT_MESSAGE, STORYBOOK_FOLLOW_UP_MESSAGE],
     });
-    console.log('------------')
-    console.log(generateStorybookResponse.data.choices[0].message?.content);
-    console.log('------------')
     const storybookCodeBlock = generateStorybookResponse.data.choices[0].message?.content.match(/```(?:tsx)?(.*)```/s)?.[1];
     console.log(storybookCodeBlock);
     console.log(chalk.blue(`ASSISTANT: ${storybookCodeBlock}`));

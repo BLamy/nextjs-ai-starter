@@ -137,5 +137,6 @@ async function createReactComponent(input: {[key: string]: any }) {
     `npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`
   );
 }
-console.log("create react component", process.env)
+
+createReactComponent(process.env);
 export default createReactComponent;

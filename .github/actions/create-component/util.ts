@@ -17,7 +17,7 @@ export function dedent<T extends string>(
   );
 
   // 2. Find all line breaks to determine the highest common indentation level.
-  const indentLengths = strings.reduce((arr, str) => {
+  const indentLengths = strings.reduce<number[]>((arr, str) => {
     const matches = str.match(/\n([\t ]+|(?!\s).)/g);
     if (matches) {
       return arr.concat(
@@ -25,7 +25,7 @@ export function dedent<T extends string>(
       );
     }
     return arr;
-  }, <number[]>[]);
+  }, []);
 
   // 3. Remove the common indentation from all strings.
   if (indentLengths.length) {
