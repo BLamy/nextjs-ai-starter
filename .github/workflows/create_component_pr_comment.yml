@@ -8,11 +8,16 @@ jobs:
     if: github.event.issue.pull_request && (contains(github.event.comment.body, 'gpt3') || contains(github.event.comment.body, 'gpt-3'))
     runs-on: ubuntu-latest
     steps:
+      - name: Set Env Vars
+        id: setup
+        run: |
+          TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
+          echo "TICKET_NUMBER=$TICKET_NUMBER" >> $GITHUB_OUTPUT
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          ref: "issue-${{ github.event.issue.number }}-update"
+          ref: "issue-${{ steps.setup.outputs.TICKET_NUMBER }}-update"
 
       - name: Update Component based on comment (GPT 3.5 Turbo)
         uses: ./.github/actions/pull-request-comment
@@ -22,14 +27,9 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
           LLM_MODEL: "gpt-3.5-turbo"
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          token: ${{ secrets.GH_API_KEY }}
-          labels: "create-component"
-          title: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
-          commit-message: "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
-          body: ${{ github.event.issue.body }}
-          branch: "issue-${{ github.event.issue.number }}-update"
-          add-paths: |
-            src/components/atoms
+      - name: Update file in git
+        run: |
+          npx prettier --write src/components/atoms
+          git add src/components/atoms
+          git commit -m "${{ github.event.issue.title }} - closes #${{ github.event.issue.number }}"
+          git push origin issue-${{ github.event.issue.number }}-update
