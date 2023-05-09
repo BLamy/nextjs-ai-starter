@@ -43,7 +43,7 @@ function createReactComponent(input) {
     `;
         (0, util_1.colorLog)("green", `SYSTEM: ${systemPrompt.content}`);
         (0, util_1.colorLog)("gray", `USER: ${INPUT_ISSUE_BODY}`);
-        const generateComponentResponse = yield fetch("https://api.openai.com/v1/chat/completions", {
+        const generateComponentResponse = yield (0, util_1.simpleFetch)("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -83,7 +83,7 @@ function createReactComponent(input) {
       Your response should only have 1 tsx code block which is the implementation of the story. No other text should be included.
     `);
         (0, util_1.colorLog)("gray", `USER: ${storybookFollowUpPrompt.content}`);
-        const generateStorybookResponse = yield fetch("https://api.openai.com/v1/chat/completions", {
+        const generateStorybookResponse = yield (0, util_1.simpleFetch)("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

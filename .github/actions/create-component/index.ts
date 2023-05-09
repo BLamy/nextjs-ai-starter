@@ -7,7 +7,8 @@ import {
   tsxCodeBlockRegex,
   exportDefaultRegex,
   exportDefaultFunctionRegex,
-  runCommand
+  runCommand,
+  simpleFetch
 } from "./util";
 
 type Input = {
@@ -51,7 +52,7 @@ async function createReactComponent(input: {[key: string]: any }) {
   colorLog("green", `SYSTEM: ${systemPrompt.content}`);
   colorLog("gray", `USER: ${INPUT_ISSUE_BODY}`);
 
-  const generateComponentResponse = await fetch(
+  const generateComponentResponse = await simpleFetch(
     "https://api.openai.com/v1/chat/completions",
     {
       method: "POST",
@@ -104,7 +105,7 @@ async function createReactComponent(input: {[key: string]: any }) {
       Your response should only have 1 tsx code block which is the implementation of the story. No other text should be included.
     `);
   colorLog("gray", `USER: ${storybookFollowUpPrompt.content}`);
-  const generateStorybookResponse = await fetch(
+  const generateStorybookResponse = await simpleFetch(
     "https://api.openai.com/v1/chat/completions",
     {
       method: "POST",

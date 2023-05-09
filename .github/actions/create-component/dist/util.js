@@ -1,7 +1,31 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.runCommand = exports.colorLog = exports.assistant = exports.user = exports.system = exports.dedent = exports.exportDefaultFunctionRegex = exports.exportDefaultRegex = exports.tsxCodeBlockRegex = void 0;
+exports.simpleFetch = exports.runCommand = exports.colorLog = exports.assistant = exports.user = exports.system = exports.dedent = exports.exportDefaultFunctionRegex = exports.exportDefaultRegex = exports.tsxCodeBlockRegex = void 0;
 const child_process_1 = require("child_process");
+const https = __importStar(require("https"));
 exports.tsxCodeBlockRegex = /```(?:tsx)?(.*)```/s;
 exports.exportDefaultRegex = /export\s+default\s+([\w]+)/s;
 exports.exportDefaultFunctionRegex = /export\s+default\s+function\s+([\w]+)/s;
@@ -92,3 +116,41 @@ function runCommand(command) {
     });
 }
 exports.runCommand = runCommand;
+function simpleFetch(url, options = {}) {
+    return new Promise((resolve, reject) => {
+        const { method = 'GET', body, headers = {
+            'Content-Type': 'application/json',
+        } } = options;
+        const requestOptions = {
+            method,
+            headers,
+        };
+        if (body) {
+            // @ts-ignore
+            requestOptions.headers['Content-Length'] = Buffer.byteLength(body);
+        }
+        const request = https.request(url, requestOptions, (response) => {
+            let responseData = '';
+            // A chunk of data has been received.
+            response.on('data', (chunk) => {
+                responseData += chunk;
+            });
+            // The whole response has been received.
+            response.on('end', () => {
+                resolve({
+                    json: () => Promise.resolve(JSON.parse(responseData)),
+                    status: response.statusCode,
+                    headers: response.headers,
+                });
+            });
+        });
+        request.on('error', (error) => {
+            reject(error);
+        });
+        if (body) {
+            request.write(body);
+        }
+        request.end();
+    });
+}
+exports.simpleFetch = simpleFetch;

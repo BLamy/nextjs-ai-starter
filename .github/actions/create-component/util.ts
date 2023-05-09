@@ -1,4 +1,6 @@
 import { exec } from "child_process";
+import * as https from 'https';
+import { IncomingHttpHeaders } from "http";
 
 export const tsxCodeBlockRegex = /```(?:tsx)?(.*)```/s;
 export const exportDefaultRegex = /export\s+default\s+([\w]+)/s;
@@ -112,5 +114,67 @@ export function runCommand(command: string) {
 
       resolve(stdout);
     });
+  });
+}
+
+interface RequestOptions {
+  method?: string;
+  body?: string;
+  headers?: IncomingHttpHeaders;
+}
+
+interface SimpleResponse {
+  json: () => Promise<any>;
+  status: number;
+  headers: IncomingHttpHeaders;
+}
+
+export function simpleFetch(url: string, options: RequestOptions = {}): Promise<SimpleResponse> {
+  return new Promise((resolve, reject) => {
+    const { 
+      method = 'GET', 
+      body, 
+      headers = {
+        'Content-Type': 'application/json',
+      } 
+    } = options;
+
+    const requestOptions: https.RequestOptions = {
+      method,
+      headers,
+    };
+
+    if (body) {
+      // @ts-ignore
+      requestOptions.headers['Content-Length'] = Buffer.byteLength(body);
+    }
+
+    const request = https.request(url, requestOptions, (response) => {
+      let responseData = '';
+
+      // A chunk of data has been received.
+      response.on('data', (chunk: string) => {
+        responseData += chunk;
+      });
+
+      // The whole response has been received.
+      response.on('end', () => {
+        resolve({
+          json: () => Promise.resolve(JSON.parse(responseData)),
+          status: response.statusCode as number,
+          headers: response.headers,
+        });
+      });
+    });
+
+    request.on('error', (error: Error) => {
+      reject(error);
+    });
+
+    if (body) {
+      request.write(body);
+    }
+
+    request.end();
   });
 }
