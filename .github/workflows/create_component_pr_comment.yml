@@ -11,8 +11,7 @@ jobs:
       - name: Set Env Vars
         id: setup
         run: |
-          ESCAPED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | awk '{printf "%s\\n", $0}')
-          COMPONENT_NAME=$(echo "$ESCAPED_ISSUE_BODY" | sed -n -e '/^### Component Name$/,/^### Update Instructions$/{//!p}')
+          COMPONENT_NAME=$(echo "${{ github.event.issue.title }}" | sed -E 's/^([a-zA-Z_$][0-9a-zA-Z_$]*).*/\1/')
           echo "COMPONENT_NAME=$COMPONENT_NAME" >> $GITHUB_OUTPUT
           TICKET_NUMBER=$(echo "${{ github.event.issue.title }}" | sed -n 's/.*#\([0-9]\+\).*/\1/p')
           echo "TICKET_NUMBER=$TICKET_NUMBER" >> $GITHUB_OUTPUT
