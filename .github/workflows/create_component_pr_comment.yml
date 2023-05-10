@@ -37,4 +37,4 @@ jobs:
           git config user.name "Brett Lamy"
           git add src/components/atoms
           git commit -m "${{ steps.setup.outputs.COMPONENT_NAME }} - closes #${{ github.event.issue.number }}"
-          git push origin issue-${{ github.event.issue.number }}-update
+          git push origin issue-${{ steps.setup.outputs.TICKET_NUMBER }}-update
