@@ -11,14 +11,8 @@ const Searchbar: React.FC<SearchbarProps> = ({
 }) => {
   return (
     <div className="relative inline-block w-full">
-      <input
-        type="text"
-        className="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
-        placeholder={placeholder}
-        onChange={(e) => onChange && onChange(e.target.value)}
-      />
       <svg
-        className="absolute top-0 right-0 w-6 h-6 mt-3 mr-4 text-gray-600"
+        className="absolute top-0 left-0 w-6 h-6 mt-3 ml-4 text-gray-600"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
         fill="currentColor"
@@ -34,6 +28,12 @@ const Searchbar: React.FC<SearchbarProps> = ({
           clipRule="evenodd"
         />
       </svg>
+      <input
+        type="text"
+        className="w-full px-12 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+        placeholder={placeholder}
+        onChange={(e) => onChange && onChange(e.target.value)}
+      />
     </div>
   );
 };
