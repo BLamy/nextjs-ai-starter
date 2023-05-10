@@ -1,6 +1,6 @@
 import React from "react";
 import { Meta, Story } from "@storybook/react";
-import SearchBar, { SearchBarProps } from "../SearchBar";
+import Search, { SearchProps } from "../Search";
 
 export default {
   title: "UI/SearchBar",
