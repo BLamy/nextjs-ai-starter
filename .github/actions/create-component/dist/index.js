@@ -109,6 +109,21 @@ function createReactComponent(input) {
         (0, util_1.colorLog)("blue", `ASSISTANT: ${storybookCodeBlock}`);
         yield fs_1.promises.writeFile(`./src/components/atoms/__tests__/${componentName}.stories.tsx`, storybookCodeBlock, "utf8");
         yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`);
+        //----------------------------------------------
+        // Add the component to update issue template
+        //----------------------------------------------
+        const yamlFile = './.github/ISSUE_TEMPLATE/create_component.yml';
+        const yamlContent = yield fs_1.promises.readFile(yamlFile, 'utf8');
+        const yamlData = (0, util_1.parseYaml)(yamlContent);
+        // Add a new option to the dropdown field for components
+        yamlData.options = yamlData.options || [];
+        yamlData.options.push(componentName);
+        // Save the updated YAML data back to the file
+        const updatedYamlContent = (0, util_1.generateYaml)(yamlData);
+        yield fs_1.promises.writeFile(yamlFile, updatedYamlContent, 'utf8');
+        //----------------------------------------------
+        // Set componentName as an output
+        //----------------------------------------------
         const output = process.env['GITHUB_OUTPUT'];
         yield fs_1.promises.appendFile(output, `componentName=${componentName}${os_1.default.EOL}`);
     });

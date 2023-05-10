@@ -4,6 +4,8 @@ import {
   system,
   user,
   assistant,
+  parseYaml,
+  generateYaml,
   tsxCodeBlockRegex,
   exportDefaultRegex,
   exportDefaultFunctionRegex,
@@ -139,6 +141,24 @@ async function createReactComponent(input: {[key: string]: any }) {
     `npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`
   );
 
+  //----------------------------------------------
+  // Add the component to update issue template
+  //----------------------------------------------
+  const yamlFile = './.github/ISSUE_TEMPLATE/create_component.yml';
+  const yamlContent = await fs.readFile(yamlFile, 'utf8');
+  const yamlData = parseYaml(yamlContent);
+
+  // Add a new option to the dropdown field for components
+  yamlData.options = yamlData.options || [];
+  yamlData.options.push(componentName);
+
+  // Save the updated YAML data back to the file
+  const updatedYamlContent = generateYaml(yamlData);
+  await fs.writeFile(yamlFile, updatedYamlContent, 'utf8');
+
+  //----------------------------------------------
+  // Set componentName as an output
+  //----------------------------------------------
   const output = process.env['GITHUB_OUTPUT'] as string;
   await fs.appendFile(output, `componentName=${componentName}${os.EOL}`)
 }

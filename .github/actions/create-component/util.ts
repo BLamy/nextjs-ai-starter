@@ -178,3 +178,37 @@ export function simpleFetch(url: string, options: RequestOptions = {}): Promise<
     request.end();
   });
 }
+
+export function parseYaml(content: string): Record<string, string[]> {
+  const data: Record<string, string[]> = {};
+  let currentKey: string | null = null;
+
+  content.split('\n').forEach(line => {
+    const keyMatch = line.match(/(\w+):\s*$/);
+    if (keyMatch) {
+      currentKey = keyMatch[1];
+      data[currentKey] = [];
+    } else {
+      const valueMatch = line.match(/^- (.*)$/);
+      if (valueMatch && currentKey) {
+        data[currentKey].push(valueMatch[1]);
+      }
+    }
+  });
+
+  return data;
+}
+
+export function generateYaml(data: Record<string, string[]>): string {
+  let content = '';
+
+  for (const key in data) {
+    content += `${key}:\n`;
+
+    for (const value of data[key]) {
+      content += `- ${value}\n`;
+    }
+  }
+
+  return content;
+}

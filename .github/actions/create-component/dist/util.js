@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.simpleFetch = exports.runCommand = exports.colorLog = exports.assistant = exports.user = exports.system = exports.dedent = exports.exportDefaultFunctionRegex = exports.exportDefaultRegex = exports.tsxCodeBlockRegex = void 0;
+exports.generateYaml = exports.parseYaml = exports.simpleFetch = exports.runCommand = exports.colorLog = exports.assistant = exports.user = exports.system = exports.dedent = exports.exportDefaultFunctionRegex = exports.exportDefaultRegex = exports.tsxCodeBlockRegex = void 0;
 const child_process_1 = require("child_process");
 const https = __importStar(require("https"));
 exports.tsxCodeBlockRegex = /```(?:tsx)?(.*)```/s;
@@ -154,3 +154,33 @@ function simpleFetch(url, options = {}) {
     });
 }
 exports.simpleFetch = simpleFetch;
+function parseYaml(content) {
+    const data = {};
+    let currentKey = null;
+    content.split('\n').forEach(line => {
+        const keyMatch = line.match(/(\w+):\s*$/);
+        if (keyMatch) {
+            currentKey = keyMatch[1];
+            data[currentKey] = [];
+        }
+        else {
+            const valueMatch = line.match(/^- (.*)$/);
+            if (valueMatch && currentKey) {
+                data[currentKey].push(valueMatch[1]);
+            }
+        }
+    });
+    return data;
+}
+exports.parseYaml = parseYaml;
+function generateYaml(data) {
+    let content = '';
+    for (const key in data) {
+        content += `${key}:\n`;
+        for (const value of data[key]) {
+            content += `- ${value}\n`;
+        }
+    }
+    return content;
+}
+exports.generateYaml = generateYaml;
