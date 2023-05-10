@@ -32,4 +32,4 @@ jobs:
           branch: "issue-${{ github.event.issue.number }}-update"
           add-paths: |
             src/components/atoms
-            .github/actions/create-component
+            .github/ISSUE_TEMPLATE/update_component.yml
