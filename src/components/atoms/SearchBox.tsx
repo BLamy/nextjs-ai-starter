@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { FaSearch } from "react-icons/fa";
 
 interface SearchBoxProps {
   onSearch: (searchTerm: string) => void;
@@ -30,7 +29,20 @@ const SearchBox: React.FC<SearchBoxProps> = ({ onSearch }) => {
                    focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50 
                    transition duration-150 ease-in-out"
       >
-        <FaSearch />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6 text-gray-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M16.447 16.454a7 7 0 10-2.893-4.74l-1.414-1.415a1 1 0 00-1.414 1.414l1.415 1.414a7 7 0 001.893 3.872zM15 9a6 6 0 11-12 0 6 6 0 0112 0z"
+          />
+        </svg>
       </button>
     </form>
   );
