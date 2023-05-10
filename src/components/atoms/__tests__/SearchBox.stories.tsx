@@ -2,7 +2,7 @@ import { Story, Meta } from "@storybook/react";
 import SearchBox, { SearchBoxProps } from "../SearchBox";
 
 export default {
-  title: "SearchBox",
+  title: "Component/SearchBox",
   component: SearchBox,
   argTypes: {
     value: { control: { type: "text" } },
