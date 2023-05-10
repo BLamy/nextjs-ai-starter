@@ -114,12 +114,15 @@ function createReactComponent(input) {
         //----------------------------------------------
         const yamlFile = './.github/ISSUE_TEMPLATE/create_component.yml';
         const yamlContent = yield fs_1.promises.readFile(yamlFile, 'utf8');
+        console.log("yamlContent", yamlContent);
         const yamlData = (0, util_1.parseYaml)(yamlContent);
+        console.log("yamlData", yamlData);
         // Add a new option to the dropdown field for components
         yamlData.options = yamlData.options || [];
         yamlData.options.push(componentName);
         // Save the updated YAML data back to the file
         const updatedYamlContent = (0, util_1.generateYaml)(yamlData);
+        console.log("updatedYamlContent", updatedYamlContent);
         yield fs_1.promises.writeFile(yamlFile, updatedYamlContent, 'utf8');
         //----------------------------------------------
         // Set componentName as an output

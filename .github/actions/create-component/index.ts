@@ -146,7 +146,10 @@ async function createReactComponent(input: {[key: string]: any }) {
   //----------------------------------------------
   const yamlFile = './.github/ISSUE_TEMPLATE/create_component.yml';
   const yamlContent = await fs.readFile(yamlFile, 'utf8');
+  console.log("yamlContent", yamlContent);
+
   const yamlData = parseYaml(yamlContent);
+  console.log("yamlData", yamlData);
 
   // Add a new option to the dropdown field for components
   yamlData.options = yamlData.options || [];
@@ -154,6 +157,7 @@ async function createReactComponent(input: {[key: string]: any }) {
 
   // Save the updated YAML data back to the file
   const updatedYamlContent = generateYaml(yamlData);
+  console.log("updatedYamlContent", updatedYamlContent);
   await fs.writeFile(yamlFile, updatedYamlContent, 'utf8');
 
   //----------------------------------------------
