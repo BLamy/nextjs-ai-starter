@@ -49,12 +49,13 @@ function updateReactComponent(input) {
   `;
         (0, util_1.colorLog)("green", `SYSTEM: ${systemPrompt.content}`);
         const matches = INPUT_COMMENT_BODY.match(util_1.gptCodeBlockRegex);
-        console.log(matches);
         if (!matches || matches.length < 3) {
             throw new Error("No code block found");
         }
+        // TODO maybe actually use the model name
         const [_, model, comment] = matches;
-        const userMessage = (0, util_1.user)(comment);
+        const componentFileContents = yield fs_1.promises.readFile(`./src/components/atoms/${INPUT_COMPONENT_NAME}.tsx`, "utf8");
+        const userMessage = (0, util_1.user)(comment + "\n```tsx\n" + componentFileContents + "\n```");
         (0, util_1.colorLog)("gray", `USER: ${userMessage.content}`);
         const generateComponentResponse = yield (0, util_1.simpleFetch)("https://api.openai.com/v1/chat/completions", {
             method: "POST",

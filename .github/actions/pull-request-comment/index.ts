@@ -72,12 +72,18 @@ async function updateReactComponent(input: { [key: string]: any }) {
   colorLog("green", `SYSTEM: ${systemPrompt.content}`);
 
   const matches = INPUT_COMMENT_BODY.match(gptCodeBlockRegex);
-  console.log(matches);
   if (!matches || matches.length < 3) {
     throw new Error("No code block found");
   }
+
+  // TODO maybe actually use the model name
   const [_, model, comment] = matches;
-  const userMessage = user(comment);
+
+  const componentFileContents = await fs.readFile(
+    `./src/components/atoms/${INPUT_COMPONENT_NAME}.tsx`,
+    "utf8"
+  );
+  const userMessage = user(comment+ "\n```tsx\n" + componentFileContents + "\n```");
   colorLog("gray", `USER: ${userMessage.content}`);
 
   const generateComponentResponse = await simpleFetch(
