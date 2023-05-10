@@ -1,16 +1,15 @@
 import React from "react";
 import { Meta, Story } from "@storybook/react";
-import Search, { SearchProps } from "../Search";
+import SearchBar, { SearchBarProps } from "../SearchBar";
 
 export default {
-  title: "UI/Search",
-  component: Search,
+  title: "UI/SearchBar",
+  component: SearchBar,
 } as Meta;
 
-const Template: Story<SearchProps> = (args) => <Search {...args} />;
+const Template: Story<SearchBarProps> = (args) => <SearchBar {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  value: "",
-  onChange: (value: string) => console.log(value),
+  onSearch: (searchTerm: string) => console.log(searchTerm),
 };
