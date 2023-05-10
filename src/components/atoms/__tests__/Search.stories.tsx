@@ -1,16 +1,18 @@
 import React from "react";
 import { Story, Meta } from "@storybook/react";
-import Search, { SearchProps } from "../Search";
+import TextInput, { TextInputProps } from "../TextInput";
 
 export default {
-  title: "Components/Search",
-  component: Search,
+  title: "Components/TextInput",
+  component: TextInput,
 } as Meta;
 
-const Template: Story<SearchProps> = (args) => <Search {...args} />;
+const Template: Story<TextInputProps> = (args) => <TextInput {...args} />;
 
 export const Primary = Template.bind({});
 Primary.args = {
+  label: "Username",
   value: "",
   onChange: () => {},
+  placeholder: "Enter your username",
 };
