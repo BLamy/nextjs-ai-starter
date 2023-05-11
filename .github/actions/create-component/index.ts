@@ -151,20 +151,45 @@ async function createReactComponent(input: {[key: string]: any }) {
   // Add the component to update issue template
   //----------------------------------------------
   const yamlFile = './.github/ISSUE_TEMPLATE/update_component.yml';
-  const yamlContent = await fs.readFile(yamlFile, 'utf8');
-  console.log("yamlContent", yamlContent);
 
-  const yamlData = parseYaml(yamlContent);
-  console.log("yamlData", yamlData);
+try {
+  const yamlContent = await fs.readFile(yamlFile, 'utf8');
 
   // Add a new option to the dropdown field for components
-  // @ts-ignore
-  yamlData.body.options.attributes.push(componentName);  
+  const newOption = 'NewComponent';
+
+  // Find the options list and add the new option
+  const optionsRegex = /^( *)(- .*\n)+/m;
+  const match = yamlContent.match(optionsRegex);
+
+  if (match) {
+    const indentation = match[1];
+    const updatedOptions = `${match[0]}${indentation}- ${newOption}\n`;
+
+    const updatedYamlContent = yamlContent.replace(optionsRegex, updatedOptions);
+    await fs.writeFile(yamlFile, updatedYamlContent, 'utf8');
+
+    console.log(`Successfully added '${newOption}' to the dropdown options in ${yamlFile}`);
+  } else {
+    console.error(`Could not find the options list in ${yamlFile}`);
+  }
+} catch (error) {
+  console.error(`Error while updating ${yamlFile}:`, error);
+}
+  // const yamlContent = await fs.readFile(yamlFile, 'utf8');
+  // console.log("yamlContent", yamlContent);
+
+  // const yamlData = parseYaml(yamlContent);
+  // console.log("yamlData", yamlData);
+
+  // // Add a new option to the dropdown field for components
+  // // @ts-ignore
+  // yamlData.body.options.attributes.push(componentName);  
   
-  // Save the updated YAML data back to the file
-  const updatedYamlContent = generateYaml(yamlData);
-  console.log("updatedYamlContent", updatedYamlContent);
-  await fs.writeFile(yamlFile, updatedYamlContent, 'utf8');
+  // // Save the updated YAML data back to the file
+  // const updatedYamlContent = generateYaml(yamlData);
+  // console.log("updatedYamlContent", updatedYamlContent);
+  // await fs.writeFile(yamlFile, updatedYamlContent, 'utf8');
 }
 
 createReactComponent(process.env);

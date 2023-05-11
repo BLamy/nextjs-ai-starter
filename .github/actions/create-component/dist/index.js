@@ -118,17 +118,27 @@ function createReactComponent(input) {
         // Add the component to update issue template
         //----------------------------------------------
         const yamlFile = './.github/ISSUE_TEMPLATE/update_component.yml';
-        const yamlContent = yield fs_1.promises.readFile(yamlFile, 'utf8');
-        console.log("yamlContent", yamlContent);
-        const yamlData = (0, util_1.parseYaml)(yamlContent);
-        console.log("yamlData", yamlData);
-        // Add a new option to the dropdown field for components
-        // @ts-ignore
-        yamlData.body.options.attributes.push(componentName);
-        // Save the updated YAML data back to the file
-        const updatedYamlContent = (0, util_1.generateYaml)(yamlData);
-        console.log("updatedYamlContent", updatedYamlContent);
-        yield fs_1.promises.writeFile(yamlFile, updatedYamlContent, 'utf8');
+        try {
+            const yamlContent = yield fs_1.promises.readFile(yamlFile, 'utf8');
+            // Add a new option to the dropdown field for components
+            const newOption = 'NewComponent';
+            // Find the options list and add the new option
+            const optionsRegex = /^( *)(- .*\n)+/m;
+            const match = yamlContent.match(optionsRegex);
+            if (match) {
+                const indentation = match[1];
+                const updatedOptions = `${match[0]}${indentation}- ${newOption}\n`;
+                const updatedYamlContent = yamlContent.replace(optionsRegex, updatedOptions);
+                yield fs_1.promises.writeFile(yamlFile, updatedYamlContent, 'utf8');
+                console.log(`Successfully added '${newOption}' to the dropdown options in ${yamlFile}`);
+            }
+            else {
+                console.error(`Could not find the options list in ${yamlFile}`);
+            }
+        }
+        catch (error) {
+            console.error(`Error while updating ${yamlFile}:`, error);
+        }
     });
 }
 createReactComponent(process.env);
