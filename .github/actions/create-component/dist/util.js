@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateYaml = exports.parseYaml = exports.simpleFetch = exports.runCommand = exports.colorLog = exports.assistant = exports.user = exports.system = exports.dedent = exports.exportDefaultFunctionRegex = exports.exportDefaultRegex = exports.tsxCodeBlockRegex = void 0;
+exports.simpleFetch = exports.runCommand = exports.colorLog = exports.assistant = exports.user = exports.system = exports.dedent = exports.exportDefaultFunctionRegex = exports.exportDefaultRegex = exports.tsxCodeBlockRegex = void 0;
 const child_process_1 = require("child_process");
 const https = __importStar(require("https"));
 exports.tsxCodeBlockRegex = /```(?:tsx)?(.*)```/s;
@@ -154,72 +154,3 @@ function simpleFetch(url, options = {}) {
     });
 }
 exports.simpleFetch = simpleFetch;
-function parseYaml(content, indentLevel = 0) {
-    const data = {};
-    const lines = content.split('\n');
-    let currentKey = null;
-    let currentValue = null;
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        if (line.startsWith(' '.repeat(indentLevel))) {
-            if (currentKey && currentValue !== null) {
-                if (Array.isArray(data[currentKey])) {
-                    data[currentKey].push(currentValue);
-                }
-                else {
-                    data[currentKey] = currentValue;
-                }
-            }
-            const match = line.match(/^(\s*)(\w+):\s*(.*)$/);
-            if (match) {
-                currentKey = match[2];
-                currentValue = match[3] || parseYaml(lines.slice(i + 1).join('\n'), indentLevel + 2);
-            }
-            else {
-                const listItemMatch = line.match(/^(\s*)-\s*(\w+):\s*(.*)$/);
-                if (listItemMatch) {
-                    currentKey = listItemMatch[2];
-                    currentValue = parseYaml(lines.slice(i + 1).join('\n'), indentLevel + 2);
-                    if (!Array.isArray(data[currentKey])) {
-                        data[currentKey] = [];
-                    }
-                }
-                else {
-                    currentKey = null;
-                    currentValue = null;
-                }
-            }
-        }
-    }
-    if (currentKey && currentValue !== null) {
-        if (Array.isArray(data[currentKey])) {
-            data[currentKey].push(currentValue);
-        }
-        else {
-            data[currentKey] = currentValue;
-        }
-    }
-    return data;
-}
-exports.parseYaml = parseYaml;
-function generateYaml(data, indentLevel = 0) {
-    let content = '';
-    for (const key in data) {
-        content += `${' '.repeat(indentLevel)}${key}:`;
-        const value = data[key];
-        if (typeof value === 'string') {
-            content += ` ${value}\n`;
-        }
-        else if (Array.isArray(value)) {
-            for (const item of value) {
-                content += `\n${' '.repeat(indentLevel + 2)}- ${item}`;
-            }
-            content += '\n';
-        }
-        else {
-            content += `\n${generateYaml(value, indentLevel + 2)}`;
-        }
-    }
-    return content;
-}
-exports.generateYaml = generateYaml;

@@ -4,8 +4,6 @@ import {
   system,
   user,
   assistant,
-  parseYaml,
-  generateYaml,
   tsxCodeBlockRegex,
   exportDefaultRegex,
   exportDefaultFunctionRegex,
@@ -151,20 +149,13 @@ async function createReactComponent(input: {[key: string]: any }) {
   // Add the component to update issue template
   //----------------------------------------------
   const yamlFile = './.github/ISSUE_TEMPLATE/update_component.yml';
-
   try {
     const yamlContent = await fs.readFile(yamlFile, 'utf8');
-  
-    // Find the options list and add the new option
-    const optionsRegex = /^(\s*)options:(\n(?:\1\s+- .*\n)+)/m;
+    const optionsRegex = /(\s+)label: Component Name[\S\s]*description:[\S\s]*options:/s;
     const match = yamlContent.match(optionsRegex);
-  
+
     if (match) {
-      const indentation = match[1];
-      const optionsList = match[2];
-      const updatedOptions = `${optionsList}${indentation}  - ${componentName}\n`;
-  
-      const updatedYamlContent = yamlContent.replace(optionsRegex, `$1options:${updatedOptions}`);
+      const updatedYamlContent = yamlContent.replace(match[0], `${match[0]}${match[1]}- ${componentName}`);
       await fs.writeFile(yamlFile, updatedYamlContent, 'utf8');
   
       console.log(`Successfully added '${componentName}' to the dropdown options in ${yamlFile}`);
