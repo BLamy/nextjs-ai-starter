@@ -195,7 +195,11 @@ export function parseYaml(content: string, indentLevel = 0): YamlObject {
 
     if (line.startsWith(' '.repeat(indentLevel))) {
       if (currentKey && currentValue !== null) {
-        data[currentKey] = currentValue;
+        if (Array.isArray(data[currentKey])) {
+          (data[currentKey] as string[]).push(currentValue as string);
+        } else {
+          data[currentKey] = currentValue;
+        }
       }
 
       const match = line.match(/^(\s*)(\w+):\s*(.*)$/);
@@ -203,19 +207,31 @@ export function parseYaml(content: string, indentLevel = 0): YamlObject {
         currentKey = match[2];
         currentValue = match[3] || parseYaml(lines.slice(i + 1).join('\n'), indentLevel + 2);
       } else {
-        currentKey = null;
-        currentValue = null;
+        const listItemMatch = line.match(/^(\s*)-\s*(\w+):\s*(.*)$/);
+        if (listItemMatch) {
+          currentKey = listItemMatch[2];
+          currentValue = parseYaml(lines.slice(i + 1).join('\n'), indentLevel + 2);
+          if (!Array.isArray(data[currentKey])) {
+            data[currentKey] = [];
+          }
+        } else {
+          currentKey = null;
+          currentValue = null;
+        }
       }
     }
   }
 
   if (currentKey && currentValue !== null) {
-    data[currentKey] = currentValue;
+    if (Array.isArray(data[currentKey])) {
+      (data[currentKey] as string[]).push(currentValue as string);
+    } else {
+      data[currentKey] = currentValue;
+    }
   }
 
   return data;
 }
-
 
 export function generateYaml(data: YamlObject, indentLevel = 0): string {
   let content = '';

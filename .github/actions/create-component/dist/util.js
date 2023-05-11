@@ -163,7 +163,12 @@ function parseYaml(content, indentLevel = 0) {
         const line = lines[i];
         if (line.startsWith(' '.repeat(indentLevel))) {
             if (currentKey && currentValue !== null) {
-                data[currentKey] = currentValue;
+                if (Array.isArray(data[currentKey])) {
+                    data[currentKey].push(currentValue);
+                }
+                else {
+                    data[currentKey] = currentValue;
+                }
             }
             const match = line.match(/^(\s*)(\w+):\s*(.*)$/);
             if (match) {
@@ -171,13 +176,28 @@ function parseYaml(content, indentLevel = 0) {
                 currentValue = match[3] || parseYaml(lines.slice(i + 1).join('\n'), indentLevel + 2);
             }
             else {
-                currentKey = null;
-                currentValue = null;
+                const listItemMatch = line.match(/^(\s*)-\s*(\w+):\s*(.*)$/);
+                if (listItemMatch) {
+                    currentKey = listItemMatch[2];
+                    currentValue = parseYaml(lines.slice(i + 1).join('\n'), indentLevel + 2);
+                    if (!Array.isArray(data[currentKey])) {
+                        data[currentKey] = [];
+                    }
+                }
+                else {
+                    currentKey = null;
+                    currentValue = null;
+                }
             }
         }
     }
     if (currentKey && currentValue !== null) {
-        data[currentKey] = currentValue;
+        if (Array.isArray(data[currentKey])) {
+            data[currentKey].push(currentValue);
+        }
+        else {
+            data[currentKey] = currentValue;
+        }
     }
     return data;
 }
