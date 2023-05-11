@@ -21,28 +21,29 @@ class PromptCompiler {
   }
 
   compileRailPrompt(fileName) {
-    const railPath = path.join(__dirname, this.promptsDirectory, fileName);
+//     const railPath = path.join(__dirname, this.promptsDirectory, fileName);
 
-    // Create and activate the virtual environment
-    const activateEnvCmd = this.createAndActivateVirtualEnv();
+//     // Create and activate the virtual environment
+//     const activateEnvCmd = this.createAndActivateVirtualEnv();
 
-    // Install guardrails-ai package in the virtual environment
-    const installCmd = `${activateEnvCmd} && pip install guardrails-ai==0.1.4`;
-    cp.execSync(installCmd);
+//     // Install guardrails-ai package in the virtual environment
+//     const installCmd = `${activateEnvCmd} && pip install guardrails-ai==0.1.4`;
+//     cp.execSync(installCmd);
 
-    // Run Python script in the virtual environment
-    const scriptCmd = `${activateEnvCmd} && python scripts/compileRailFile.py ${railPath}`;
-    const compiledFile = cp.execSync(scriptCmd).toString();
+//     // Run Python script in the virtual environment
+//     const scriptCmd = `${activateEnvCmd} && python scripts/compileRailFile.py ${railPath}`;
+//     const compiledFile = cp.execSync(scriptCmd).toString();
 
-    return JSON.stringify(compiledFile.replace(
-        'ONLY return a valid JSON object (no other text is necessary). The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.', 
-        `ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the \`name\` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.
-Here are examples of simple (XML, JSON) pairs that show the expected behavior:
-- \`<string name='foo' format='two-words lower-case' />\` => \`{'foo': 'example one'}\`
-- \`<list name='bar'><string format='upper-case' /></list>\` => \`{"bar": ['STRING ONE', 'STRING TWO', etc.]}\`
-- \`<object name='baz'><string name="foo" format="capitalize two-words" /><integer name="index" format="1-indexed" /></object>\` => \`{'baz': {'foo': 'Some String', 'index': 1}}\`
-</prompt>
-`));
+//     return JSON.stringify(compiledFile.replace(
+//         'ONLY return a valid JSON object (no other text is necessary). The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.', 
+//         `ONLY return a valid JSON object (no other text is necessary), where the key of the field in JSON is the \`name\` attribute of the corresponding XML, and the value is of the type specified by the corresponding XML's tag. The JSON MUST conform to the XML format, including any types and format requests e.g. requests for lists, objects and specific types. Be correct and concise.
+// Here are examples of simple (XML, JSON) pairs that show the expected behavior:
+// - \`<string name='foo' format='two-words lower-case' />\` => \`{'foo': 'example one'}\`
+// - \`<list name='bar'><string format='upper-case' /></list>\` => \`{"bar": ['STRING ONE', 'STRING TWO', etc.]}\`
+// - \`<object name='baz'><string name="foo" format="capitalize two-words" /><integer name="index" format="1-indexed" /></object>\` => \`{'baz': {'foo': 'Some String', 'index': 1}}\`
+// </prompt>
+// `));
+return "";
   }
 
   compileTypescriptPrompt(fileName) {
