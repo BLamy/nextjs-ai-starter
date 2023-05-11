@@ -3,6 +3,7 @@ description: Fill out this form to create a new component
 labels: ["update-component"]
 body:
   - type: dropdown
+  - NewComponent
     id: component
     attributes:
       label: Component Name
