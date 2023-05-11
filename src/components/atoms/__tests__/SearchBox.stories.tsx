@@ -14,3 +14,10 @@ Default.args = {
     console.log(value);
   },
 };
+
+export const WithIcon = Template.bind({});
+WithIcon.args = {
+  onChange: (value) => {
+    console.log(value);
+  },
+};
