@@ -76,6 +76,11 @@ function createReactComponent(input) {
         yield fs_1.promises.writeFile(`./src/components/atoms/${componentName}.tsx`, codeBlock, "utf8");
         yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/${componentName}.tsx`);
         //----------------------------------------------
+        // Set componentName as an output
+        //----------------------------------------------
+        const output = process.env['GITHUB_OUTPUT'];
+        yield fs_1.promises.appendFile(output, `componentName=${componentName}${os_1.default.EOL}`);
+        //----------------------------------------------
         // Create the storybook
         //----------------------------------------------
         const storybookFollowUpPrompt = (0, util_1.user)(`
@@ -119,18 +124,11 @@ function createReactComponent(input) {
         console.log("yamlData", yamlData);
         // Add a new option to the dropdown field for components
         // @ts-ignore
-        yamlData.body[0].attributes.options = yamlData.body[0].attributes.options || [];
-        // @ts-ignore
-        yamlData.body[0].attributes.options.push(componentName);
+        yamlData.body.options.attributes.push(componentName);
         // Save the updated YAML data back to the file
         const updatedYamlContent = (0, util_1.generateYaml)(yamlData);
         console.log("updatedYamlContent", updatedYamlContent);
         yield fs_1.promises.writeFile(yamlFile, updatedYamlContent, 'utf8');
-        //----------------------------------------------
-        // Set componentName as an output
-        //----------------------------------------------
-        const output = process.env['GITHUB_OUTPUT'];
-        yield fs_1.promises.appendFile(output, `componentName=${componentName}${os_1.default.EOL}`);
     });
 }
 createReactComponent(process.env);

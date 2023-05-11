@@ -97,6 +97,12 @@ async function createReactComponent(input: {[key: string]: any }) {
   );
 
   //----------------------------------------------
+  // Set componentName as an output
+  //----------------------------------------------
+  const output = process.env['GITHUB_OUTPUT'] as string;
+  await fs.appendFile(output, `componentName=${componentName}${os.EOL}`)
+
+  //----------------------------------------------
   // Create the storybook
   //----------------------------------------------
   const storybookFollowUpPrompt = user(`
@@ -153,20 +159,12 @@ async function createReactComponent(input: {[key: string]: any }) {
 
   // Add a new option to the dropdown field for components
   // @ts-ignore
-  yamlData.body[0].attributes.options = yamlData.body[0].attributes.options || [];
-    // @ts-ignore
-  yamlData.body[0].attributes.options.push(componentName);  
+  yamlData.body.options.attributes.push(componentName);  
   
   // Save the updated YAML data back to the file
   const updatedYamlContent = generateYaml(yamlData);
   console.log("updatedYamlContent", updatedYamlContent);
   await fs.writeFile(yamlFile, updatedYamlContent, 'utf8');
-
-  //----------------------------------------------
-  // Set componentName as an output
-  //----------------------------------------------
-  const output = process.env['GITHUB_OUTPUT'] as string;
-  await fs.appendFile(output, `componentName=${componentName}${os.EOL}`)
 }
 
 createReactComponent(process.env);
