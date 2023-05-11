@@ -9,9 +9,7 @@ export default {
   component: ControlledSearchbox,
   argTypes: {
     value: {
-      control: {
-        type: null,
-      },
+      control: null,
     },
     onChange: {
       action: "changed",
@@ -39,5 +37,5 @@ const Template: Story<ControlledSearchboxProps> = (args) => {
   );
 };
 
-export const Default = Template.bind({}) as typeof Template;
-Default.args = {} as ControlledSearchboxProps;
+export const Default = Template.bind({});
+Default.args = {};
