@@ -120,17 +120,16 @@ function createReactComponent(input) {
         const yamlFile = './.github/ISSUE_TEMPLATE/update_component.yml';
         try {
             const yamlContent = yield fs_1.promises.readFile(yamlFile, 'utf8');
-            // Add a new option to the dropdown field for components
-            const newOption = 'NewComponent';
             // Find the options list and add the new option
-            const optionsRegex = /^( *)(- .*\n)+/m;
+            const optionsRegex = /^(\s*)options:(\n(?:\1\s+- .*\n)+)/m;
             const match = yamlContent.match(optionsRegex);
             if (match) {
                 const indentation = match[1];
-                const updatedOptions = `${match[0]}${indentation}- ${newOption}\n`;
-                const updatedYamlContent = yamlContent.replace(optionsRegex, updatedOptions);
+                const optionsList = match[2];
+                const updatedOptions = `${optionsList}${indentation}  - ${componentName}\n`;
+                const updatedYamlContent = yamlContent.replace(optionsRegex, `$1options:${updatedOptions}`);
                 yield fs_1.promises.writeFile(yamlFile, updatedYamlContent, 'utf8');
-                console.log(`Successfully added '${newOption}' to the dropdown options in ${yamlFile}`);
+                console.log(`Successfully added '${componentName}' to the dropdown options in ${yamlFile}`);
             }
             else {
                 console.error(`Could not find the options list in ${yamlFile}`);
