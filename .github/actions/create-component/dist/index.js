@@ -118,8 +118,10 @@ function createReactComponent(input) {
         const yamlData = (0, util_1.parseYaml)(yamlContent);
         console.log("yamlData", yamlData);
         // Add a new option to the dropdown field for components
-        yamlData.options = yamlData.options || [];
-        yamlData.options.push(componentName);
+        // @ts-ignore
+        yamlData.body[0].attributes.options = yamlData.body[0].attributes.options || [];
+        // @ts-ignore
+        yamlData.body[0].attributes.options.push(componentName);
         // Save the updated YAML data back to the file
         const updatedYamlContent = (0, util_1.generateYaml)(yamlData);
         console.log("updatedYamlContent", updatedYamlContent);

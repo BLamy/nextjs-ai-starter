@@ -179,34 +179,60 @@ export function simpleFetch(url: string, options: RequestOptions = {}): Promise<
   });
 }
 
-export function parseYaml(content: string): Record<string, string[]> {
-  const data: Record<string, string[]> = {};
-  let currentKey: string | null = null;
+type YamlValue = string | YamlValue[] | YamlObject;
+interface YamlObject {
+  [key: string]: YamlValue;
+}
 
-  content.split('\n').forEach(line => {
-    const keyMatch = line.match(/(\w+):\s*$/);
-    if (keyMatch) {
-      currentKey = keyMatch[1];
-      data[currentKey] = [];
-    } else {
-      const valueMatch = line.match(/^- (.*)$/);
-      if (valueMatch && currentKey) {
-        data[currentKey].push(valueMatch[1]);
+export function parseYaml(content: string, indentLevel = 0): YamlObject {
+  const data: YamlObject = {};
+  const lines = content.split('\n');
+  let currentKey: string | null = null;
+  let currentValue: YamlValue | null = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (line.startsWith(' '.repeat(indentLevel))) {
+      if (currentKey && currentValue !== null) {
+        data[currentKey] = currentValue;
+      }
+
+      const match = line.match(/^(\s*)(\w+):\s*(.*)$/);
+      if (match) {
+        currentKey = match[2];
+        currentValue = match[3] || parseYaml(lines.slice(i + 1).join('\n'), indentLevel + 2);
+      } else {
+        currentKey = null;
+        currentValue = null;
       }
     }
-  });
+  }
+
+  if (currentKey && currentValue !== null) {
+    data[currentKey] = currentValue;
+  }
 
   return data;
 }
 
-export function generateYaml(data: Record<string, string[]>): string {
+
+export function generateYaml(data: YamlObject, indentLevel = 0): string {
   let content = '';
 
   for (const key in data) {
-    content += `${key}:\n`;
+    content += `${' '.repeat(indentLevel)}${key}:`;
 
-    for (const value of data[key]) {
-      content += `- ${value}\n`;
+    const value = data[key];
+    if (typeof value === 'string') {
+      content += ` ${value}\n`;
+    } else if (Array.isArray(value)) {
+      for (const item of value) {
+        content += `\n${' '.repeat(indentLevel + 2)}- ${item}`;
+      }
+      content += '\n';
+    } else {
+      content += `\n${generateYaml(value, indentLevel + 2)}`;
     }
   }
 
