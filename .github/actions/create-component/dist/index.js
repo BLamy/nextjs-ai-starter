@@ -112,7 +112,7 @@ function createReactComponent(input) {
         //----------------------------------------------
         // Add the component to update issue template
         //----------------------------------------------
-        const yamlFile = './.github/ISSUE_TEMPLATE/create_component.yml';
+        const yamlFile = './.github/ISSUE_TEMPLATE/update_component.yml';
         const yamlContent = yield fs_1.promises.readFile(yamlFile, 'utf8');
         console.log("yamlContent", yamlContent);
         const yamlData = (0, util_1.parseYaml)(yamlContent);

@@ -144,7 +144,7 @@ async function createReactComponent(input: {[key: string]: any }) {
   //----------------------------------------------
   // Add the component to update issue template
   //----------------------------------------------
-  const yamlFile = './.github/ISSUE_TEMPLATE/create_component.yml';
+  const yamlFile = './.github/ISSUE_TEMPLATE/update_component.yml';
   const yamlContent = await fs.readFile(yamlFile, 'utf8');
   console.log("yamlContent", yamlContent);
 
