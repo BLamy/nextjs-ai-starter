@@ -43,7 +43,7 @@ class PromptCompiler {
 // - \`<object name='baz'><string name="foo" format="capitalize two-words" /><integer name="index" format="1-indexed" /></object>\` => \`{'baz': {'foo': 'Some String', 'index': 1}}\`
 // </prompt>
 // `));
-return "";
+return JSON.stringify("TODO FIX ME");
   }
 
   compileTypescriptPrompt(fileName) {
