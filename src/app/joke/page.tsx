@@ -4,7 +4,7 @@ import * as PromptTypes from "@/ai/prompts";
 import { ChatCompletionRequestMessage } from "openai";
 import Chat from "@/components/organisms/Chat";
 import TypesafePrompt from "@/lib/TypesafePrompt";
-
+import JokeExamples from "@/ai/prompts/examples/JokeGenerator.Examples.json";
 // Search params are passed in from the URL are always strings
 type Props = {
   searchParams: {
@@ -25,10 +25,10 @@ const errorHandlers = {
     error: string,
     messages: ChatCompletionRequestMessage[]
   ) => {},
-  "json parse error": async (
-    error: string,
-    messages: ChatCompletionRequestMessage[]
-  ) => {},
+  // "json parse error": async (
+  //   error: string,
+  //   messages: ChatCompletionRequestMessage[]
+  // ) => {},
   "zod validation error": async (
     error: string,
     messages: ChatCompletionRequestMessage[]
@@ -47,9 +47,10 @@ const errorHandlers = {
 export const dynamic = "force-dynamic";
 export default async function Joke({ searchParams }: Props) {
   const prompt = new TypesafePrompt(
-    Prompts.JokeGenerator,
+    PromptTypes.JokeGenerator.prompt,
     PromptTypes.JokeGenerator.inputSchema,
-    PromptTypes.JokeGenerator.outputSchema
+    PromptTypes.JokeGenerator.outputSchema,
+    JokeExamples,
   );
   const params = {
     count: Number.parseInt(searchParams["count"] || "1"),

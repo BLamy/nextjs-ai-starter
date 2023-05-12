@@ -39,7 +39,8 @@
     "ts-dedent": "^2.2.0",
     "typescript": "5.1.0-dev.20230311",
     "window.ai": "^0.1.1",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zod-to-ts": "^1.1.4"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^6.5.0",
