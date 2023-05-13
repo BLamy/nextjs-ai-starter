@@ -22,7 +22,7 @@ const SearchBox = ({ placeholder, onSearch }: SearchBoxProps) => {
     <div className="relative flex items-center">
       <input
         type="text"
-        className="pl-10 py-2 pr-4 w-full border rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+        className="px-4 py-2 w-full border rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
         placeholder={placeholder}
         value={value}
         onChange={handleChange}
