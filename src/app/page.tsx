@@ -31,11 +31,11 @@ const demos = [
   //     "Uses a static sqlite database to query for embedding on the client side.",
   //   href: "/sqlite",
   // },
-  {
-    title: "Guardrails Demo",
-    description: "Loads prompt from a Guardrails file.",
-    href: "/rail",
-  },
+  // {
+  //   title: "Guardrails Demo",
+  //   description: "Loads prompt from a Guardrails file.",
+  //   href: "/rail",
+  // },
   {
     title: "Docs",
     description: "Explore our documentation.",

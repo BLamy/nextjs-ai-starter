@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 // Prompts can be imported using:
 // ```typescript
 // import Prompts from "@/ai/prompts";
@@ -12,28 +10,7 @@ import { z } from "zod";
 // ]);
 // const output: PromptTypes.NFLScores.Output = PromptTypes.JokeGenerator.outputSchema.parse(res.);
 // ```
-import * as NFLScores from "./NFLScores.Prompt";
-import * as JokeGenerator from "./JokeGenerator.Prompt";
-import * as NumberGenerator from "./NumberGenerator.Prompt";
-
-// This is a zod schema that validates the environment variables
-export const EnvSchema = z.object({
-    NFLScores: z.string(),
-    JokeGenerator: z.string(),
-    NumberGenerator: z.string(),
-    BankRun: z.string(),
-    PoemGenerator: z.string(),
-});
-
-// This gives the default export auto-completion for the prompts
-export default EnvSchema.parse({
-    // Note these variables do not actually exist in the environment
-    // They are replaced at build time by the DefinePlugin
-    NFLScores: process.env.NFLScoresPrompt,
-    JokeGenerator: process.env.JokeGeneratorPrompt,
-    NumberGenerator: process.env.NumberGeneratorPrompt,
-    BankRun: process.env.BankRunPrompt,
-    PoemGenerator: process.env.PoemGeneratorPrompt,
-});
-
-export { NFLScores, JokeGenerator, NumberGenerator };
+export * as NFLScores from "./NFLScores.Prompt";
+export * as JokeGenerator from "./JokeGenerator.Prompt";
+export * as NumberGenerator from "./NumberGenerator.Prompt";
+export { default as PoemGenerator } from './PoemGenerator.Prompt.txt'

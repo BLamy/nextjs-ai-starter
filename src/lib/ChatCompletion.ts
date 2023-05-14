@@ -17,7 +17,7 @@ type Options = {
 const defaultOpts = {
   parseResponse: true,
   model: "gpt-3.5-turbo",
-  temperature: 0,
+  temperature: 0.3,
 };
 export async function generateChatCompletion<
   TOutput extends Record<string, any>

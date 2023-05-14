@@ -1,5 +1,5 @@
-const webpack = require("webpack");
-const PromptCompiler = require("./scripts/PromptCompiler");
+// const webpack = require("webpack");
+// const PromptCompiler = require("./scripts/PromptCompiler");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -8,7 +8,7 @@ const nextConfig = {
   },
   webpack: (config, { isServer, buildId }) => {
     // This will read the prompts in from the prompts directory compile them and assign them to process.env
-    config.plugins.push(new webpack.DefinePlugin(new PromptCompiler().build()));
+    // config.plugins.push(new webpack.DefinePlugin(new PromptCompiler().build()));
     config.module.rules.push({
       test: /\.txt$/,
       use: 'raw-loader',

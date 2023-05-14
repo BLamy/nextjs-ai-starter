@@ -10,11 +10,14 @@ import {
 import { ChatCompletionRequestMessage } from "openai";
 import { isValidTool } from "@/lib/Utils";
 import { ZodSchema } from "zod";
+import { zodToTs, createTypeAlias, printNode } from 'zod-to-ts'
+import basicPreamble from '@/lib/preambles/basic.turbo.Prompt.txt';
+// import toolsPreamble from './preambles/tools.turbo.Prompt.txt';
 
 type Result<TOutput, TError> = ({ res: TOutput } | { error: TError }) & {
   messages: ChatCompletionRequestMessage[];
 };
-type ErrorHandler = (
+export type ErrorHandler = (
   error: string,
   messages: ChatCompletionRequestMessage[]
 ) => Promise<ChatCompletionRequestMessage[] | void>;
@@ -35,6 +38,7 @@ export default class TypesafePrompt<
     private prompt: TPrompt,
     private inputSchema: TInput,
     private outputSchema: TOutput,
+    private examples: ChatCompletionRequestMessage[] = [],
     // private tools: TTools,
     private config?: {
       skipInputValidation?: boolean;
@@ -46,13 +50,13 @@ export default class TypesafePrompt<
   async run<TError extends string>(
     input: z.infer<TInput>,
     errorHandlers: {
-      [TKey in TError | "unknown" | "zod validation error"]: ErrorHandler;
+      [TKey in TError | "unknown" | "type validation error"]: ErrorHandler;
     }
-  ): Promise<Result<TOutput, TError | "unknown" | "zod validation error">> {
+  ): Promise<Result<TOutput, TError | "unknown" | "type validation error">> {
     if (!this.config?.skipInputValidation) {
       const inputValidation = this.inputSchema.safeParse(input);
       if (!inputValidation.success) {
-        const error = "zod validation error";
+        const error = "type validation error";
         const messages: ChatCompletionRequestMessage[] = [
           system(inputValidation.error.message),
         ];
@@ -60,10 +64,39 @@ export default class TypesafePrompt<
         return { error, messages };
       }
     }
-    console.log(chalk.green(`SYSTEM: ${this.prompt}`));
+
+    let inputType = printNode(
+      zodToTs(this.inputSchema, 'Input').node,
+    ).replace(/\r?\n\s*/g, '').replace(/;/g, ', ').replace(', }', '}');
+    if (inputType.endsWith('[]')) {
+      inputType = `Array<${inputType.slice(0, -2)}>`;
+    }
+
+    let outputType = printNode(
+      zodToTs(this.outputSchema, 'Output').node,
+    ).replace(/\r?\n\s*/g, '').replace(/;/g, ', ').replace(', }', '}');
+    if (outputType.endsWith('[]')) {
+      outputType = `Array<${outputType.slice(0, -2)}>`;
+    }
+    let systemPrompt = basicPreamble;
+    if (this.examples.length > 0) {
+      systemPrompt += `\n### Examples${this.examples.reduce((acc, example) => {
+        return `${acc}\n${example.role.toUpperCase()}: ${example.content}`;
+      }, "")}`
+    }
+
+    systemPrompt += "\n### Typescript\n";
+    systemPrompt += `export type Prompt = "${this.prompt}"\n`;
+    systemPrompt += `export type Input = ${inputType}\n`;
+    systemPrompt += `export type Output = ${outputType}\n`;
+    systemPrompt += `export type Errors = ${Object.keys(errorHandlers).map(key => JSON.stringify(key)).join(' | ')};\n`;
+
+    const systemMessage = system(systemPrompt);
+
+    console.log(chalk.green(`SYSTEM: ${systemMessage.content}`));
     console.log(chalk.blue(`USER: ${JSON.stringify(input, null, 2)}`));
     let messages: ChatCompletionRequestMessage[] = [
-      system(this.prompt),
+      systemMessage,
       user(JSON.stringify(input)),
     ];
     // There are only two tools so if it loops more than twice, something is wrong.
@@ -97,7 +130,7 @@ export default class TypesafePrompt<
           return { error: "unknown", messages };
         }
       }
-
+      
       if ("error" in chatCompletion) {
         console.error(
           chalk.red(`SYSTEM: ${JSON.stringify(chatCompletion, null, 2)}`)

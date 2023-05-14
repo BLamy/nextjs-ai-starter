@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+const inputSchema = z.object({
+  query: z.string(),
+});
+
 // Ideally the latest score will just pop up in a block at the top of the search results
 const gameSpotlightSchema = z.object({
   sports_results: z.object({
@@ -40,7 +44,7 @@ const organicResultsSchema = z.object({
   ),
 });
 
-export default async function search({ query }: { query: string }) {
+export default async function search({ query }: z.infer<typeof inputSchema>) {
   const res = await fetch(
     `https://serpapi.com/search.json?engine=google&q=${query}&api_key=${process.env.SERP_API_KEY}`
   );
