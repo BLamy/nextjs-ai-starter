@@ -1,4 +1,0 @@
-[
-    {"role":"user","content":"{ \"count\": 3, \"jokeType\": \"funny\"}"},
-    {"role":"assistant","content":"[{ \"setup\": \"Why did the tomato turn red?\",\"punchline\":\"Because it saw the salad dressing!\", \"explanation\": \"This is a funny joke because of the pun in salad dressing.\"},{ \"setup\": \"Why did the scarecrow win an award?\", \"punchline\": \"Because he was outstanding in his field.\", \"explanation\": \"This is a funny joke because of the pun on the word field.\"},{ \"setup\":\"Why don't scientists trust atoms?\", \"punchline\": \"Because they make up everything.\", \"explanation\": \"This is a funny joke because atoms are the basic building block for everything and therefore there is a pun for making everything up\"}]"}
-]

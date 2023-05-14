@@ -1,5 +1,10 @@
+import { z } from 'zod';
 import { evaluate } from "mathjs";
 
-export default function calculator({ equation }: { equation: string }) {
+export const inputSchema = z.object({
+  equation: z.string()
+});
+
+export default function calculator({ equation }: z.infer<typeof inputSchema>) {
   return evaluate(equation);
 }

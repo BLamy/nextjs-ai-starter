@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "GitHub.copilot",
+        "ms-vscode.vscode-typescript-next",
+        "esbenp.prettier-vscode",
+        "yoavbls.pretty-ts-errors",
+        "WallabyJs.quokka-vscode",
+        "WallabyJs.wallaby-vscode",
+        "WallabyJs.console-ninja"
+    ]
+}

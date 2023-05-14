@@ -1,7 +1,7 @@
 import { generateChatCompletion, user, assistant } from "@/lib/ChatCompletion";
 import Chat from "@/components/organisms/Chat";
 import { ChatCompletionRequestMessage } from "openai";
-import Prompts from "@/ai/prompts";
+import * as Prompts from "@/ai/prompts";
 
 export default async function Joke() {
   const messages: ChatCompletionRequestMessage[] = [

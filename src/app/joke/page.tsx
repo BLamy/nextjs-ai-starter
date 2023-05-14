@@ -1,14 +1,14 @@
 import React from "react";
-import Prompts from "@/ai/prompts";
-import * as PromptTypes from "@/ai/prompts";
+// import Prompts from "@/ai/prompts";
+import * as Prompts from "@/ai/prompts";
 import { ChatCompletionRequestMessage } from "openai";
 import Chat from "@/components/organisms/Chat";
-import TypesafePrompt from "@/lib/TypesafePrompt";
-import JokeExamples from "@/ai/prompts/examples/JokeGenerator.Examples.json";
+import TypesafePrompt, { ErrorHandler } from "@/lib/TypesafePrompt";
+// import JokeExamples from "@/ai/prompts/examples/JokeGenerator.Examples.json";
 // Search params are passed in from the URL are always strings
 type Props = {
   searchParams: {
-    [key in keyof PromptTypes.JokeGenerator.Input]: string;
+    [key in keyof Prompts.JokeGenerator.Input]: string;
   };
 };
 
@@ -16,7 +16,7 @@ type Props = {
 // The error handlers are async functions that take in the error string and the messages
 // You can return a new set of messages which will be used in the chat as an attempt to fix the error
 // If you return nothing the chat will terminate and the error will be displayed to the user
-const errorHandlers = {
+const errorHandlers: {[key in Prompts.JokeGenerator.Errors]: ErrorHandler} = {
   unknown: async (
     error: string,
     messages: ChatCompletionRequestMessage[]
@@ -29,7 +29,7 @@ const errorHandlers = {
   //   error: string,
   //   messages: ChatCompletionRequestMessage[]
   // ) => {},
-  "zod validation error": async (
+  "type validation error": async (
     error: string,
     messages: ChatCompletionRequestMessage[]
   ) => {
@@ -47,18 +47,18 @@ const errorHandlers = {
 export const dynamic = "force-dynamic";
 export default async function Joke({ searchParams }: Props) {
   const prompt = new TypesafePrompt(
-    PromptTypes.JokeGenerator.prompt,
-    PromptTypes.JokeGenerator.inputSchema,
-    PromptTypes.JokeGenerator.outputSchema,
-    JokeExamples,
+    Prompts.JokeGenerator.prompt,
+    Prompts.JokeGenerator.inputSchema,
+    Prompts.JokeGenerator.outputSchema,
+    Prompts.JokeGenerator.examples,
   );
   const params = {
     count: Number.parseInt(searchParams["count"] || "1"),
-    jokeType: PromptTypes.JokeGenerator.jokeTypeSchema.parse(
+    jokeType: Prompts.JokeGenerator.jokeTypeSchema.parse(
       searchParams["jokeType"]
     ),
   };
-  const { messages } = await prompt.run<PromptTypes.JokeGenerator.Errors>(
+  const { messages } = await prompt.run<Prompts.JokeGenerator.Errors>(
     params,
     errorHandlers
   );
