@@ -10,13 +10,13 @@ type Error = {
   msg: string;
 };
 type Options = {
-  model?: string; //"gpt-3.5-turbo" | "gpt-4"
+  model?: string; //"gpt-3.5-turbo-0613" | "gpt-4"
   parseResponse?: boolean;
   temperature?: number;
 };
 const defaultOpts = {
   parseResponse: true,
-  model: "gpt-3.5-turbo",
+  model: "gpt-3.5-turbo-0613",
   temperature: 0,
 };
 export async function generateChatCompletion<

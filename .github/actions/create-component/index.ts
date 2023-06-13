@@ -13,7 +13,7 @@ import {
 import os from "os";
 
 type Input = {
-  INPUT_LLM_MODEL: "gpt-3.5-turbo" | "gpt-4";
+  INPUT_LLM_MODEL: "gpt-3.5-turbo-0613" | "gpt-4";
   INPUT_OPENAI_API_KEY: string;
   INPUT_ISSUE_BODY: string;
 };
@@ -22,7 +22,7 @@ type Input = {
 function isValidInput(input: {[key: string]: any }): input is Input {
   if (
     typeof input.INPUT_LLM_MODEL !== "string" ||
-    !["gpt-3.5-turbo", "gpt-4"].includes(input.INPUT_LLM_MODEL)
+    !["gpt-3.5-turbo-0613", "gpt-4"].includes(input.INPUT_LLM_MODEL)
   ) {
     throw new Error(`Invalid INPUT_LLM_MODEL: ${input.INPUT_LLM_MODEL}`);
   }

@@ -18,7 +18,7 @@ const os_1 = __importDefault(require("os"));
 // Doing this instead of zod so we don't have to install dependencies
 function isValidInput(input) {
     if (typeof input.INPUT_LLM_MODEL !== "string" ||
-        !["gpt-3.5-turbo", "gpt-4"].includes(input.INPUT_LLM_MODEL)) {
+        !["gpt-3.5-turbo-0613", "gpt-4"].includes(input.INPUT_LLM_MODEL)) {
         throw new Error(`Invalid INPUT_LLM_MODEL: ${input.INPUT_LLM_MODEL}`);
     }
     if (typeof input.INPUT_OPENAI_API_KEY !== "string" || input.INPUT_OPENAI_API_KEY === "") {

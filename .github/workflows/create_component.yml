@@ -19,7 +19,7 @@ jobs:
         with:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ISSUE_BODY: ${{ github.event.issue.body }}
-          LLM_MODEL: "gpt-3.5-turbo"
+          LLM_MODEL: "gpt-3.5-turbo-0613"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
