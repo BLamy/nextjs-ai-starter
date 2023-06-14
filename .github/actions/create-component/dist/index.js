@@ -108,12 +108,16 @@ function createReactComponent(input) {
                 ],
             }),
         });
-        const rawStoryBookResponse = (_e = (yield generateStorybookResponse.json()).data
-            .choices[0].message) === null || _e === void 0 ? void 0 : _e.content;
-        const storybookCodeBlock = (_f = rawStoryBookResponse.match(util_1.tsxCodeBlockRegex)) === null || _f === void 0 ? void 0 : _f[1];
+        const rawStoryBookResponse = yield generateStorybookResponse.json();
+        const storybookCodeBlock = (_f = (_e = rawStoryBookResponse.data.choices[0].message) === null || _e === void 0 ? void 0 : _e.content.match(util_1.tsxCodeBlockRegex)) === null || _f === void 0 ? void 0 : _f[1];
         (0, util_1.colorLog)("blue", `ASSISTANT: ${storybookCodeBlock}`);
-        yield fs_1.promises.writeFile(`./src/components/atoms/__tests__/${componentName}.stories.tsx`, storybookCodeBlock, "utf8");
-        yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`);
+        if (storybookCodeBlock) {
+            yield fs_1.promises.writeFile(`./src/components/atoms/__tests__/${componentName}.stories.tsx`, storybookCodeBlock, "utf8");
+            yield (0, util_1.runCommand)(`npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`);
+        }
+        else {
+            (0, util_1.colorLog)("blue", `RAW ASSISTANT: ${rawStoryBookResponse}`);
+        }
         //----------------------------------------------
         // Add the component to update issue template
         //----------------------------------------------

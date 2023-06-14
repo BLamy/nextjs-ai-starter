@@ -132,19 +132,21 @@ async function createReactComponent(input: {[key: string]: any }) {
     }
   );
 
-  const rawStoryBookResponse = (await generateStorybookResponse.json()).data
-    .choices[0].message?.content;
-  const storybookCodeBlock = rawStoryBookResponse.match(tsxCodeBlockRegex)?.[1];
+  const rawStoryBookResponse = await generateStorybookResponse.json();
+  const storybookCodeBlock = rawStoryBookResponse.data.choices[0].message?.content.match(tsxCodeBlockRegex)?.[1];
   colorLog("blue", `ASSISTANT: ${storybookCodeBlock}`);
-  await fs.writeFile(
-    `./src/components/atoms/__tests__/${componentName}.stories.tsx`,
-    storybookCodeBlock,
-    "utf8"
-  );
-  await runCommand(
-    `npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`
-  );
-
+  if (storybookCodeBlock) {
+    await fs.writeFile(
+      `./src/components/atoms/__tests__/${componentName}.stories.tsx`,
+      storybookCodeBlock,
+      "utf8"
+    );
+    await runCommand(
+      `npx prettier --write ./src/components/atoms/__tests__/${componentName}.stories.tsx`
+    );
+  } else {
+    colorLog("blue", `RAW ASSISTANT: ${rawStoryBookResponse}`);
+  }
   //----------------------------------------------
   // Add the component to update issue template
   //----------------------------------------------
